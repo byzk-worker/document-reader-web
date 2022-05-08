@@ -1,39 +1,89 @@
 import { RollupOptions } from "rollup";
 import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
-// import del from "rollup-plugin-delete";
-import { terser } from "rollup-plugin-terser";
-import postcss from "@yinxulai/rollup-plugin-less";
 
+import posthtml from "rollup-plugin-posthtml-template";
 const path = require("path");
-const packageInfo = require("../package.json");
+
+// const base64 = require("postcss-font-base64");
+const autoprefixer = require("autoprefixer");
+const postcss = require("rollup-plugin-postcss");
+const less = require("less");
 
 const resolveFile = function (...filePath) {
   return path.join(__dirname, "..", ...filePath);
 };
 
+const processLess = function (context, payload) {
+  return new Promise((resolve, reject) => {
+    less.render(
+      {
+        file: context,
+      },
+      function (err, result) {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(err);
+        }
+      }
+    );
+
+    less.render(context, {}).then(
+      function (output) {
+        // output.css = string of css
+        // output.map = string of sourcemap
+        // output.imports = array of string filenames of the imports referenced
+        if (output && output.css) {
+          resolve(output.css);
+        } else {
+          reject({});
+        }
+      },
+      function (err) {
+        reject(err);
+      }
+    );
+  });
+};
+
+const outDir = resolveFile("build");
+
 export default {
   input: "src/index.ts",
   output: [
     {
-      file: resolveFile("dist", packageInfo.libName + ".min.js"),
-      format: "iife",
-      name: packageInfo.libName,
+      file: path.join(outDir, "index.js"),
+      format: "es",
       sourcemap: false,
     },
   ],
+  external: ["classnames", "san"],
   plugins: [
-    postcss({
-      cssModule: true,
-      insert: true,
-      //   extensions: [".css"],
-    }),
+    // postcss({
+    //   cssModule: true,
+    //   insert: true,
+    //   //   extensions: [".css"],
+    // }),
     // del({ targets: "dist/*" }),
+    // posthtml({
+    //   template: true,
+    // }),
+    posthtml({
+      directives: [{ name: "%", start: "<", end: ">" }],
+    }),
+    postcss({
+      // modules: true,
+      extract: path.join(outDir, "index.css"),
+      minimize: false,
+      process: processLess,
+      // plugins: [base64({}), autoprefixer({ add: true })],
+      plugins: [autoprefixer({ add: true })],
+    }),
     typescript(),
     commonjs(),
-    nodeResolve(),
+    // nodeResolve(),
     babel({
       exclude: "node_modules/**", // 防止打包node_modules下的文件
       babelHelpers: "runtime", // 使plugin-transform-runtime生效
@@ -71,16 +121,6 @@ export default {
         //  多次导入的文件，只导入一次
         ["@babel/plugin-transform-runtime"],
       ],
-    }),
-    terser({
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        ie8: true,
-      },
-      output: {
-        comments: () => false,
-      },
     }),
   ],
 } as RollupOptions;

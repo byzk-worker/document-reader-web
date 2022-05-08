@@ -1,20 +1,20 @@
 import { RollupOptions } from "rollup";
 import babel from "@rollup/plugin-babel";
-
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
-import serve from "rollup-plugin-serve";
-import livereload from "rollup-plugin-livereload";
+// import del from "rollup-plugin-delete";
+import { terser } from "rollup-plugin-terser";
 // import postcss from "@yinxulai/rollup-plugin-less";
 import url from "@rollup/plugin-url";
 import posthtml from "rollup-plugin-posthtml-template";
 
-// import base64 from "postcss-font-base64";
-const packageInfo = require("../package.json");
+// import { postcssFontsBase64 as base64 } from "./common";
 
 const path = require("path");
+const packageInfo = require("../package.json");
 
+// const base64 = require("postcss-font-base64");
 const autoprefixer = require("autoprefixer");
 const postcss = require("rollup-plugin-postcss");
 const less = require("less");
@@ -56,40 +56,78 @@ const processLess = function (context, payload) {
   });
 };
 
-const Global = `var process = {
-  env: {
-    NODE_ENV: 'development'
-  }
-};\n`;
+const Global = `var process={env:{NODE_ENV: 'development'}};`;
 
-const configs: RollupOptions = {
+const outDir = resolveFile("build", "dist");
+
+export default {
   input: "src/index.ts",
   output: [
     {
-      file: resolveFile("build", "dist", packageInfo.libName + ".js"),
+      file: path.join(outDir, packageInfo.libName + ".js"),
       format: "iife",
       name: packageInfo.libName,
-      sourcemap: true,
+      sourcemap: false,
       banner: Global,
+    },
+    {
+      file: path.join(outDir, packageInfo.libName + ".min.js"),
+      format: "iife",
+      name: packageInfo.libName,
+      sourcemap: false,
+      banner: Global,
+      plugins: [
+        terser({
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+          output: {
+            comments: () => false,
+          },
+        }),
+      ],
+    },
+    {
+      file: path.join(outDir, packageInfo.libName + ".ie.min.js"),
+      format: "iife",
+      name: packageInfo.libName,
+      sourcemap: false,
+      banner: Global,
+      plugins: [
+        terser({
+          ie8: true,
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+          output: {
+            comments: () => false,
+          },
+        }),
+      ],
     },
   ],
   plugins: [
     // postcss({
     //   cssModule: true,
     //   insert: true,
+    //   //   extensions: [".css"],
     // }),
+    // del({ targets: "dist/*" }),
     // posthtml({
     //   template: true,
     // }),
-
     posthtml({
       directives: [{ name: "%", start: "<", end: ">" }],
     }),
     postcss({
       // modules: true,
+      // extract: resolveFile("dist", "css", "index.min.css"),
       extract: false,
-      minimize: false,
+      minimize: true,
       process: processLess,
+      // plugins: [base64({}), autoprefixer({ add: true })],
       plugins: [autoprefixer({ add: true })],
     }),
     url({
@@ -104,7 +142,7 @@ const configs: RollupOptions = {
         "**/*.woff2",
       ],
     }),
-    typescript({}),
+    typescript(),
     commonjs(),
     nodeResolve(),
     babel({
@@ -145,13 +183,5 @@ const configs: RollupOptions = {
         ["@babel/plugin-transform-runtime"],
       ],
     }),
-    serve({
-      // 装备serve武器并配置参数
-      port: 3000,
-      contentBase: [resolveFile("")],
-    }),
-    livereload(resolveFile("build", "dist")),
   ],
-};
-
-export default configs;
+} as RollupOptions;

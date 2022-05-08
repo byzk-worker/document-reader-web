@@ -1,0 +1,35 @@
+.tab {
+  width: 166px;
+  height: 100%;
+  background: #ffffff;
+  position: relative;
+  float: left;
+  margin-right: 6px;
+
+  .fileName {
+    position: absolute;
+    left: 21px;
+    height: 100%;
+    width: 97px;
+    font-size: 12px;
+    font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+    font-weight: 400;
+    color: #333333;
+    line-height: 30px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .closeBtn {
+    font-size: 0px;
+    position: absolute;
+    right: 21px;
+    line-height: 30px;
+    > span {
+      cursor: pointer;
+      font-size: 8px;
+    }
+  }
+}

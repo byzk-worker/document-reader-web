@@ -1,0 +1,34 @@
+@import "../../styles/commom.less";
+
+.toolJump {
+  height: 100%;
+  line-height: @headerToolPanelHeight;
+  text-align: center;
+
+  > span {
+    .common_font;
+    color: #333;
+    transition: all 0.3s;
+    &.disabled {
+      color: #888;
+      cursor: not-allowed;
+      &:hover {
+        color: #888;
+      }
+    }
+    &:hover {
+      color: #2752e7;
+    }
+  }
+  > input {
+    width: 30px;
+  }
+}
+
+.toolIconBtn {
+  height: 100%;
+  line-height: @headerToolPanelHeight;
+  > span {
+    font-size: 24px;
+  }
+}

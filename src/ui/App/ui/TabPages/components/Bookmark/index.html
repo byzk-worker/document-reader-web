@@ -1,0 +1,16 @@
+<div class="<%= styles.bookmark %>">
+    <div s-ref="tab-group" class="<%= styles.tabGroup %>" style="right: {{btnGroupWidth+12}}px">
+        <div s-ref="tab-wrapper-scroll" class="<%= styles.tabs %>">
+            <div s-ref="tab-wrapper" style="overflow: hidden">
+                <h-tab s-for="t in tabs" id="{{t.id}}" name="{{t.name}}" />
+            </div>
+        </div>
+        <div title="打开" on-click="events.add($event)" class="<%= styles.tabAdd %>">
+            <span class="iconfont">&#xe64d;</span>
+        </div>
+    </div>
+    <div s-if="btnGroup && btnGroup.btns && btnGroup.btns.length > 0" class="<%= styles.btnGroup %>"
+        style="width: {{btnGroupWidth}}px">
+        <tab-btn s-for="btn in btnGroup.btns" s-bind={{{...btn}}} />
+    </div>
+</div>

@@ -1,0 +1,30 @@
+{
+  "id": "3373110",
+  "name": "板式文件阅读器",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "695212",
+      "name": "圆角方框",
+      "font_class": "yuanjiaofangkuang",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "5387522",
+      "name": "关闭",
+      "font_class": "guanbi",
+      "unicode": "eaf2",
+      "unicode_decimal": 60146
+    },
+    {
+      "icon_id": "9474647",
+      "name": "缩小",
+      "font_class": "suoxiao",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    }
+  ]
+}

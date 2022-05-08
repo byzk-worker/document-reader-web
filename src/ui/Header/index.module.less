@@ -1,0 +1,110 @@
+@tollbarHeight: 40px;
+@import "../../styles/commom.less";
+
+.header {
+  width: 100%;
+  min-height: 40px;
+  user-select: none;
+
+  > .tollbar {
+    width: 100%;
+    height: @tollbarHeight;
+    background: #2752e7;
+    overflow: hidden;
+    position: relative;
+
+    > .tabFold {
+      position: absolute;
+      right: 13px;
+      width: 24px;
+      height: 100%;
+      line-height: @tollbarHeight;
+      .common_font;
+      color: #fff;
+      cursor: pointer;
+      > span {
+        font-size: @fontSize;
+      }
+    }
+    > .fileBtn,
+    > .tabs > .tab {
+      float: left;
+      cursor: pointer;
+      height: 100%;
+      width: 98px;
+      color: #fff;
+      line-height: @tollbarHeight;
+      .common_font;
+      > span {
+        font-size: @fontSize;
+      }
+    }
+
+    > .tabs {
+      float: left;
+      > .tab {
+        width: 50px;
+        transition: all 0.3s;
+        &.active {
+          background-color: #fff;
+          color: #333;
+        }
+      }
+    }
+  }
+  > .tabPanels {
+    width: 100%;
+    height: 0;
+    background-color: #fff;
+    transition: all 0.3s;
+    overflow: auto;
+
+    &.active {
+      height: @headerToolPanelHeight;
+    }
+
+    > .tabPanel {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      padding-left: 30px;
+
+      > div {
+        height: 100%;
+        float: left;
+        margin-right: 30px;
+        > .separate {
+          width: 2px;
+          height: 100%;
+          > div {
+            width: 100%;
+            height: 42px;
+            margin-top: 4px;
+            background-color: #888;
+          }
+        }
+
+        > .tool {
+          width: 50px;
+          height: 100%;
+          cursor: pointer;
+
+          > .text {
+            .common_font;
+            color: #333;
+          }
+          > .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 24px;
+            margin: 4px auto 2px auto;
+            text-align: center;
+            > span {
+              font-size: 24px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
