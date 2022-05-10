@@ -21633,6 +21633,47 @@ var bkDocReader = (function (exports) {
 	        }
 	    }
 	};
+	function getEleWindowTop(ele) {
+	    var offset = ele.offsetTop;
+	    if (ele.offsetParent != null) {
+	        offset += getEleWindowTop(ele.offsetParent);
+	    }
+	    return offset;
+	}
+	function getEleWindowLeft(ele) {
+	    var offset = ele.offsetLeft;
+	    if (ele.offsetParent != null) {
+	        offset += getEleWindowLeft(ele.offsetParent);
+	    }
+	    return offset;
+	}
+	function getEleWindowScollLeft(ele) {
+	    if (ele === document.body || !ele) {
+	        return 0;
+	    }
+	    return ele.scrollLeft + (getEleWindowScollLeft(ele.parentElement) || 0);
+	}
+	function getEleWindowScollTopt(ele) {
+	    if (ele === document.body || !ele) {
+	        return 0;
+	    }
+	    return ele.scrollTop + (getEleWindowScollTopt(ele.parentElement) || 0);
+	}
+	function getBoundingClientRect(ele) {
+	    // if (ele.getBoundingClientRect) {
+	    //   return ele.getBoundingClientRect();
+	    // }
+	    var top = getEleWindowTop(ele) - getEleWindowScollTopt(ele);
+	    var left = getEleWindowLeft(ele) - getEleWindowScollLeft(ele);
+	    return {
+	        top: top,
+	        left: left,
+	        width: ele.clientWidth,
+	        height: ele.clientHeight,
+	        x: left,
+	        y: top
+	    };
+	}
 
 	var dom = /*#__PURE__*/Object.freeze({
 		__proto__: null,
@@ -21642,6 +21683,7 @@ var bkDocReader = (function (exports) {
 		getFullscreenElement: getFullscreenElement,
 		isFullScreen: isFullScreen,
 		eventUtil: eventUtil,
+		getBoundingClientRect: getBoundingClientRect,
 		dispatchDomEvent: dispatchDomEvent,
 		nodeEventInfoGet: nodeEventInfoGet,
 		handleNodeInfo: handleNodeInfo,
@@ -21693,11 +21735,11 @@ var bkDocReader = (function (exports) {
 	  }
 	}
 
-	var css_248z$7 = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: auto;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding-left: 30px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div {\n  height: 100%;\n  float: left;\n  margin-right: 30px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
-	var styles$6 = {"common_font":"index-module_common_font__kzEJV","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","tabPanel":"index-module_tabPanel__aeg7u","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-	styleInject(css_248z$7);
+	var css_248z$9 = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
+	var styles$8 = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+	styleInject(css_248z$9);
 
-	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe6df;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe718;':'&#xe615;' | raw}}</span>\n        </div>\n    </div>\n    <div class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.handleTabPanelWidth(toolbarConfig)}}\">\n            <div s-for=\"toolInfo in toolbarConfig.tools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
+	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe615;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <!-- <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" -->\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 	var lodash = {exports: {}};
 
@@ -38900,16 +38942,32 @@ var bkDocReader = (function (exports) {
 	}.call(commonjsGlobal));
 	}(lodash, lodash.exports));
 
+	var headerToolMarginRight = 16;
+	var headerToolPanelHeight = 50;
+
 	var template$5 = lodash.exports.template(htmlTemplate)({
-	    styles: styles$6
+	    styles: styles$8
 	});
 	var Header = dist.exports.defineComponent({
 	    template: template$5,
 	    initData: function () {
 	        return {
 	            selectTabKey: 0,
-	            expand: true
+	            expand: true,
+	            panelWidthList: [],
+	            marginLeft: 0,
+	            tabPanelsWidth: 0,
+	            toolsPanelWidth: 0,
+	            marginEnd: false
 	        };
+	    },
+	    attached: function () {
+	        this.events.resize = this.events.resize.bind(this);
+	        eventUtil.addHandler(window, "resize", this.events.resize);
+	        this.events.resize();
+	    },
+	    detached: function () {
+	        eventUtil.removeHandler(window, "resize", this.events.resize);
 	    },
 	    updated: function () {
 	        var _this = this;
@@ -38917,22 +38975,40 @@ var bkDocReader = (function (exports) {
 	            _this.dispatch("app::resize", {});
 	        }, 500);
 	    },
-	    fns: {
-	        handleNodeInfoWidth: function (nodeInfo) {
-	            if (!nodeInfo || typeof nodeInfo.width === "undefined") {
-	                return undefined;
+	    computed: {
+	        showControlBreak: function () {
+	            var result = ["", ""];
+	            var width = this.data.get("toolsPanelWidth");
+	            if (width <= 0) {
+	                return result;
 	            }
-	            return "width: " + nodeInfo.width + "px";
+	            var pannelsWidth = this.data.get("tabPanelsWidth");
+	            var marginLeft = this.data.get("marginLeft");
+	            if (pannelsWidth >= width) {
+	                return result;
+	            }
+	            debugger;
+	            if (marginLeft > 0) {
+	                result[0] = "prev";
+	            }
+	            if (marginLeft + pannelsWidth < width) {
+	                result[1] = "next";
+	            }
+	            return result;
 	        },
-	        handleTabPanelWidth: function (toolbarConfig) {
-	            var tools = toolbarConfig.tools;
-	            if (!tools || tools.length === 0) {
-	                return undefined;
+	        handlePanelWidth: function () {
+	            var selectTabKey = this.data.get("selectTabKey");
+	            var toolsConfig = this.data.get("toolbars[".concat(selectTabKey, "]"));
+	            if (!toolsConfig ||
+	                !toolsConfig.tools ||
+	                toolsConfig.tools.length === 0) {
+	                return;
 	            }
+	            var tools = toolsConfig.tools;
 	            var sumWidth = 0;
 	            for (var i = 0; i < tools.length; i++) {
 	                var tool = tools[i];
-	                sumWidth += 30;
+	                sumWidth += headerToolMarginRight;
 	                if (tool.type === "separate") {
 	                    sumWidth += 2;
 	                    continue;
@@ -38944,13 +39020,80 @@ var bkDocReader = (function (exports) {
 	                    sumWidth += tool.nodeInfo.width;
 	                }
 	                else {
-	                    sumWidth += 50;
+	                    sumWidth += headerToolPanelHeight;
 	                }
 	            }
-	            return "width: " + sumWidth + "px";
+	            return sumWidth;
+	            // return "width: " + sumWidth + "px;";
+	        },
+	        handlePanelTools: function () {
+	            var selectTabKey = this.data.get("selectTabKey");
+	            var toolsConfig = this.data.get("toolbars[".concat(selectTabKey, "]"));
+	            if (!toolsConfig ||
+	                !toolsConfig.tools ||
+	                toolsConfig.tools.length === 0) {
+	                return;
+	            }
+	            return toolsConfig.tools;
+	        }
+	    },
+	    fns: {
+	        showControlBreakWrapper: function (show, isNext) {
+	            debugger;
+	            if (!show || show.length != 2 || (!show[0] && !show[1])) {
+	                this.data.set("marginLeft", 0);
+	                return;
+	            }
+	            if (show[0] === "prev" && !show[1]) {
+	                this.data.set("marginEnd", true);
+	            }
+	            else {
+	                if (this.data.get("marginEnd")) {
+	                    this.data.set("marginEnd", false);
+	                }
+	            }
+	            if (isNext) {
+	                return show[1] === "next";
+	            }
+	            return show[0] === "prev";
+	        },
+	        handleNodeInfoWidth: function (nodeInfo) {
+	            if (!nodeInfo || typeof nodeInfo.width === "undefined") {
+	                return undefined;
+	            }
+	            return "width: " + nodeInfo.width + "px";
+	        },
+	        settingToolsPanelWidthReturnStyle: function (width) {
+	            width = width || 0;
+	            this.data.set("toolsPanelWidth", width);
+	            return "width: " + width + "px;";
 	        }
 	    },
 	    events: {
+	        resize: function () {
+	            var tabPanelsEle = this.ref("tabPanels");
+	            if (!tabPanelsEle) {
+	                return;
+	            }
+	            var tabPanelsWidth = tabPanelsEle.clientWidth;
+	            this.data.set("tabPanelsWidth", tabPanelsWidth);
+	            var marginLeft = this.data.get("marginLeft");
+	            if (marginLeft === 0) {
+	                return;
+	            }
+	            var toolPanelWidth = this.data.get("toolsPanelWidth");
+	            var width = toolPanelWidth - marginLeft - tabPanelsWidth;
+	            var marginEnd = this.data.get("marginEnd");
+	            if (marginEnd) {
+	                this.data.set("marginLeft", toolPanelWidth - tabPanelsWidth + 24);
+	                return;
+	            }
+	            if (width < 0) {
+	                width = -width - 24;
+	                marginLeft -= width;
+	                this.data.set("marginLeft", marginLeft);
+	            }
+	        },
 	        tabClick: function (index) {
 	            var selectTabKey = this.data.get("selectTabKey");
 	            if (index === selectTabKey) {
@@ -38979,13 +39122,36 @@ var bkDocReader = (function (exports) {
 	            else {
 	                ele.attach(toolEle);
 	            }
+	        },
+	        prevAndNextToolClick: function (isNext) {
+	            debugger;
+	            var toolsPanelWidth = this.data.get("toolsPanelWidth");
+	            var tabPanelsWidth = this.data.get("tabPanelsWidth");
+	            var marginLeft = this.data.get("marginLeft");
+	            if (isNext) {
+	                var width = toolsPanelWidth - tabPanelsWidth - marginLeft;
+	                if (width <= 0) {
+	                    return;
+	                }
+	                while (width > tabPanelsWidth) {
+	                    width -= tabPanelsWidth;
+	                }
+	                marginLeft += width + 24;
+	            }
+	            else {
+	                marginLeft -= tabPanelsWidth;
+	                if (marginLeft <= 0) {
+	                    marginLeft = 0;
+	                }
+	            }
+	            this.data.set("marginLeft", marginLeft);
 	        }
 	    }
 	});
 
-	var css_248z$6 = "#index-module_app__DAOOy {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #f5f7f9;\n}\n#index-module_header__NtWW5 {\n  width: 100%;\n  max-height: 120px;\n}\n#index-module_content__m20ZT {\n  width: 100%;\n}\n";
-	var styles$5 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","content":"index-module_content__m20ZT"};
-	styleInject(css_248z$6);
+	var css_248z$8 = "#index-module_app__DAOOy {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #f5f7f9;\n  overflow: hidden;\n}\n#index-module_header__NtWW5 {\n  width: 100%;\n  max-height: 120px;\n}\n#index-module_content__m20ZT {\n  width: 100%;\n}\n";
+	var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","content":"index-module_content__m20ZT"};
+	styleInject(css_248z$8);
 
 	var classnames = {exports: {}};
 
@@ -39047,24 +39213,24 @@ var bkDocReader = (function (exports) {
 
 	var classNames = classnames.exports;
 
-	var css_248z$5 = ".index-module_bookmark__1nGVp {\n  width: 100%;\n  height: 30px;\n  background: #e6e6e6;\n  position: relative;\n  overflow: hidden;\n  transition: all 0.5s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy,\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  height: 100%;\n  display: inline-block;\n  font-size: 0;\n  position: absolute;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy {\n  left: 0;\n  height: 100%;\n  padding: 0 4px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 {\n  float: left;\n  height: 100%;\n  overflow: auto;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 > div {\n  height: 100%;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p {\n  cursor: pointer;\n  float: left;\n  width: 16px;\n  height: 100%;\n  font-size: 8px;\n  line-height: 30px;\n}\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  right: 0;\n  padding-right: 1px;\n  overflow: hidden;\n  height: 100%;\n}\n";
-	var styles$4 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
-	styleInject(css_248z$5);
+	var css_248z$7 = ".index-module_bookmark__1nGVp {\n  width: 100%;\n  height: 30px;\n  background: #e6e6e6;\n  position: relative;\n  overflow: hidden;\n  transition: all 0.5s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy,\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  height: 100%;\n  display: inline-block;\n  font-size: 0;\n  position: absolute;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy {\n  left: 0;\n  height: 100%;\n  padding: 0 4px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 {\n  float: left;\n  height: 100%;\n  overflow: auto;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 > div {\n  height: 100%;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p {\n  cursor: pointer;\n  float: left;\n  width: 16px;\n  height: 100%;\n  font-size: 8px;\n  line-height: 30px;\n}\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  right: 0;\n  padding-right: 1px;\n  overflow: hidden;\n  height: 100%;\n}\n";
+	var styles$6 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
+	styleInject(css_248z$7);
 
-	var css_248z$4 = ".index-module_tab__nriyF {\n  width: 166px;\n  height: 100%;\n  background: #ffffff;\n  position: relative;\n  float: left;\n  margin-right: 6px;\n}\n.index-module_tab__nriyF .index-module_fileName__A6hsy {\n  position: absolute;\n  left: 21px;\n  height: 100%;\n  width: 97px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  text-align: center;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM {\n  font-size: 0px;\n  position: absolute;\n  right: 21px;\n  line-height: 30px;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM > span {\n  cursor: pointer;\n  font-size: 8px;\n}\n";
-	var styles$3 = {"tab":"index-module_tab__nriyF","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
-	styleInject(css_248z$4);
+	var css_248z$6 = ".index-module_tab__nriyF {\n  width: 166px;\n  height: 100%;\n  background: #ffffff;\n  position: relative;\n  float: left;\n  margin-right: 6px;\n}\n.index-module_tab__nriyF .index-module_fileName__A6hsy {\n  position: absolute;\n  left: 21px;\n  height: 100%;\n  width: 97px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  text-align: center;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM {\n  font-size: 0px;\n  position: absolute;\n  right: 21px;\n  line-height: 30px;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM > span {\n  cursor: pointer;\n  font-size: 8px;\n}\n";
+	var styles$5 = {"tab":"index-module_tab__nriyF","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
+	styleInject(css_248z$6);
 
-	var template$4 = "\n    <div class=\"".concat(styles$3.tab, "\">\n      <div title={{name}} class=\"").concat(styles$3.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div class=\"").concat(styles$3.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
+	var template$4 = "\n    <div class=\"".concat(styles$5.tab, "\">\n      <div title={{name}} class=\"").concat(styles$5.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div class=\"").concat(styles$5.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
 	var BookmarkTab = dist.exports.defineComponent({
 	    template: template$4
 	});
 
-	var css_248z$3 = ".index-module_btn__Z99v5 {\n  display: block;\n  width: 30px;\n  height: 30px;\n  overflow: hidden;\n  line-height: 30px;\n  text-align: center;\n  float: left;\n}\n.index-module_btn__Z99v5 > span {\n  display: block;\n  width: 24px;\n  height: 24px;\n  text-align: center;\n  line-height: 24px;\n  cursor: pointer;\n  margin-top: 3px;\n}\n";
-	var styles$2 = {"btn":"index-module_btn__Z99v5"};
-	styleInject(css_248z$3);
+	var css_248z$5 = ".index-module_btn__Z99v5 {\n  display: block;\n  width: 30px;\n  height: 30px;\n  overflow: hidden;\n  line-height: 30px;\n  text-align: center;\n  float: left;\n}\n.index-module_btn__Z99v5 > span {\n  display: block;\n  width: 24px;\n  height: 24px;\n  text-align: center;\n  line-height: 24px;\n  cursor: pointer;\n  margin-top: 3px;\n}\n";
+	var styles$4 = {"btn":"index-module_btn__Z99v5"};
+	styleInject(css_248z$5);
 
-	var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles$2.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
+	var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles$4.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
 	var TabBtn = dist.exports.defineComponent({
 	    template: template$3,
 	    attached: function () {
@@ -39094,10 +39260,10 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var html$2 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\">\n            </h-tab></div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\">\n    </tab-btn></div>\n</div>";
+	var html$5 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\">\n            </h-tab></div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\">\n    </tab-btn></div>\n</div>";
 
-	var template$2 = lodash.exports.template(html$2)({
-	    styles: styles$4
+	var template$2 = lodash.exports.template(html$5)({
+	    styles: styles$6
 	});
 	var Bookmark = dist.exports.defineComponent({
 	    components: {
@@ -39208,7 +39374,7 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var template = "\n<div id=\"".concat(styles$5.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$5.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" />\n        <ui-header s-bind={{{...areas.header}}} appId=\"{{appId}}\" />\n    </div>\n    <div id=\"").concat(styles$5.content, "\" style=\"height: {{contentHeight}}px\">\n    </div>\n    <div id=\"").concat(styles$5.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+	var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" />\n        <ui-header s-bind={{{...areas.header}}} appId=\"{{appId}}\" />\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 	var AppUi = dist.exports.defineComponent({
 	    components: {
 	        "ui-tabs": TabPages,
@@ -39247,27 +39413,26 @@ var bkDocReader = (function (exports) {
 	                return;
 	            }
 	            var contentHeight = root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
-	            console.log("内容高度: ", contentHeight);
 	            this.data.set("contentHeight", contentHeight);
 	        }
 	    }
 	});
 
-	var css_248z$2 = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n";
-	var styles$1 = {"common_font":"index-module_common_font__1JO7K","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS"};
-	styleInject(css_248z$2);
+	var css_248z$4 = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n";
+	var styles$3 = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV"};
+	styleInject(css_248z$4);
 
-	var html$1 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <!-- <input placeholder=\"\" type=\"number\" value=\"1\" /> -->\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+	var html$4 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <!-- <input placeholder=\"\" type=\"number\" value=\"1\" /> -->\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
-	var html = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
+	var html$3 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-	var css_248z$1 = "";
-	var styles = {};
-	styleInject(css_248z$1);
+	var css_248z$3 = "";
+	var styles$2 = {};
+	styleInject(css_248z$3);
 
 	var allowKeys = [8, 37, 39, 46];
 	var InputNumber = dist.exports.defineComponent({
-	    template: lodash.exports.template(html)(styles),
+	    template: lodash.exports.template(html$3)(styles$2),
 	    initData: function () {
 	        return {
 	            value: "1",
@@ -39276,7 +39441,6 @@ var bkDocReader = (function (exports) {
 	    },
 	    events: {
 	        valueKeyDown: function (event) {
-	            console.log(event.keyCode);
 	            if ((event.keyCode < 48 || event.keyCode > 57) &&
 	                !allowKeys.includes(event.keyCode)) {
 	                eventUtil.preventDefault(event);
@@ -39358,7 +39522,7 @@ var bkDocReader = (function (exports) {
 	    components: {
 	        "input-number": InputNumber
 	    },
-	    template: lodash.exports.template(html$1)({ styles: styles$1 }),
+	    template: lodash.exports.template(html$4)({ styles: styles$3 }),
 	    initData: function () {
 	        return {
 	            maxValue: undefined,
@@ -39369,7 +39533,7 @@ var bkDocReader = (function (exports) {
 	        prevDisableClass: function () {
 	            var val = this.data.get("value");
 	            if (val == 1) {
-	                return styles$1.disabled;
+	                return styles$3.disabled;
 	            }
 	        }
 	    },
@@ -39384,6 +39548,105 @@ var bkDocReader = (function (exports) {
 	            }
 	        }
 	    }
+	});
+
+	var html$2 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select></c-select>\n</div>";
+
+	var html$1 = "<div class=\"<%= styles.select %>\">\n    <div class=\"<%= styles.value %>\" on-click=\"events.selectClick($event)\">\n        <span>哈哈</span>\n    </div>\n    <c-options show=\"{{showOptions}}\" activeVal=\"{{activeVal}}\" options=\"{{options}}\"></c-options>\n</div>";
+
+	var css_248z$2 = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  width: 100%;\n  height: 100%;\n  padding: 0 6px;\n  color: #333;\n  text-align: left;\n}\n.index-module_select__2NwCG:hover {\n  border: 1px solid #40a9ff;\n}\n";
+	var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I"};
+	styleInject(css_248z$2);
+
+	var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\">{{option.text}}</div>\n</div>";
+
+	var css_248z$1 = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
+	var styles = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
+	styleInject(css_248z$1);
+
+	function getDataJoinStyle(dataSource, name, key) {
+	    key = key || name;
+	    var d = dataSource.data.get(name);
+	    if (typeof d === "undefined") {
+	        return "";
+	    }
+	    return key + ": " + d + "px;";
+	}
+	var Options = dist.exports.defineComponent({
+	    template: lodash.exports.template(html)({ styles: styles }),
+	    initData: function () {
+	        return {
+	            options: [],
+	            show: false,
+	            top: 0,
+	            left: 0
+	        };
+	    },
+	    computed: {
+	        optionsStyle: function () {
+	            var show = this.data.get("show");
+	            if (!show) {
+	                return "height: 0";
+	            }
+	            var styleStr = getDataJoinStyle(this, "left") +
+	                getDataJoinStyle(this, "right") +
+	                getDataJoinStyle(this, "top") +
+	                getDataJoinStyle(this, "bottom");
+	            return styleStr;
+	        }
+	    }
+	});
+
+	var Select = dist.exports.defineComponent({
+	    components: {
+	        "c-options": Options
+	    },
+	    template: lodash.exports.template(html$1)({ styles: styles$1 }),
+	    initData: function () {
+	        return {
+	            showOoptions: false,
+	            activeVal: 1,
+	            options: [
+	                {
+	                    val: 1,
+	                    text: "测试"
+	                },
+	                {
+	                    val: 2,
+	                    text: "测试2"
+	                },
+	                {
+	                    val: 4,
+	                    text: "测试3"
+	                },
+	            ]
+	        };
+	    },
+	    events: {
+	        selectClick: function (event) {
+	            var ele = event.target;
+	            //   console.log(ele.clientTop);
+	            //   console.log(ele.offsetTop);
+	            //   console.log(ele.scrollTop);
+	            //   console.log(ele.style.top);
+	            //   console.log("=====================");
+	            console.log("clientLeft=", ele.clientLeft);
+	            console.log("offsetLeft=", ele.offsetLeft);
+	            console.log("scrollLeft=", ele.scrollLeft);
+	            console.log("clientWidth", ele.clientWidth);
+	            console.log("offsetWidth", ele.offsetWidth);
+	            console.log("scrollWidth", ele.scrollWidth);
+	            console.log(ele.getBoundingClientRect());
+	            console.log(getBoundingClientRect(ele));
+	        }
+	    }
+	});
+
+	var ToolScale = dist.exports.defineComponent({
+	    components: {
+	        "c-select": Select
+	    },
+	    template: lodash.exports.template(html$2)({ styles: styles$3 })
 	});
 
 	var fullBtnId = createId();
@@ -39478,13 +39741,20 @@ var bkDocReader = (function (exports) {
 	            html: "&#xe67b;",
 	            title: "缩小",
 	            width: 24,
-	            className: styles$1.toolIconBtn
+	            className: styles$3.toolIconBtn
 	        }
 	    },
 	    scale: {
 	        type: "default",
 	        nodeInfo: {
-	            title: "缩放比率"
+	            title: "缩放比率",
+	            width: 82,
+	            render: function (app, nodeInfo, parent) {
+	                return new ToolScale({
+	                    owner: parent,
+	                    source: "<tool-select style='width:80px;'></tool-select>"
+	                });
+	            }
 	        }
 	    },
 	    enlarge: {
@@ -39493,7 +39763,7 @@ var bkDocReader = (function (exports) {
 	            html: "&#xe65a;",
 	            title: "放大",
 	            width: 24,
-	            className: styles$1.toolIconBtn
+	            className: styles$3.toolIconBtn
 	        }
 	    },
 	    find: {
@@ -39582,6 +39852,7 @@ var bkDocReader = (function (exports) {
 	                headerTabsBtns.SuitableWidth,
 	                headerTabsBtns.SuitablePage,
 	                { type: "separate" },
+	                headerTabsBtns.scale,
 	                headerTabsBtns.narrow,
 	                headerTabsBtns.enlarge,
 	                { type: "separate" },
@@ -39640,7 +39911,7 @@ var bkDocReader = (function (exports) {
 	    components: {
 	        "ui-app": AppUi
 	    },
-	    template: "<ui-app s-show=\"show\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" />",
+	    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" />",
 	    initData: function () {
 	        return {
 	            show: true,

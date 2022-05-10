@@ -51,7 +51,7 @@ const App = defineComponent<AppProps>({
   components: {
     "ui-app": AppUi,
   },
-  template: `<ui-app s-show="show" s-bind="{{{...appOptions}}}" appId="{{appId}}" />`,
+  template: `<ui-app s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" />`,
   initData: function () {
     return {
       show: true,

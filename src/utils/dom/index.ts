@@ -152,4 +152,53 @@ export const eventUtil = {
   },
 };
 
+function getEleWindowTop(ele: HTMLElement) {
+  let offset = ele.offsetTop;
+  if (ele.offsetParent != null) {
+    offset += getEleWindowTop(ele.offsetParent as any);
+  }
+
+  return offset;
+}
+
+function getEleWindowLeft(ele: HTMLElement) {
+  var offset = ele.offsetLeft;
+  if (ele.offsetParent != null) {
+    offset += getEleWindowLeft(ele.offsetParent as any);
+  }
+  return offset;
+}
+
+function getEleWindowScollLeft(ele: HTMLElement) {
+  if (ele === document.body || !ele) {
+    return 0;
+  }
+
+  return ele.scrollLeft + (getEleWindowScollLeft(ele.parentElement) || 0);
+}
+
+function getEleWindowScollTopt(ele: HTMLElement) {
+  if (ele === document.body || !ele) {
+    return 0;
+  }
+
+  return ele.scrollTop + (getEleWindowScollTopt(ele.parentElement) || 0);
+}
+
+export function getBoundingClientRect(ele: HTMLElement): DOMRect {
+  // if (ele.getBoundingClientRect) {
+  //   return ele.getBoundingClientRect();
+  // }
+  const top = getEleWindowTop(ele) - getEleWindowScollTopt(ele);
+  const left = getEleWindowLeft(ele) - getEleWindowScollLeft(ele);
+  return {
+    top,
+    left,
+    width: ele.clientWidth,
+    height: ele.clientHeight,
+    x: left,
+    y: top,
+  } as DOMRect;
+}
+
 export * from "./san";

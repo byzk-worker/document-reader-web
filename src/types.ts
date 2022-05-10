@@ -118,6 +118,14 @@ export interface AppUpdateOptions {
    * class的名称
    */
   classNames?: string[] | string;
+  /**
+   * 应用最小宽度, 默认: 1280px
+   */
+  minWidth?: number;
+  /**
+   * 应用最小高度, 默认: 800px
+   */
+  minHeight?: number;
 }
 
 /**

@@ -69,7 +69,6 @@ export default defineComponent<DataType>({
 
       const contentHeight =
         root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
-      console.log("内容高度: ", contentHeight);
       this.data.set("contentHeight", contentHeight);
     },
   },

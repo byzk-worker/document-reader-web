@@ -27,7 +27,6 @@ export default defineComponent<InputNumberProps>({
   },
   events: {
     valueKeyDown(this: InputNumberComponent, event: KeyboardEvent) {
-      console.log(event.keyCode);
 
       if (
         (event.keyCode < 48 || event.keyCode > 57) &&

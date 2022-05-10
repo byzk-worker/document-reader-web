@@ -1,0 +1,3 @@
+<div class="<%= styles.options %>" style="{{optionsStyle}}">
+    <div s-for="option in options" class="<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}">{{option.text}}</div>
+</div>

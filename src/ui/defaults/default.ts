@@ -1,13 +1,9 @@
 import { NodeInfo, ToolbarConfig, ToolInfo } from "../../types";
 import { dom, id } from "../../utils";
-import { defineComponent, Component } from "san";
-import { template as templateParser } from "lodash";
-import toolJump from "./views/toolJump.html";
+import { Component } from "san";
 import styles from "./index.module.less";
-import InputNumber, {
-  InputNumberComponent,
-} from "../../components/InputNumber";
 import ToolJump from "./components/ToolJump";
+import ToolScale from "./components/ToolScale";
 
 const fullBtnId = id.createId();
 
@@ -116,6 +112,13 @@ const headerTabsBtns = {
     type: "default",
     nodeInfo: {
       title: "缩放比率",
+      width: 82,
+      render(app, nodeInfo, parent): Component {
+        return new ToolScale({
+          owner: parent,
+          source: "<tool-select style='width:80px;'></tool-select>",
+        });
+      },
     },
   } as ToolInfo,
   enlarge: {
@@ -214,6 +217,7 @@ export const defaultData = {
         headerTabsBtns.SuitableWidth,
         headerTabsBtns.SuitablePage,
         { type: "separate" },
+        headerTabsBtns.scale,
         headerTabsBtns.narrow,
         headerTabsBtns.enlarge,
         { type: "separate" },

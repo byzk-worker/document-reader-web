@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3350382 */
-  src: url('iconfont.woff2?t=1651844316582') format('woff2'),
-       url('iconfont.woff?t=1651844316582') format('woff'),
-       url('iconfont.ttf?t=1651844316582') format('truetype');
+  src: url('iconfont.woff2?t=1652082520777') format('woff2'),
+       url('iconfont.woff?t=1652082520777') format('woff'),
+       url('iconfont.ttf?t=1652082520777') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,46 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-cha:before {
+  content: "\e659";
+}
+
+.icon-zuixiaohua:before {
+  content: "\e657";
+}
+
+.icon-xiala:before {
+  content: "\e656";
+}
+
+.icon-caidan:before {
+  content: "\e655";
+}
+
+.icon-suolvetu:before {
+  content: "\e651";
+}
+
+.icon-suolvetu-copy:before {
+  content: "\e71c";
+}
+
+.icon-zhushiliebiao:before {
+  content: "\e650";
+}
+
+.icon-zhushiliebiao-copy:before {
+  content: "\e71b";
+}
+
+.icon-qianzhangliebiao:before {
+  content: "\e64f";
+}
+
+.icon-qianzhangliebiao-copy:before {
+  content: "\e71a";
 }
 
 .icon-zhang:before {

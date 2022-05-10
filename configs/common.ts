@@ -18,12 +18,6 @@ export function postcssFontsBase64(options) {
     css.walkAtRules("font-face", function (fontFace) {
       var fileTypeRegex = getRegexStringForFileTypes(options.format);
       // TODO: Return here if font-family doesn't match options.match
-      console.log(
-        new RegExp(
-          `url\\(('|")?.+\\.${fileTypeRegex}\\?{0,}[^']{0,}("|')?\\)`,
-          "g"
-        )
-      );
       fontFace.replaceValues(
         // new RegExp('url\\("?.+\\.' + fileTypeRegex + '"?.{0,}\\)', "g"),
         new RegExp(
@@ -91,7 +85,6 @@ export function postcssFontsBase64(options) {
       } else {
         // Fallback to glob
         file = glob.sync("**/" + file)[0]; // Could be smarter
-        console.log("进入", file);
         if (fs.existsSync(file)) {
           return readAndEncodeFile(file);
         }
