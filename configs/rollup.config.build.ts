@@ -59,7 +59,7 @@ export default {
       sourcemap: false,
     },
   ],
-  external: ["classnames", "san"],
+  external: ["classnames", "san", "lodash"],
   plugins: [
     // postcss({
     //   cssModule: true,

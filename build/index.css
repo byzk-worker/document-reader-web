@@ -5,6 +5,11 @@
   font-weight: 400;
   color: #fff;
 }
+.index-module_text_overflow__8S-Xs {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .index-module_header__bANPo {
   width: 100%;
   min-height: 40px;
@@ -34,7 +39,7 @@
   cursor: pointer;
 }
 .index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {
-  font-size: 12px;
+  font-size: 24px;
 }
 .index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,
 .index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {
@@ -69,37 +74,66 @@
   height: 0;
   background-color: #fff;
   transition: all 0.3s;
+  overflow: hidden;
+  position: relative;
 }
 .index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {
   height: 50px;
+}
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+  width: 14px;
+  height: 100%;
+  background-color: #888;
+  line-height: 50px;
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+}
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {
+  font-size: 14px;
+}
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {
+  left: 0;
+}
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {
+  right: 0;
 }
 .index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {
   width: 100%;
   height: 100%;
   overflow: auto;
-  padding-left: 30px;
+  padding: 0 24px;
+  overflow: hidden;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {
   height: 100%;
   float: left;
-  margin-right: 30px;
+  margin-right: 16px;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_separate__rpKpN {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {
   width: 2px;
   height: 100%;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_separate__rpKpN > div {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {
   width: 100%;
   height: 42px;
   margin-top: 4px;
   background-color: #888;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {
   width: 50px;
   height: 100%;
   cursor: pointer;
+  overflow: hidden;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_text__XqzxF {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_text__XqzxF {
   font-size: 12px;
   text-align: center;
   font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
@@ -107,14 +141,14 @@
   color: #fff;
   color: #333;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_icon__MnfZO {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO {
   width: 24px;
   height: 24px;
   border-radius: 24px;
   margin: 4px auto 2px auto;
   text-align: center;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > div > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {
   font-size: 24px;
 }
 
@@ -123,6 +157,7 @@
   width: 100%;
   height: 100%;
   background: #f5f7f9;
+  overflow: hidden;
 }
 #index-module_header__NtWW5 {
   width: 100%;
@@ -230,6 +265,144 @@
   line-height: 24px;
   cursor: pointer;
   margin-top: 3px;
+}
+
+.index-module_common_font__1JO7K {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+}
+.index-module_text_overflow__5IRoi {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.index-module_toolJump__1AnPZ {
+  height: 100%;
+  line-height: 50px;
+  text-align: center;
+}
+.index-module_toolJump__1AnPZ > span {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+  color: #333;
+  transition: all 0.3s;
+}
+.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {
+  color: #888;
+  cursor: not-allowed;
+}
+.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {
+  color: #888;
+}
+.index-module_toolJump__1AnPZ > span:hover {
+  color: #2752e7;
+}
+.index-module_toolJump__1AnPZ > input {
+  width: 30px;
+}
+.index-module_toolIconBtn__99EQS {
+  height: 100%;
+  line-height: 50px;
+}
+.index-module_toolIconBtn__99EQS > span {
+  font-size: 24px;
+}
+.index-module_toolScale__GZ9IV {
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+}
+
+
+.index-module_common_font__niHsZ {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+}
+.index-module_text_overflow__COYLB {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.index-module_select__2NwCG {
+  width: 100%;
+  height: 28px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  margin: 0 auto;
+  transition: all 0.3s;
+  line-height: 28px;
+}
+.index-module_select__2NwCG > .index-module_value__4778I {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  height: 100%;
+  padding: 0 6px;
+  color: #333;
+  text-align: left;
+}
+.index-module_select__2NwCG:hover {
+  border: 1px solid #40a9ff;
+}
+
+.index-module_common_font__Sz-yv {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+}
+.index-module_text_overflow__MHvJv {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.index-module_options__BzSRC {
+  font-size: 12px;
+  text-align: center;
+  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+  font-weight: 400;
+  color: #fff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: #333;
+  width: 86px;
+  position: absolute;
+  left: 100px;
+  top: 28px;
+  overflow: hidden;
+  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);
+  background-color: white;
+}
+.index-module_options__BzSRC > .index-module_option__7PE8z {
+  padding-left: 6px;
+  height: 28px;
+  width: 100%;
+  line-height: 28px;
+  transition: all 0.2s;
+}
+.index-module_options__BzSRC > .index-module_option__7PE8z:hover {
+  background-color: #f5f5f5;
+}
+.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {
+  background-color: #e9f6fe;
+  font-weight: 400;
 }
 
 .iconfont {
