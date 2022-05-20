@@ -1,7 +1,7 @@
 import { defineComponent, Component } from "san";
 import styles from "./index.module.less";
 import htmlTemplate from "./index.html";
-import { HeaderConfig, NodeInfo, ToolbarConfig } from "../../types";
+import { HeaderConfig, NodeInfo, ToolbarConfig, ToolInfo } from "../../types";
 
 import { template as templateParser } from "lodash";
 import { app, dom } from "../../utils";
@@ -9,6 +9,7 @@ import {
   headerToolMarginRight,
   headerToolPanelHeight,
 } from "../../styles/common";
+import ToolBtn from "./components/ToolBtn";
 
 type DataType = HeaderConfig & {
   selectTabKey: number;
@@ -29,6 +30,9 @@ const template = templateParser(htmlTemplate)({
 
 export default defineComponent<DataType>({
   template,
+  components: {
+    "ui-toolbtn": ToolBtn,
+  },
   initData() {
     return {
       selectTabKey: 0,
@@ -128,6 +132,33 @@ export default defineComponent<DataType>({
     },
   },
   fns: {
+    showToolBar(this: HeaderComponent, toolbarConfig: ToolbarConfig) {
+      if (!toolbarConfig) {
+        return false;
+      }
+
+      if (!toolbarConfig.tools || toolbarConfig.tools.length === 0) {
+        return false;
+      }
+
+      return true;
+    },
+    showTool(this: HeaderComponent, toolInfo: ToolInfo | undefined) {
+      if (toolInfo.type !== "separate" && (!toolInfo || !toolInfo.nodeInfo)) {
+        return false;
+      }
+
+      const appInterface = app.getApp(this.data.get("appId"));
+      if (toolInfo.needReader && !appInterface.getReader()?.currentParser()) {
+        return false;
+      }
+
+      if (toolInfo.nodeInfo?.isShow) {
+        return toolInfo.nodeInfo.isShow(appInterface);
+      }
+
+      return true;
+    },
     showControlBreakWrapper(
       this: HeaderComponent,
       show: string[],
@@ -203,25 +234,32 @@ export default defineComponent<DataType>({
       const expand = this.data.get("expand");
       this.data.set("expand", !expand);
     },
-    handleRender(this: HeaderComponent, renderId: string) {
-      if (!renderId) {
+    handleRender(this: HeaderComponent, toolInfo: ToolInfo, index: number) {
+      const toolEle = (this.ref("ref-tool-" + index) as any) as HTMLDivElement;
+      if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
         return undefined;
       }
 
-      const toolEle = (this.ref(
-        "ref-tool-" + renderId
-      ) as any) as HTMLDivElement;
-      if (!toolEle) {
+      if (toolInfo.nodeInfo.renderId) {
+        dom.nodeRender(
+          toolInfo.nodeInfo.renderId,
+          app.getApp(this.data.get("appId")),
+          this,
+          toolEle
+        );
         return undefined;
       }
-      const appId = this.data.get("appId");
-      const ele = dom.nodeRender(renderId, app.getApp(appId), this);
-      if (typeof (ele as any).attach !== "function") {
-        toolEle.innerHTML = "";
-        toolEle.appendChild(ele as any);
-      } else {
-        (ele as any).attach(toolEle);
+
+      if (
+        !toolInfo.nodeInfo.evenIdList ||
+        toolInfo.nodeInfo.evenIdList.length === 0
+      ) {
+        return undefined;
       }
+
+      dom.dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+
+      return undefined;
     },
     prevAndNextToolClick(this: HeaderComponent, isNext: boolean) {
       const toolsPanelWidth = this.data.get("toolsPanelWidth");

@@ -1,14 +1,18 @@
 import { defineComponent, Component } from "san";
 
-import AppUi from "./ui/App";
+import AppUi, { AppUiInterface } from "./ui/App";
 import {
   AppInterface,
   AppOptions,
   AppUpdateOptions,
+  FileInfo,
+  ReaderInterface,
+  ReaderParserConstructor,
+  ReaderParserInterface,
   ToolbarConfig,
   WebFontConfig,
 } from "./types";
-import { app, datas, dom, id, id as idUtils } from "./utils";
+import { app, arrayuUique, datas, dom, id, id as idUtils } from "./utils";
 import { defaultData } from "./ui/defaults/default";
 
 const fontfaceStyleId = new Date().getTime() + "";
@@ -60,7 +64,7 @@ const App = defineComponent<AppProps>({
   components: {
     "ui-app": AppUi,
   },
-  template: `<ui-app s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" ></<ui-app>`,
+  template: `<ui-app s-ref="ref-app" s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" ></<ui-app>`,
   initData: function () {
     return {
       show: true,
@@ -82,12 +86,40 @@ const App = defineComponent<AppProps>({
   },
 });
 
+class ReaderImpl implements ReaderInterface {
+  public constructor(private _uiAppInterface: AppUiInterface) {}
+
+  loadFile(file: FileInfo): Promise<void> {
+    debugger;
+    return this._uiAppInterface.getReader().loadFile(file);
+  }
+
+  currentParser(): ReaderParserInterface {
+    return this._uiAppInterface.getReader().currentParser();
+  }
+  supportFileSuffix(): string[] {
+    const parserList = this._uiAppInterface.getReader().getParserList();
+    const result: string[] = [];
+    for (let i = 0; i < parserList.length; i++) {
+      const fileSuffixList = parserList[i].support().fileSuffix;
+      result.push(...fileSuffixList);
+    }
+    return arrayuUique(result);
+  }
+
+  attach(parser: ReaderParserConstructor): void {
+    this._uiAppInterface.getReader().attachParser(parser);
+  }
+}
+
 export class AppImpl implements AppInterface {
   private _appComponent: Component | undefined;
   private _attachEle: HTMLElement | undefined;
   private _isShow: boolean = false;
   private _fontConfig: WebFontConfig;
   private _appId: string | undefined;
+  private _uiAppInterface: AppUiInterface | undefined;
+  private _readerInterface: ReaderInterface | undefined;
 
   public constructor(private _initOptions?: AppOptions) {
     this._fontConfig =
@@ -99,7 +131,6 @@ export class AppImpl implements AppInterface {
       this._createFontFaceStyle();
     }
   }
-
   private _pathJoin = (...p: string[]) => {
     for (let i = 0; i < p.length; i++) {
       const v = p[i];
@@ -171,6 +202,10 @@ export class AppImpl implements AppInterface {
     this.update(defaultOptions);
     this.update(this._initOptions!);
     this._appComponent.attach(this._attachEle!);
+    this._uiAppInterface = (this._appComponent.ref(
+      "ref-app"
+    ) as any) as AppUiInterface;
+    this._readerInterface = new ReaderImpl(this._uiAppInterface);
   };
 
   /**
@@ -206,6 +241,10 @@ export class AppImpl implements AppInterface {
       }
     }
   };
+
+  public getReader(): ReaderInterface {
+    return this._readerInterface;
+  }
 
   public getRootEle(): HTMLElement | undefined {
     return this._attachEle;

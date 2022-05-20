@@ -9,6 +9,7 @@ import livereload from "rollup-plugin-livereload";
 // import postcss from "@yinxulai/rollup-plugin-less";
 import url from "@rollup/plugin-url";
 import posthtml from "rollup-plugin-posthtml-template";
+import nodePolyfills from "rollup-plugin-polyfill-node";
 
 // import base64 from "postcss-font-base64";
 const packageInfo = require("../package.json");
@@ -81,7 +82,6 @@ const configs: RollupOptions = {
     // posthtml({
     //   template: true,
     // }),
-
     posthtml({
       directives: [{ name: "%", start: "<", end: ">" }],
     }),
@@ -106,7 +106,10 @@ const configs: RollupOptions = {
     }),
     typescript({}),
     commonjs(),
-    nodeResolve(),
+    nodeResolve({ browser:true, preferBuiltins: true }),
+    // nodePolyfills({
+    //   baseDir: "src",
+    // }),
     babel({
       exclude: "node_modules/**", // 防止打包node_modules下的文件
       babelHelpers: "runtime", // 使plugin-transform-runtime生效

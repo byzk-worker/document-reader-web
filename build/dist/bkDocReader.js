@@ -1,10 +1,4 @@
-var process = {
-  env: {
-    NODE_ENV: 'development'
-  }
-};
-
-(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
+var process={env:{NODE_ENV: 'development'}};
 var bkDocReader = (function (exports) {
 	'use strict';
 
@@ -3630,7 +3624,7 @@ var bkDocReader = (function (exports) {
 	    ELEM: 4,
 	    CMPT: 5,
 	    SLOT: 6,
-	    TPL: 7,
+	    FRAG: 7,
 	    LOADER: 8,
 	    IS: 9
 	};
@@ -4779,7 +4773,6 @@ var bkDocReader = (function (exports) {
 	// var preheatEl = require('./preheat-el');
 	// var elementOwnDetach = require('./element-own-detach');
 	// var elementOwnDispose = require('./element-own-dispose');
-	// var elementOwnOnEl = require('./element-own-on-el');
 	// var elementOwnAttached = require('./element-own-attached');
 	// var nodeSBindInit = require('./node-s-bind-init');
 	// var nodeSBindUpdate = require('./node-s-bind-update');
@@ -4805,7 +4798,6 @@ var bkDocReader = (function (exports) {
 
 	    this.lifeCycle = LifeCycle.start;
 	    this.children = [];
-	    this._elFns = [];
 	    this.parentComponent = parent.nodeType === 5
 	        ? parent
 	        : parent.parentComponent;
@@ -4944,7 +4936,6 @@ var bkDocReader = (function (exports) {
 
 	Element.prototype.detach = elementOwnDetach;
 	Element.prototype.dispose = elementOwnDispose;
-	Element.prototype._onEl = elementOwnOnEl;
 	Element.prototype._leave = function () {
 	    if (this.leaveDispose) {
 	        if (!this.lifeCycle.disposed) {
@@ -4953,12 +4944,14 @@ var bkDocReader = (function (exports) {
 	                this.children[len].dispose(1, 1);
 	            }
 
-	            len = this._elFns.length;
-	            while (len--) {
-	                var fn = this._elFns[len];
-	                un(this.el, fn[0], fn[1], fn[2]);
+	            if (this._elFns) {
+	                len = this._elFns.length;
+	                while (len--) {
+	                    var fn = this._elFns[len];
+	                    un(this.el, fn[0], fn[1], fn[2]);
+	                }
+	                this._elFns = null;
 	            }
-	            this._elFns = null;
 
 	            // #[begin] allua
 	            /* istanbul ignore if */
@@ -5076,7 +5069,7 @@ var bkDocReader = (function (exports) {
 	 */
 
 	// var Element = require('./element');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var AsyncComponent = require('./async-component');
 
 	// #[begin] reverse
@@ -5099,7 +5092,7 @@ var bkDocReader = (function (exports) {
 	        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
 	    }
 
-	    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+	    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
 	    if (ComponentOrLoader) {
 	        return typeof ComponentOrLoader === 'function'
@@ -5123,7 +5116,7 @@ var bkDocReader = (function (exports) {
 	        switch (componentName) {
 	            case 'fragment':
 	            case 'template':
-	                    return new TemplateNode(aNode, parent, scope, owner, reverseWalker);
+	                    return new FragmentNode(aNode, parent, scope, owner, reverseWalker);
 	        }
 	    }
 	    else {
@@ -5172,7 +5165,7 @@ var bkDocReader = (function (exports) {
 	 */
 
 	// var Element = require('./element');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var AsyncComponent = require('./async-component');
 
 
@@ -5194,7 +5187,7 @@ var bkDocReader = (function (exports) {
 	        return new aNode.Clazz(aNode, parent, scope, owner);
 	    }
 
-	    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+	    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
 	    if (ComponentOrLoader) {
 	        return typeof ComponentOrLoader === 'function'
@@ -5216,7 +5209,7 @@ var bkDocReader = (function (exports) {
 	        switch (componentName) {
 	            case 'fragment':
 	            case 'template':
-	                    return new TemplateNode(aNode, parent, scope, owner);
+	                    return new FragmentNode(aNode, parent, scope, owner);
 	        }
 	    }
 	    else {
@@ -5280,7 +5273,7 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
-	 * @file template 节点类
+	 * @file fragment 节点类
 	 */
 
 	// var guid = require('../util/guid');
@@ -5293,7 +5286,7 @@ var bkDocReader = (function (exports) {
 	// var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 	/**
-	 * template 节点类
+	 * fragment 节点类
 	 *
 	 * @class
 	 * @param {Object} aNode 抽象节点
@@ -5302,7 +5295,7 @@ var bkDocReader = (function (exports) {
 	 * @param {Component} owner 所属组件环境
 	 * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
 	 */
-	function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
+	function FragmentNode(aNode, parent, scope, owner, reverseWalker) {
 	    this.aNode = aNode;
 	    this.owner = owner;
 	    this.scope = scope;
@@ -5355,9 +5348,9 @@ var bkDocReader = (function (exports) {
 
 
 
-	TemplateNode.prototype.nodeType = 7;
+	FragmentNode.prototype.nodeType = 7;
 
-	TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
+	FragmentNode.prototype.attach = nodeOwnOnlyChildrenAttach;
 
 	/**
 	 * 销毁释放
@@ -5365,7 +5358,7 @@ var bkDocReader = (function (exports) {
 	 * @param {boolean=} noDetach 是否不要把节点从dom移除
 	 * @param {boolean=} noTransition 是否不显示过渡动画效果
 	 */
-	TemplateNode.prototype.dispose = function (noDetach, noTransition) {
+	FragmentNode.prototype.dispose = function (noDetach, noTransition) {
 	    elementDisposeChildren(this.children, noDetach, noTransition);
 
 	    if (!noDetach) {
@@ -5391,17 +5384,17 @@ var bkDocReader = (function (exports) {
 	 *
 	 * @param {Array} changes 数据变化信息
 	 */
-	TemplateNode.prototype._update = function (changes) {
+	FragmentNode.prototype._update = function (changes) {
 	    for (var i = 0; i < this.children.length; i++) {
 	        this.children[i]._update(changes);
 	    }
 	};
 
-	TemplateNode.prototype._getElAsRootNode = function () {
+	FragmentNode.prototype._getElAsRootNode = function () {
 	    return this.sel;
 	};
 
-	// exports = module.exports = TemplateNode;
+	// exports = module.exports = FragmentNode;
 
 
 	/**
@@ -5810,33 +5803,6 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
-	 * @file 为元素的 el 绑定事件
-	 */
-
-	// var on = require('../browser/on');
-
-	/**
-	 * 为元素的 el 绑定事件
-	 *
-	 * @param {string} name 事件名
-	 * @param {Function} listener 监听器
-	 * @param {boolean} capture 是否是捕获阶段触发
-	 */
-	function elementOwnOnEl(name, listener, capture) {
-	    capture = !!capture;
-	    this._elFns.push([name, listener, capture]);
-	    on(this.el, name, listener, capture);
-	}
-
-	// exports = module.exports = elementOwnOnEl;
-
-
-	/**
-	 * Copyright (c) Baidu Inc. All rights reserved.
-	 *
-	 * This source code is licensed under the MIT license.
-	 * See LICENSE file in the project root for license information.
-	 *
 	 * @file 是否浏览器环境
 	 */
 
@@ -6045,6 +6011,20 @@ var bkDocReader = (function (exports) {
 	}
 
 	/**
+	 * 为元素的 el 绑定事件
+	 *
+	 * @param {string} name 事件名
+	 * @param {Function} listener 监听器
+	 * @param {boolean} capture 是否是捕获阶段触发
+	 */
+	 function elementOnEl(element, name, listener, capture) {
+	    capture = !!capture;
+	    element._elFns = element._elFns || [];
+	    element._elFns.push([name, listener, capture]);
+	    on(element.el, name, listener, capture);
+	}
+
+	/**
 	 * 完成元素 attached 后的行为
 	 *
 	 * @param {Object} element 元素节点
@@ -6070,28 +6050,28 @@ var bkDocReader = (function (exports) {
 	                    case 'input':
 	                    case 'textarea':
 	                        if (isBrowser && window.CompositionEvent) {
-	                            this._onEl('change', inputOnCompositionEnd);
-	                            this._onEl('compositionstart', inputOnCompositionStart);
-	                            this._onEl('compositionend', inputOnCompositionEnd);
+	                            elementOnEl(this, 'change', inputOnCompositionEnd);
+	                            elementOnEl(this, 'compositionstart', inputOnCompositionStart);
+	                            elementOnEl(this, 'compositionend', inputOnCompositionEnd);
 	                        }
 
 	                        // #[begin] allua
 	                        /* istanbul ignore else */
 	                        if ('oninput' in this.el) {
 	                        // #[end]
-	                            this._onEl('input', getInputXPropOutputer(this, xProp, data));
+	                            elementOnEl(this, 'input', getInputXPropOutputer(this, xProp, data));
 	                        // #[begin] allua
 	                        }
 	                        else {
-	                            this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
-	                            this._onEl('focusout', getInputBlurXPropHandler(this));
+	                            elementOnEl(this, 'focusin', getInputFocusXPropHandler(this, xProp, data));
+	                            elementOnEl(this, 'focusout', getInputBlurXPropHandler(this));
 	                        }
 	                        // #[end]
 
 	                        break;
 
 	                    case 'select':
-	                        this._onEl('change', getXPropOutputer(this, xProp, data));
+	                        elementOnEl(this, 'change', getXPropOutputer(this, xProp, data));
 	                        break;
 	                }
 	                break;
@@ -6102,7 +6082,7 @@ var bkDocReader = (function (exports) {
 	                        switch (this.el.type) {
 	                            case 'checkbox':
 	                            case 'radio':
-	                                this._onEl('click', getXPropOutputer(this, xProp, data));
+	                                elementOnEl(this, 'click', getXPropOutputer(this, xProp, data));
 	                        }
 	                }
 	                break;
@@ -6117,14 +6097,15 @@ var bkDocReader = (function (exports) {
 	//         warnEventListenMethod(eventBind, owner);
 	        // #[end]
 
-	        this._onEl(
+	        elementOnEl(
+	            this, 
 	            eventBind.name,
 	            getEventListener(eventBind, owner, data, eventBind.modifier),
 	            eventBind.modifier.capture
 	        );
 	    }
 
-	    if (isComponent) {
+	    if (isComponent && this.nativeEvents) {
 	        for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
 	            var eventBind = this.nativeEvents[i];
 
@@ -6132,7 +6113,8 @@ var bkDocReader = (function (exports) {
 	//             warnEventListenMethod(eventBind, this.owner);
 	            // #[end]
 
-	            this._onEl(
+	            elementOnEl(
+	                this, 
 	                eventBind.name,
 	                getEventListener(eventBind, this.owner, this.scope),
 	                eventBind.modifier.capture
@@ -6354,7 +6336,7 @@ var bkDocReader = (function (exports) {
 	                break;
 
 	            case 7:
-	                nodePaths.unshift('template');
+	                nodePaths.unshift('fragment');
 	                break;
 
 	            case 5:
@@ -6920,7 +6902,6 @@ var bkDocReader = (function (exports) {
 	// var nodeSBindInit = require('./node-s-bind-init');
 	// var nodeSBindUpdate = require('./node-s-bind-update');
 	// var elementOwnAttached = require('./element-own-attached');
-	// var elementOwnOnEl = require('./element-own-on-el');
 	// var elementOwnDetach = require('./element-own-detach');
 	// var elementOwnDispose = require('./element-own-dispose');
 	// var warnEventListenMethod = require('./warn-event-listen-method');
@@ -6959,7 +6940,6 @@ var bkDocReader = (function (exports) {
 	    }
 
 	    this.children = [];
-	    this._elFns = [];
 	    this.listeners = {};
 	    this.slotChildren = [];
 	    this.implicitChildren = [];
@@ -7077,8 +7057,6 @@ var bkDocReader = (function (exports) {
 	    }
 	    // #[end]
 
-	    // native事件数组
-	    this.nativeEvents = [];
 
 	    if (this.source) {
 	        // 组件运行时传入的结构，做slot解析
@@ -7088,6 +7066,8 @@ var bkDocReader = (function (exports) {
 	            var eventBind = this.source.events[i];
 	            // 保存当前实例的native事件，下面创建aNode时候做合并
 	            if (eventBind.modifier.native) {
+	                // native事件数组
+	                this.nativeEvents = this.nativeEvents || [];
 	                this.nativeEvents.push(eventBind);
 	            }
 	            else {
@@ -7798,7 +7778,7 @@ var bkDocReader = (function (exports) {
 	 * @private
 	 * @param {Object} change 数据变化信息
 	 */
-	Component.prototype._initDataChanger = function (change) {
+	Component.prototype._initDataChanger = function () {
 	    var me = this;
 
 	    this._dataChanger = function (change) {
@@ -7966,7 +7946,6 @@ var bkDocReader = (function (exports) {
 
 	Component.prototype.detach = elementOwnDetach;
 	Component.prototype.dispose = elementOwnDispose;
-	Component.prototype._onEl = elementOwnOnEl;
 	Component.prototype._attached = elementOwnAttached;
 	Component.prototype._leave = function () {
 	    if (this.leaveDispose) {
@@ -8003,12 +7982,14 @@ var bkDocReader = (function (exports) {
 	                    this.children[len].dispose(1, 1);
 	                }
 
-	                len = this._elFns.length;
-	                while (len--) {
-	                    var fn = this._elFns[len];
-	                    un(this.el, fn[0], fn[1], fn[2]);
+	                if (this._elFns) {
+	                    len = this._elFns.length;
+	                    while (len--) {
+	                        var fn = this._elFns[len];
+	                        un(this.el, fn[0], fn[1], fn[2]);
+	                    }
+	                    this._elFns = null;
 	                }
-	                this._elFns = null;
 
 	                // #[begin] allua
 	                /* istanbul ignore if */
@@ -10006,7 +9987,7 @@ var bkDocReader = (function (exports) {
 	// var createNode = require('./create-node');
 	// var createReverseNode = require('./create-reverse-node');
 	// var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
-	// var TemplateNode = require('./template-node');
+
 
 	/**
 	 * is 指令节点类
@@ -10116,7 +10097,7 @@ var bkDocReader = (function (exports) {
 	// var ForNode = require('./for-node');
 	// var IfNode = require('./if-node');
 	// var IsNode = require('./is-node');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var Element = require('./element');
 
 	/**
@@ -10125,7 +10106,7 @@ var bkDocReader = (function (exports) {
 	 * @param {Object} aNode 要预热的ANode
 	 */
 	function preheatANode(aNode, componentInstance) {
-	    var stack = [];
+	    var stack;
 
 	    function recordHotspotData(expr, notContentData) {
 	        var refs = analyseExprDataHotspot(expr);
@@ -10326,17 +10307,18 @@ var bkDocReader = (function (exports) {
 
 	                    case 'template':
 	                    case 'fragment':
-	                        aNode.Clazz = TemplateNode;
+	                        aNode.Clazz = FragmentNode;
 	                        break;
 
 	                    default:
 	                        if (!aNode.directives.is && hotTags[aNode.tagName]) {
-	                            if (!componentInstance || !componentInstance.components[aNode.tagName]) {
+	                            var components = componentInstance && componentInstance.components;
+	                            if (!components || !components[aNode.tagName]) {
 	                                aNode.elem = true;
 	                            }
 
 	                            // #[begin] error
-	//                             if (componentInstance && componentInstance.components[aNode.tagName]) {
+	//                             if (components && components[aNode.tagName]) {
 	//                                 warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
 	//                             }
 	                            // #[end]
@@ -10349,7 +10331,8 @@ var bkDocReader = (function (exports) {
 	        }
 	    }
 
-	    if (aNode) {
+	    if (aNode && !aNode._ht) {
+	        stack = [];
 	        analyseANodeHotspot(aNode);
 	    }
 	}
@@ -10434,6 +10417,773 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
+	 * @file 模板组件类
+	 */
+
+
+	// var each = require('../util/each');
+	// var guid = require('../util/guid');
+	// var extend = require('../util/extend');
+	// var nextTick = require('../util/next-tick');
+	// var emitDevtool = require('../util/emit-devtool');
+	// var ExprType = require('../parser/expr-type');
+	// var parseExpr = require('../parser/parse-expr');
+	// var parseTemplate = require('../parser/parse-template');
+	// var unpackANode = require('../parser/unpack-anode');
+	// var removeEl = require('../browser/remove-el');
+	// var Data = require('../runtime/data');
+	// var evalExpr = require('../runtime/eval-expr');
+	// var changeExprCompare = require('../runtime/change-expr-compare');
+	// var DataChangeType = require('../runtime/data-change-type');
+	// var insertBefore = require('../browser/insert-before');
+	// var createNode = require('./create-node');
+	// var preheatEl = require('./preheat-el');
+	// var parseComponentTemplate = require('./parse-component-template');
+	// var preheatANode = require('./preheat-a-node');
+	// var LifeCycle = require('./life-cycle');
+	// var getANodeProp = require('./get-a-node-prop');
+	// var isDataChangeByElement = require('./is-data-change-by-element');
+	// var reverseElementChildren = require('./reverse-element-children');
+	// var NodeType = require('./node-type');
+	// var styleProps = require('./style-props');
+	// var nodeSBindInit = require('./node-s-bind-init');
+	// var nodeSBindUpdate = require('./node-s-bind-update');
+	// var elementOwnAttached = require('./element-own-attached');
+	// var elementOwnDetach = require('./element-own-detach');
+	// var elementOwnDispose = require('./element-own-dispose');
+	// var elementDisposeChildren = require('./element-dispose-children');
+	// var handleError = require('../util/handle-error');
+	 
+	 
+	 
+	/**
+	 * 模板组件类
+	 *
+	 * @class
+	 * @param {Object} options 初始化参数
+	 */
+	function TemplateComponent(options) { // eslint-disable-line
+	    options = options || {};
+	    this.lifeCycle = LifeCycle.start;
+	    this.id = guid++;
+
+	    this.children = [];
+	    this.slotChildren = [];
+	    this.implicitChildren = [];
+
+	    var clazz = this.constructor;
+
+	    this.owner = options.owner;
+	    this.scope = options.scope;
+	    var parent = options.parent;
+	    if (parent) {
+	        this.parent = parent;
+	        this.parentComponent = parent.nodeType === 5
+	            ? parent
+	            : parent && parent.parentComponent;
+	    }
+	    else if (this.owner) {
+	        this.parentComponent = this.owner;
+	        this.scope = this.owner.data;
+	    }
+
+	    this.sourceSlotNameProps = [];
+	    this.sourceSlots = {
+	        named: {}
+	    };
+
+	    var proto = clazz.prototype;
+
+	    // compile
+	    if (!proto.hasOwnProperty('aNode')) {
+	        var aPack = clazz.aPack || proto.hasOwnProperty('aPack') && proto.aPack;
+	        if (aPack) {
+	            proto.aNode = unpackANode(aPack);
+	            clazz.aPack = proto.aPack = null;
+	        }
+	        else {
+	            proto.aNode = parseComponentTemplate(clazz);
+	        }
+	    }
+
+	    preheatANode(proto.aNode, this);
+
+	    this.tagName = proto.aNode.tagName;
+	    this.source = typeof options.source === 'string'
+	        ? parseTemplate(options.source).children[0]
+	        : options.source;
+
+	    preheatANode(this.source);
+	    proto.aNode._i++;
+
+	    if (this.source) {
+	        // 组件运行时传入的结构，做slot解析
+	        this._initSourceSlots(1);
+
+	        for (var i = 0, l = this.source.events.length; i < l; i++) {
+	            var eventBind = this.source.events[i];
+	            // 保存当前实例的native事件，下面创建aNode时候做合并
+	            if (eventBind.modifier.native) {
+	                // native事件数组
+	                this.nativeEvents = this.nativeEvents || [];
+	                this.nativeEvents.push(eventBind);
+	            }
+	        }
+
+	        this.tagName = this.tagName || this.source.tagName;
+	        this.binds = this.source._b;
+
+	        // init s-bind data
+	        this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
+	    }
+
+	    // init data
+	    var initData;
+	    try {
+	        initData = typeof this.initData === 'function' && this.initData();
+	    }
+	    catch (e) {
+	        handleError(e, this, 'initData');
+	    }
+	    initData = extend(initData || {}, options.data || this._srcSbindData);
+
+	    if (this.binds && this.scope) {
+	        for (var i = 0, l = this.binds.length; i < l; i++) {
+	            var bindInfo = this.binds[i];
+
+	            var value = evalExpr(bindInfo.expr, this.scope, this.owner);
+	            if (typeof value !== 'undefined') {
+	                // See: https://github.com/ecomfe/san/issues/191
+	                initData[bindInfo.name] = value;
+	            }
+	        }
+	    }
+
+	    this.data = new Data(initData);
+
+	    this.tagName = this.tagName || 'div';
+	    // #[begin] allua
+	    // ie8- 不支持innerHTML输出自定义标签
+	    /* istanbul ignore if */
+	    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
+	        this.tagName = 'div';
+	    }
+	    // #[end]
+
+	    this._initDataChanger();
+	    this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
+	    this.lifeCycle = LifeCycle.inited;
+
+	    // #[begin] reverse
+	    var reverseWalker = options.reverseWalker;
+	    if (reverseWalker) {
+	        if (this.aNode.Clazz) {
+	            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	        }
+	        else {
+	            this.el = reverseWalker.current;
+	            reverseWalker.goNext();
+
+	            reverseElementChildren(this, this.data, this);
+	        }
+
+	        this.lifeCycle = LifeCycle.created;
+	        this._attached();
+	        this.lifeCycle = LifeCycle.attached;
+	    }
+	    // #[end]
+	}
+
+
+	/**
+	 * 初始化组件内部监听数据变化
+	 *
+	 * @private
+	 * @param {Object} change 数据变化信息
+	 */
+	TemplateComponent.prototype._initDataChanger = function () {
+	    var me = this;
+
+	    this._dataChanger = function (change) {
+	        if (me.lifeCycle.created) {
+	            if (!me._dataChanges) {
+	                nextTick(me._update, me);
+	                me._dataChanges = [];
+	            }
+
+	            me._dataChanges.push(change);
+	        }
+	        else if (me.lifeCycle.inited && me.owner) {
+	            me._updateBindxOwner([change]);
+	        }
+	    };
+
+	    this.data.listen(this._dataChanger);
+	};
+
+
+	/**
+	 * 将组件attach到页面
+	 *
+	 * @param {HTMLElement} parentEl 要添加到的父元素
+	 * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+	 */
+	TemplateComponent.prototype.attach = function (parentEl, beforeEl) {
+	    if (!this.lifeCycle.attached) {
+	        // #[begin] devtool
+	//         emitDevtool('comp-beforeAttach', this);
+	        // #[end]
+
+	        var aNode = this.aNode;
+
+	        if (aNode.Clazz) {
+	            // #[begin] devtool
+	//             emitDevtool('comp-beforeCreate', this);
+	            // #[end]
+
+	            this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
+	            this._rootNode.attach(parentEl, beforeEl);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	            
+	            this.lifeCycle = LifeCycle.created;
+	            // #[begin] devtool
+	//             emitDevtool('comp-create', this);
+	            // #[end]
+	        }
+	        else {
+	            if (!this.el) {
+	                // #[begin] devtool
+	//                 emitDevtool('comp-beforeCreate', this);
+	                // #[end]
+
+	                var props;
+
+	                if (aNode._ce && aNode._i > 2) {
+	                    props = aNode._dp;
+	                    this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
+	                }
+	                else {
+	                    props = aNode.props;
+	                    this.el = createEl(this.tagName);
+	                }
+
+	                if (this._sbindData) {
+	                    for (var key in this._sbindData) {
+	                        if (this._sbindData.hasOwnProperty(key)) {
+	                            getPropHandler(this.tagName, key)(
+	                                this.el,
+	                                this._sbindData[key],
+	                                key,
+	                                this
+	                            );
+	                        }
+	                    }
+	                }
+
+	                for (var i = 0, l = props.length; i < l; i++) {
+	                    var prop = props[i];
+	                    var value = evalExpr(prop.expr, this.data, this);
+
+	                    if (value || !styleProps[prop.name]) {
+	                        prop.handler(this.el, value, prop.name, this);
+	                    }
+	                }
+
+	                this.lifeCycle = LifeCycle.created;
+	                // #[begin] devtool
+	//                 emitDevtool('comp-create', this);
+	                // #[end]
+	            }
+
+	            insertBefore(this.el, parentEl, beforeEl);
+
+	            if (!this._contentReady) {
+	                var htmlDirective = aNode.directives.html;
+
+	                if (htmlDirective) {
+	                    // #[begin] error
+	//                     warnSetHTML(this.el);
+	                    // #[end]
+
+	                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+	                }
+	                else {
+	                    for (var i = 0, l = aNode.children.length; i < l; i++) {
+	                        var childANode = aNode.children[i];
+	                        var child = childANode.Clazz
+	                            ? new childANode.Clazz(childANode, this, this.data, this)
+	                            : createNode(childANode, this, this.data, this);
+	                        this.children.push(child);
+	                        child.attach(this.el);
+	                    }
+	                }
+
+	                this._contentReady = 1;
+	            }
+
+	            this._attached();
+	        }
+
+	        this.lifeCycle = LifeCycle.attached;
+	        // #[begin] devtool
+	//         emitDevtool('comp-attached', this);
+	        // #[end]
+	    }
+	};
+
+	/**
+	 * 类型标识
+	 *
+	 * @type {string}
+	 */
+	TemplateComponent.prototype.nodeType = 5;
+
+	TemplateComponent.prototype._getElAsRootNode = function () {
+	    return this.el;
+	};
+
+	/**
+	 * 视图更新函数
+	 *
+	 * @param {Array?} changes 数据变化信息
+	 */
+	TemplateComponent.prototype._update = function (changes) {
+	    if (this.lifeCycle.disposed) {
+	        return;
+	    }
+
+	    var me = this;
+
+
+	    var needReloadForSlot = false;
+	    this._notifyNeedReload = function () {
+	        needReloadForSlot = true;
+	    };
+
+	    if (changes) {
+	        if (this.source) {
+	            this._srcSbindData = nodeSBindUpdate(
+	                this.source.directives.bind,
+	                this._srcSbindData,
+	                this.scope,
+	                this.owner,
+	                changes,
+	                function (name, value) {
+	                    if (name in me.source._pi) {
+	                        return;
+	                    }
+
+	                    me.data.set(name, value, {
+	                        target: {
+	                            node: me.owner
+	                        }
+	                    });
+	                }
+	            );
+	        }
+
+	        each(changes, function (change) {
+	            var changeExpr = change.expr;
+
+	            each(me.binds, function (bindItem) {
+	                var relation;
+	                var setExpr = bindItem.name;
+	                var updateExpr = bindItem.expr;
+
+	                if (!isDataChangeByElement(change, me, setExpr)
+	                    && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
+	                ) {
+	                    if (relation > 2) {
+	                        setExpr = {
+	                            type: 4,
+	                            paths: [
+	                                {
+	                                    type: 1,
+	                                    value: setExpr
+	                                }
+	                            ].concat(changeExpr.paths.slice(updateExpr.paths.length))
+	                        };
+	                        updateExpr = changeExpr;
+	                    }
+
+	                    if (relation >= 2 && change.type === 2) {
+	                        me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
+	                            target: {
+	                                node: me.owner
+	                            }
+	                        });
+	                    }
+	                    else {
+	                        me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
+	                            target: {
+	                                node: me.owner
+	                            }
+	                        });
+	                    }
+	                }
+	            });
+
+	            each(me.sourceSlotNameProps, function (bindItem) {
+	                needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
+	                return !needReloadForSlot;
+	            });
+	        });
+
+	        if (needReloadForSlot) {
+	            this._initSourceSlots();
+	            this._repaintChildren();
+	        }
+	        else {
+	            var slotChildrenLen = this.slotChildren.length;
+	            while (slotChildrenLen--) {
+	                var slotChild = this.slotChildren[slotChildrenLen];
+
+	                if (slotChild.lifeCycle.disposed) {
+	                    this.slotChildren.splice(slotChildrenLen, 1);
+	                }
+	                else if (slotChild.isInserted) {
+	                    slotChild._update(changes, 1);
+	                }
+	            }
+	        }
+	    }
+
+	    var dataChanges = this._dataChanges;
+	    if (dataChanges) {
+	        // #[begin] devtool
+	//         emitDevtool('comp-beforeUpdate', this);
+	        // #[end]
+
+	        this._dataChanges = null;
+
+	        this._sbindData = nodeSBindUpdate(
+	            this.aNode.directives.bind,
+	            this._sbindData,
+	            this.data,
+	            this,
+	            dataChanges,
+	            function (name, value) {
+	                if (me._rootNode || (name in me.aNode._pi)) {
+	                    return;
+	                }
+
+	                getPropHandler(me.tagName, name)(me.el, value, name, me);
+	            }
+	        );
+
+	        var htmlDirective = this.aNode.directives.html;
+
+	        if (this._rootNode) {
+	            this._rootNode._update(dataChanges);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	        }
+	        else if (htmlDirective) {
+	            var len = dataChanges.length;
+	            while (len--) {
+	                if (changeExprCompare(dataChanges[len].expr, htmlDirective.value, this.data)) {
+	                    // #[begin] error
+	//                     warnSetHTML(this.el);
+	                    // #[end]
+
+	                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+	                    break;
+	                }
+	            }
+	        }
+	        else {
+	            var dynamicProps = this.aNode._dp;
+	            for (var i = 0; i < dynamicProps.length; i++) {
+	                var prop = dynamicProps[i];
+
+	                for (var j = 0; j < dataChanges.length; j++) {
+	                    var change = dataChanges[j];
+	                    if (changeExprCompare(change.expr, prop.expr, this.data)
+	                        || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
+	                    ) {
+	                        prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
+	                        break;
+	                    }
+	                }
+	            }
+
+	            for (var i = 0; i < this.children.length; i++) {
+	                this.children[i]._update(dataChanges);
+	            }
+	        }
+
+	        if (needReloadForSlot) {
+	            this._initSourceSlots();
+	            this._repaintChildren();
+	        }
+
+	        if (this.owner && this._updateBindxOwner(dataChanges)) {
+	            this.owner._update();
+	        }
+	    }
+
+	    this._notifyNeedReload = null;
+	};
+
+	TemplateComponent.prototype._updateBindxOwner = function (dataChanges) {
+	    var me = this;
+	    var xbindUped;
+
+	    each(dataChanges, function (change) {
+	        each(me.binds, function (bindItem) {
+	            var changeExpr = change.expr;
+	            if (bindItem.x
+	                && !isDataChangeByElement(change, me.owner)
+	                && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
+	            ) {
+	                var updateScopeExpr = bindItem.expr;
+	                if (changeExpr.paths.length > 1) {
+	                    updateScopeExpr = {
+	                        type: 4,
+	                        paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+	                    };
+	                }
+
+	                xbindUped = 1;
+	                me.scope.set(
+	                    updateScopeExpr,
+	                    evalExpr(changeExpr, me.data, me),
+	                    {
+	                        target: {
+	                            node: me,
+	                            prop: bindItem.name
+	                        }
+	                    }
+	                );
+	            }
+	        });
+	    });
+
+	    return xbindUped;
+	};
+
+
+	/**
+	 * 初始化创建组件外部传入的插槽对象
+	 *
+	 * @protected
+	 * @param {boolean} isFirstTime 是否初次对sourceSlots进行计算
+	 */
+	TemplateComponent.prototype._initSourceSlots = function (isFirstTime) {
+	    this.sourceSlots.named = {};
+
+	    // 组件运行时传入的结构，做slot解析
+	    if (this.source && this.scope) {
+	        var sourceChildren = this.source.children;
+
+	        for (var i = 0, l = sourceChildren.length; i < l; i++) {
+	            var child = sourceChildren[i];
+	            var target;
+
+	            var slotBind = !child.textExpr && getANodeProp(child, 'slot');
+	            if (slotBind) {
+	                isFirstTime && this.sourceSlotNameProps.push(slotBind);
+
+	                var slotName = evalExpr(slotBind.expr, this.scope, this.owner);
+	                target = this.sourceSlots.named[slotName];
+	                if (!target) {
+	                    target = this.sourceSlots.named[slotName] = [];
+	                }
+	                target.push(child);
+	            }
+	            else if (isFirstTime) {
+	                target = this.sourceSlots.noname;
+	                if (!target) {
+	                    target = this.sourceSlots.noname = [];
+	                }
+	                target.push(child);
+	            }
+	        }
+	    }
+	};
+
+	TemplateComponent.prototype._repaintChildren = function () {
+	    // TODO: repaint once?
+
+	    if (this._rootNode) {
+	        var parentEl = this._rootNode.el.parentNode;
+	        var beforeEl = this._rootNode.el.nextSibling;
+	        this._rootNode.dispose(0, 1);
+	        this.slotChildren = [];
+
+	        this._rootNode = createNode(this.aNode, this, this.data, this);
+	        this._rootNode.attach(parentEl, beforeEl);
+	        this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	    }
+	    else {
+	        elementDisposeChildren(this.children, 0, 1);
+	        this.children = [];
+	        this.slotChildren = [];
+
+	        for (var i = 0, l = this.aNode.children.length; i < l; i++) {
+	            var child = createNode(this.aNode.children[i], this, this.data, this);
+	            this.children.push(child);
+	            child.attach(this.el);
+	        }
+	    }
+	};
+
+	TemplateComponent.prototype._leave = function () {
+	    if (this.leaveDispose) {
+	        if (!this.lifeCycle.disposed) {
+	            // #[begin] devtool
+	//             emitDevtool('comp-beforeDetach', this);
+	            // #[end]
+
+	            this.data.unlisten();
+	            this.dataChanger = null;
+	            this._dataChanges = null;
+
+	            this.source = null;
+	            this.sourceSlots = null;
+	            this.sourceSlotNameProps = null;
+
+	            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+	            this.slotChildren = null;
+
+
+	            if (this._rootNode) {
+	                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+	                this._rootNode.dispose(this.disposeNoDetach && this.parent);
+	            }
+	            else {
+	                var len = this.children.length;
+	                while (len--) {
+	                    this.children[len].dispose(1, 1);
+	                }
+
+	                // #[begin] allua
+	                /* istanbul ignore if */
+	                if (this._inputTimer) {
+	                    clearInterval(this._inputTimer);
+	                    this._inputTimer = null;
+	                }
+	                // #[end]
+
+	                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+	                if (!this.disposeNoDetach || !this.parent) {
+	                    removeEl(this.el);
+	                }
+	            }
+
+	            this.lifeCycle = LifeCycle.detached;
+	            // #[begin] devtool
+	//             emitDevtool('comp-detached', this);
+	            // #[end]
+
+	            // #[begin] devtool
+	//             emitDevtool('comp-beforeDispose', this);
+	            // #[end]
+
+	            this._rootNode = null;
+	            this.el = null;
+	            this.owner = null;
+	            this.scope = null;
+	            this.children = null;
+
+	            this.lifeCycle = LifeCycle.disposed;
+	            // #[begin] devtool
+	//             emitDevtool('comp-disposed', this);
+	            // #[end]
+
+	            if (this._ondisposed) {
+	                this._ondisposed();
+	            }
+	        }
+	    }
+	    else if (this.lifeCycle.attached) {
+	        // #[begin] devtool
+	//         emitDevtool('comp-beforeDetach', this);
+	        // #[end]
+
+	        if (this._rootNode) {
+	            if (this._rootNode.detach) {
+	                this._rootNode.detach();
+	            }
+	            else {
+	                this._rootNode.dispose();
+	                this._rootNode = null;
+	            }
+	        }
+	        else {
+	            removeEl(this.el);
+	        }
+
+	        this.lifeCycle = LifeCycle.detached;
+	        // #[begin] devtool
+	//         emitDevtool('comp-detached', this);
+	        // #[end]
+	    }
+	};
+
+	TemplateComponent.prototype.detach = elementOwnDetach;
+	TemplateComponent.prototype.dispose = elementOwnDispose;
+	TemplateComponent.prototype._attached = elementOwnAttached;
+
+	// exports = module.exports = TemplateComponent;
+
+
+	/**
+	 * Copyright (c) Baidu Inc. All rights reserved.
+	 *
+	 * This source code is licensed under the MIT license.
+	 * See LICENSE file in the project root for license information.
+	 *
+	 * @file 创建模板组件类
+	 */
+
+	// var TemplateComponent = require('./template-component');
+	// var inherits = require('../util/inherits');
+	 
+	/**
+	 * 创建组件类
+	 *
+	 * @param {Object|string} template 模板组件类的方法表或模板字符串
+	 * @return {Function}
+	 */
+	function defineTemplateComponent(template) {
+	     // 如果传入一个不是 san component 的 constructor，直接返回不是组件构造函数
+	     // 这种场景导致的错误 san 不予考虑
+	    switch (typeof template) {
+	        case 'function':
+	            return template;
+
+	        case 'string':
+	            template = {template: template};
+	        // #[begin] error
+	//             break;
+	// 
+	//         case 'object':
+	//             break;
+	// 
+	//         default:
+	//             throw new Error('[SAN FATAL] defineTemplateComponent need string or plain object.');
+	        // #[end]
+	    }
+	 
+	    function ComponentClass(option) { // eslint-disable-line
+	        TemplateComponent.call(this, option);
+	    }
+	 
+	    ComponentClass.prototype = template;
+	    inherits(ComponentClass, TemplateComponent);
+	 
+	    return ComponentClass;
+	}
+	 
+	// exports = module.exports = defineTemplateComponent;
+
+	/**
+	 * Copyright (c) Baidu Inc. All rights reserved.
+	 *
+	 * This source code is licensed under the MIT license.
+	 * See LICENSE file in the project root for license information.
+	 *
 	 * @file 创建组件Loader
 	 */
 
@@ -10470,6 +11220,7 @@ var bkDocReader = (function (exports) {
 	//     var Component = require('./view/component');
 	//     var parseComponentTemplate = require('./view/parse-component-template');
 	//     var defineComponent = require('./view/define-component');
+	//     var defineTemplateComponent = require('./view/define-template-component');
 	//     var createComponentLoader = require('./view/create-component-loader');
 	//     var emitDevtool = require('./util/emit-devtool');
 	//     var Data = require('./runtime/data');
@@ -10483,7 +11234,7 @@ var bkDocReader = (function (exports) {
 	         *
 	         * @type {string}
 	         */
-	        version: '3.11.3',
+	        version: '3.12.0',
 
 	        // #[begin] devtool
 	//         /**
@@ -10508,6 +11259,7 @@ var bkDocReader = (function (exports) {
 	         * @return {Function}
 	         */
 	        defineComponent: defineComponent,
+	        defineTemplateComponent: defineTemplateComponent,
 
 	        /**
 	         * 创建组件Loader
@@ -14247,7 +14999,7 @@ var bkDocReader = (function (exports) {
 	    ELEM: 4,
 	    CMPT: 5,
 	    SLOT: 6,
-	    TPL: 7,
+	    FRAG: 7,
 	    LOADER: 8,
 	    IS: 9
 	};
@@ -15396,7 +16148,6 @@ var bkDocReader = (function (exports) {
 	// var preheatEl = require('./preheat-el');
 	// var elementOwnDetach = require('./element-own-detach');
 	// var elementOwnDispose = require('./element-own-dispose');
-	// var elementOwnOnEl = require('./element-own-on-el');
 	// var elementOwnAttached = require('./element-own-attached');
 	// var nodeSBindInit = require('./node-s-bind-init');
 	// var nodeSBindUpdate = require('./node-s-bind-update');
@@ -15422,7 +16173,6 @@ var bkDocReader = (function (exports) {
 
 	    this.lifeCycle = LifeCycle.start;
 	    this.children = [];
-	    this._elFns = [];
 	    this.parentComponent = parent.nodeType === 5
 	        ? parent
 	        : parent.parentComponent;
@@ -15561,7 +16311,6 @@ var bkDocReader = (function (exports) {
 
 	Element.prototype.detach = elementOwnDetach;
 	Element.prototype.dispose = elementOwnDispose;
-	Element.prototype._onEl = elementOwnOnEl;
 	Element.prototype._leave = function () {
 	    if (this.leaveDispose) {
 	        if (!this.lifeCycle.disposed) {
@@ -15570,12 +16319,14 @@ var bkDocReader = (function (exports) {
 	                this.children[len].dispose(1, 1);
 	            }
 
-	            len = this._elFns.length;
-	            while (len--) {
-	                var fn = this._elFns[len];
-	                un(this.el, fn[0], fn[1], fn[2]);
+	            if (this._elFns) {
+	                len = this._elFns.length;
+	                while (len--) {
+	                    var fn = this._elFns[len];
+	                    un(this.el, fn[0], fn[1], fn[2]);
+	                }
+	                this._elFns = null;
 	            }
-	            this._elFns = null;
 
 	            // #[begin] allua
 	            /* istanbul ignore if */
@@ -15693,7 +16444,7 @@ var bkDocReader = (function (exports) {
 	 */
 
 	// var Element = require('./element');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var AsyncComponent = require('./async-component');
 
 	// #[begin] reverse
@@ -15716,7 +16467,7 @@ var bkDocReader = (function (exports) {
 	        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
 	    }
 
-	    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+	    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
 	    if (ComponentOrLoader) {
 	        return typeof ComponentOrLoader === 'function'
@@ -15740,7 +16491,7 @@ var bkDocReader = (function (exports) {
 	        switch (componentName) {
 	            case 'fragment':
 	            case 'template':
-	                    return new TemplateNode(aNode, parent, scope, owner, reverseWalker);
+	                    return new FragmentNode(aNode, parent, scope, owner, reverseWalker);
 	        }
 	    }
 	    else {
@@ -15789,7 +16540,7 @@ var bkDocReader = (function (exports) {
 	 */
 
 	// var Element = require('./element');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var AsyncComponent = require('./async-component');
 
 
@@ -15811,7 +16562,7 @@ var bkDocReader = (function (exports) {
 	        return new aNode.Clazz(aNode, parent, scope, owner);
 	    }
 
-	    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+	    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
 	    if (ComponentOrLoader) {
 	        return typeof ComponentOrLoader === 'function'
@@ -15833,7 +16584,7 @@ var bkDocReader = (function (exports) {
 	        switch (componentName) {
 	            case 'fragment':
 	            case 'template':
-	                    return new TemplateNode(aNode, parent, scope, owner);
+	                    return new FragmentNode(aNode, parent, scope, owner);
 	        }
 	    }
 	    else {
@@ -15897,7 +16648,7 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
-	 * @file template 节点类
+	 * @file fragment 节点类
 	 */
 
 	// var guid = require('../util/guid');
@@ -15910,7 +16661,7 @@ var bkDocReader = (function (exports) {
 	// var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 	/**
-	 * template 节点类
+	 * fragment 节点类
 	 *
 	 * @class
 	 * @param {Object} aNode 抽象节点
@@ -15919,7 +16670,7 @@ var bkDocReader = (function (exports) {
 	 * @param {Component} owner 所属组件环境
 	 * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
 	 */
-	function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
+	function FragmentNode(aNode, parent, scope, owner, reverseWalker) {
 	    this.aNode = aNode;
 	    this.owner = owner;
 	    this.scope = scope;
@@ -15972,9 +16723,9 @@ var bkDocReader = (function (exports) {
 
 
 
-	TemplateNode.prototype.nodeType = 7;
+	FragmentNode.prototype.nodeType = 7;
 
-	TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
+	FragmentNode.prototype.attach = nodeOwnOnlyChildrenAttach;
 
 	/**
 	 * 销毁释放
@@ -15982,7 +16733,7 @@ var bkDocReader = (function (exports) {
 	 * @param {boolean=} noDetach 是否不要把节点从dom移除
 	 * @param {boolean=} noTransition 是否不显示过渡动画效果
 	 */
-	TemplateNode.prototype.dispose = function (noDetach, noTransition) {
+	FragmentNode.prototype.dispose = function (noDetach, noTransition) {
 	    elementDisposeChildren(this.children, noDetach, noTransition);
 
 	    if (!noDetach) {
@@ -16008,17 +16759,17 @@ var bkDocReader = (function (exports) {
 	 *
 	 * @param {Array} changes 数据变化信息
 	 */
-	TemplateNode.prototype._update = function (changes) {
+	FragmentNode.prototype._update = function (changes) {
 	    for (var i = 0; i < this.children.length; i++) {
 	        this.children[i]._update(changes);
 	    }
 	};
 
-	TemplateNode.prototype._getElAsRootNode = function () {
+	FragmentNode.prototype._getElAsRootNode = function () {
 	    return this.sel;
 	};
 
-	// exports = module.exports = TemplateNode;
+	// exports = module.exports = FragmentNode;
 
 
 	/**
@@ -16427,33 +17178,6 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
-	 * @file 为元素的 el 绑定事件
-	 */
-
-	// var on = require('../browser/on');
-
-	/**
-	 * 为元素的 el 绑定事件
-	 *
-	 * @param {string} name 事件名
-	 * @param {Function} listener 监听器
-	 * @param {boolean} capture 是否是捕获阶段触发
-	 */
-	function elementOwnOnEl(name, listener, capture) {
-	    capture = !!capture;
-	    this._elFns.push([name, listener, capture]);
-	    on(this.el, name, listener, capture);
-	}
-
-	// exports = module.exports = elementOwnOnEl;
-
-
-	/**
-	 * Copyright (c) Baidu Inc. All rights reserved.
-	 *
-	 * This source code is licensed under the MIT license.
-	 * See LICENSE file in the project root for license information.
-	 *
 	 * @file 是否浏览器环境
 	 */
 
@@ -16662,6 +17386,20 @@ var bkDocReader = (function (exports) {
 	}
 
 	/**
+	 * 为元素的 el 绑定事件
+	 *
+	 * @param {string} name 事件名
+	 * @param {Function} listener 监听器
+	 * @param {boolean} capture 是否是捕获阶段触发
+	 */
+	 function elementOnEl(element, name, listener, capture) {
+	    capture = !!capture;
+	    element._elFns = element._elFns || [];
+	    element._elFns.push([name, listener, capture]);
+	    on(element.el, name, listener, capture);
+	}
+
+	/**
 	 * 完成元素 attached 后的行为
 	 *
 	 * @param {Object} element 元素节点
@@ -16687,28 +17425,28 @@ var bkDocReader = (function (exports) {
 	                    case 'input':
 	                    case 'textarea':
 	                        if (isBrowser && window.CompositionEvent) {
-	                            this._onEl('change', inputOnCompositionEnd);
-	                            this._onEl('compositionstart', inputOnCompositionStart);
-	                            this._onEl('compositionend', inputOnCompositionEnd);
+	                            elementOnEl(this, 'change', inputOnCompositionEnd);
+	                            elementOnEl(this, 'compositionstart', inputOnCompositionStart);
+	                            elementOnEl(this, 'compositionend', inputOnCompositionEnd);
 	                        }
 
 	                        // #[begin] allua
 	                        /* istanbul ignore else */
 	                        if ('oninput' in this.el) {
 	                        // #[end]
-	                            this._onEl('input', getInputXPropOutputer(this, xProp, data));
+	                            elementOnEl(this, 'input', getInputXPropOutputer(this, xProp, data));
 	                        // #[begin] allua
 	                        }
 	                        else {
-	                            this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
-	                            this._onEl('focusout', getInputBlurXPropHandler(this));
+	                            elementOnEl(this, 'focusin', getInputFocusXPropHandler(this, xProp, data));
+	                            elementOnEl(this, 'focusout', getInputBlurXPropHandler(this));
 	                        }
 	                        // #[end]
 
 	                        break;
 
 	                    case 'select':
-	                        this._onEl('change', getXPropOutputer(this, xProp, data));
+	                        elementOnEl(this, 'change', getXPropOutputer(this, xProp, data));
 	                        break;
 	                }
 	                break;
@@ -16719,7 +17457,7 @@ var bkDocReader = (function (exports) {
 	                        switch (this.el.type) {
 	                            case 'checkbox':
 	                            case 'radio':
-	                                this._onEl('click', getXPropOutputer(this, xProp, data));
+	                                elementOnEl(this, 'click', getXPropOutputer(this, xProp, data));
 	                        }
 	                }
 	                break;
@@ -16734,14 +17472,15 @@ var bkDocReader = (function (exports) {
 	        warnEventListenMethod(eventBind, owner);
 	        // #[end]
 
-	        this._onEl(
+	        elementOnEl(
+	            this, 
 	            eventBind.name,
 	            getEventListener(eventBind, owner, data, eventBind.modifier),
 	            eventBind.modifier.capture
 	        );
 	    }
 
-	    if (isComponent) {
+	    if (isComponent && this.nativeEvents) {
 	        for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
 	            var eventBind = this.nativeEvents[i];
 
@@ -16749,7 +17488,8 @@ var bkDocReader = (function (exports) {
 	            warnEventListenMethod(eventBind, this.owner);
 	            // #[end]
 
-	            this._onEl(
+	            elementOnEl(
+	                this, 
 	                eventBind.name,
 	                getEventListener(eventBind, this.owner, this.scope),
 	                eventBind.modifier.capture
@@ -16996,7 +17736,7 @@ var bkDocReader = (function (exports) {
 	                break;
 
 	            case 7:
-	                nodePaths.unshift('template');
+	                nodePaths.unshift('fragment');
 	                break;
 
 	            case 5:
@@ -17562,7 +18302,6 @@ var bkDocReader = (function (exports) {
 	// var nodeSBindInit = require('./node-s-bind-init');
 	// var nodeSBindUpdate = require('./node-s-bind-update');
 	// var elementOwnAttached = require('./element-own-attached');
-	// var elementOwnOnEl = require('./element-own-on-el');
 	// var elementOwnDetach = require('./element-own-detach');
 	// var elementOwnDispose = require('./element-own-dispose');
 	// var warnEventListenMethod = require('./warn-event-listen-method');
@@ -17601,7 +18340,6 @@ var bkDocReader = (function (exports) {
 	    }
 
 	    this.children = [];
-	    this._elFns = [];
 	    this.listeners = {};
 	    this.slotChildren = [];
 	    this.implicitChildren = [];
@@ -17719,8 +18457,6 @@ var bkDocReader = (function (exports) {
 	    }
 	    // #[end]
 
-	    // native事件数组
-	    this.nativeEvents = [];
 
 	    if (this.source) {
 	        // 组件运行时传入的结构，做slot解析
@@ -17730,6 +18466,8 @@ var bkDocReader = (function (exports) {
 	            var eventBind = this.source.events[i];
 	            // 保存当前实例的native事件，下面创建aNode时候做合并
 	            if (eventBind.modifier.native) {
+	                // native事件数组
+	                this.nativeEvents = this.nativeEvents || [];
 	                this.nativeEvents.push(eventBind);
 	            }
 	            else {
@@ -18440,7 +19178,7 @@ var bkDocReader = (function (exports) {
 	 * @private
 	 * @param {Object} change 数据变化信息
 	 */
-	Component.prototype._initDataChanger = function (change) {
+	Component.prototype._initDataChanger = function () {
 	    var me = this;
 
 	    this._dataChanger = function (change) {
@@ -18608,7 +19346,6 @@ var bkDocReader = (function (exports) {
 
 	Component.prototype.detach = elementOwnDetach;
 	Component.prototype.dispose = elementOwnDispose;
-	Component.prototype._onEl = elementOwnOnEl;
 	Component.prototype._attached = elementOwnAttached;
 	Component.prototype._leave = function () {
 	    if (this.leaveDispose) {
@@ -18645,12 +19382,14 @@ var bkDocReader = (function (exports) {
 	                    this.children[len].dispose(1, 1);
 	                }
 
-	                len = this._elFns.length;
-	                while (len--) {
-	                    var fn = this._elFns[len];
-	                    un(this.el, fn[0], fn[1], fn[2]);
+	                if (this._elFns) {
+	                    len = this._elFns.length;
+	                    while (len--) {
+	                        var fn = this._elFns[len];
+	                        un(this.el, fn[0], fn[1], fn[2]);
+	                    }
+	                    this._elFns = null;
 	                }
-	                this._elFns = null;
 
 	                // #[begin] allua
 	                /* istanbul ignore if */
@@ -20648,7 +21387,7 @@ var bkDocReader = (function (exports) {
 	// var createNode = require('./create-node');
 	// var createReverseNode = require('./create-reverse-node');
 	// var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
-	// var TemplateNode = require('./template-node');
+
 
 	/**
 	 * is 指令节点类
@@ -20758,7 +21497,7 @@ var bkDocReader = (function (exports) {
 	// var ForNode = require('./for-node');
 	// var IfNode = require('./if-node');
 	// var IsNode = require('./is-node');
-	// var TemplateNode = require('./template-node');
+	// var FragmentNode = require('./fragment-node');
 	// var Element = require('./element');
 
 	/**
@@ -20767,7 +21506,7 @@ var bkDocReader = (function (exports) {
 	 * @param {Object} aNode 要预热的ANode
 	 */
 	function preheatANode(aNode, componentInstance) {
-	    var stack = [];
+	    var stack;
 
 	    function recordHotspotData(expr, notContentData) {
 	        var refs = analyseExprDataHotspot(expr);
@@ -20968,17 +21707,18 @@ var bkDocReader = (function (exports) {
 
 	                    case 'template':
 	                    case 'fragment':
-	                        aNode.Clazz = TemplateNode;
+	                        aNode.Clazz = FragmentNode;
 	                        break;
 
 	                    default:
 	                        if (!aNode.directives.is && hotTags[aNode.tagName]) {
-	                            if (!componentInstance || !componentInstance.components[aNode.tagName]) {
+	                            var components = componentInstance && componentInstance.components;
+	                            if (!components || !components[aNode.tagName]) {
 	                                aNode.elem = true;
 	                            }
 
 	                            // #[begin] error
-	                            if (componentInstance && componentInstance.components[aNode.tagName]) {
+	                            if (components && components[aNode.tagName]) {
 	                                warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
 	                            }
 	                            // #[end]
@@ -20991,7 +21731,8 @@ var bkDocReader = (function (exports) {
 	        }
 	    }
 
-	    if (aNode) {
+	    if (aNode && !aNode._ht) {
+	        stack = [];
 	        analyseANodeHotspot(aNode);
 	    }
 	}
@@ -21076,6 +21817,773 @@ var bkDocReader = (function (exports) {
 	 * This source code is licensed under the MIT license.
 	 * See LICENSE file in the project root for license information.
 	 *
+	 * @file 模板组件类
+	 */
+
+
+	// var each = require('../util/each');
+	// var guid = require('../util/guid');
+	// var extend = require('../util/extend');
+	// var nextTick = require('../util/next-tick');
+	// var emitDevtool = require('../util/emit-devtool');
+	// var ExprType = require('../parser/expr-type');
+	// var parseExpr = require('../parser/parse-expr');
+	// var parseTemplate = require('../parser/parse-template');
+	// var unpackANode = require('../parser/unpack-anode');
+	// var removeEl = require('../browser/remove-el');
+	// var Data = require('../runtime/data');
+	// var evalExpr = require('../runtime/eval-expr');
+	// var changeExprCompare = require('../runtime/change-expr-compare');
+	// var DataChangeType = require('../runtime/data-change-type');
+	// var insertBefore = require('../browser/insert-before');
+	// var createNode = require('./create-node');
+	// var preheatEl = require('./preheat-el');
+	// var parseComponentTemplate = require('./parse-component-template');
+	// var preheatANode = require('./preheat-a-node');
+	// var LifeCycle = require('./life-cycle');
+	// var getANodeProp = require('./get-a-node-prop');
+	// var isDataChangeByElement = require('./is-data-change-by-element');
+	// var reverseElementChildren = require('./reverse-element-children');
+	// var NodeType = require('./node-type');
+	// var styleProps = require('./style-props');
+	// var nodeSBindInit = require('./node-s-bind-init');
+	// var nodeSBindUpdate = require('./node-s-bind-update');
+	// var elementOwnAttached = require('./element-own-attached');
+	// var elementOwnDetach = require('./element-own-detach');
+	// var elementOwnDispose = require('./element-own-dispose');
+	// var elementDisposeChildren = require('./element-dispose-children');
+	// var handleError = require('../util/handle-error');
+	 
+	 
+	 
+	/**
+	 * 模板组件类
+	 *
+	 * @class
+	 * @param {Object} options 初始化参数
+	 */
+	function TemplateComponent(options) { // eslint-disable-line
+	    options = options || {};
+	    this.lifeCycle = LifeCycle.start;
+	    this.id = guid++;
+
+	    this.children = [];
+	    this.slotChildren = [];
+	    this.implicitChildren = [];
+
+	    var clazz = this.constructor;
+
+	    this.owner = options.owner;
+	    this.scope = options.scope;
+	    var parent = options.parent;
+	    if (parent) {
+	        this.parent = parent;
+	        this.parentComponent = parent.nodeType === 5
+	            ? parent
+	            : parent && parent.parentComponent;
+	    }
+	    else if (this.owner) {
+	        this.parentComponent = this.owner;
+	        this.scope = this.owner.data;
+	    }
+
+	    this.sourceSlotNameProps = [];
+	    this.sourceSlots = {
+	        named: {}
+	    };
+
+	    var proto = clazz.prototype;
+
+	    // compile
+	    if (!proto.hasOwnProperty('aNode')) {
+	        var aPack = clazz.aPack || proto.hasOwnProperty('aPack') && proto.aPack;
+	        if (aPack) {
+	            proto.aNode = unpackANode(aPack);
+	            clazz.aPack = proto.aPack = null;
+	        }
+	        else {
+	            proto.aNode = parseComponentTemplate(clazz);
+	        }
+	    }
+
+	    preheatANode(proto.aNode, this);
+
+	    this.tagName = proto.aNode.tagName;
+	    this.source = typeof options.source === 'string'
+	        ? parseTemplate(options.source).children[0]
+	        : options.source;
+
+	    preheatANode(this.source);
+	    proto.aNode._i++;
+
+	    if (this.source) {
+	        // 组件运行时传入的结构，做slot解析
+	        this._initSourceSlots(1);
+
+	        for (var i = 0, l = this.source.events.length; i < l; i++) {
+	            var eventBind = this.source.events[i];
+	            // 保存当前实例的native事件，下面创建aNode时候做合并
+	            if (eventBind.modifier.native) {
+	                // native事件数组
+	                this.nativeEvents = this.nativeEvents || [];
+	                this.nativeEvents.push(eventBind);
+	            }
+	        }
+
+	        this.tagName = this.tagName || this.source.tagName;
+	        this.binds = this.source._b;
+
+	        // init s-bind data
+	        this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
+	    }
+
+	    // init data
+	    var initData;
+	    try {
+	        initData = typeof this.initData === 'function' && this.initData();
+	    }
+	    catch (e) {
+	        handleError(e, this, 'initData');
+	    }
+	    initData = extend(initData || {}, options.data || this._srcSbindData);
+
+	    if (this.binds && this.scope) {
+	        for (var i = 0, l = this.binds.length; i < l; i++) {
+	            var bindInfo = this.binds[i];
+
+	            var value = evalExpr(bindInfo.expr, this.scope, this.owner);
+	            if (typeof value !== 'undefined') {
+	                // See: https://github.com/ecomfe/san/issues/191
+	                initData[bindInfo.name] = value;
+	            }
+	        }
+	    }
+
+	    this.data = new Data(initData);
+
+	    this.tagName = this.tagName || 'div';
+	    // #[begin] allua
+	    // ie8- 不支持innerHTML输出自定义标签
+	    /* istanbul ignore if */
+	    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
+	        this.tagName = 'div';
+	    }
+	    // #[end]
+
+	    this._initDataChanger();
+	    this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
+	    this.lifeCycle = LifeCycle.inited;
+
+	    // #[begin] reverse
+	    var reverseWalker = options.reverseWalker;
+	    if (reverseWalker) {
+	        if (this.aNode.Clazz) {
+	            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	        }
+	        else {
+	            this.el = reverseWalker.current;
+	            reverseWalker.goNext();
+
+	            reverseElementChildren(this, this.data, this);
+	        }
+
+	        this.lifeCycle = LifeCycle.created;
+	        this._attached();
+	        this.lifeCycle = LifeCycle.attached;
+	    }
+	    // #[end]
+	}
+
+
+	/**
+	 * 初始化组件内部监听数据变化
+	 *
+	 * @private
+	 * @param {Object} change 数据变化信息
+	 */
+	TemplateComponent.prototype._initDataChanger = function () {
+	    var me = this;
+
+	    this._dataChanger = function (change) {
+	        if (me.lifeCycle.created) {
+	            if (!me._dataChanges) {
+	                nextTick(me._update, me);
+	                me._dataChanges = [];
+	            }
+
+	            me._dataChanges.push(change);
+	        }
+	        else if (me.lifeCycle.inited && me.owner) {
+	            me._updateBindxOwner([change]);
+	        }
+	    };
+
+	    this.data.listen(this._dataChanger);
+	};
+
+
+	/**
+	 * 将组件attach到页面
+	 *
+	 * @param {HTMLElement} parentEl 要添加到的父元素
+	 * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+	 */
+	TemplateComponent.prototype.attach = function (parentEl, beforeEl) {
+	    if (!this.lifeCycle.attached) {
+	        // #[begin] devtool
+	        emitDevtool('comp-beforeAttach', this);
+	        // #[end]
+
+	        var aNode = this.aNode;
+
+	        if (aNode.Clazz) {
+	            // #[begin] devtool
+	            emitDevtool('comp-beforeCreate', this);
+	            // #[end]
+
+	            this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
+	            this._rootNode.attach(parentEl, beforeEl);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	            
+	            this.lifeCycle = LifeCycle.created;
+	            // #[begin] devtool
+	            emitDevtool('comp-create', this);
+	            // #[end]
+	        }
+	        else {
+	            if (!this.el) {
+	                // #[begin] devtool
+	                emitDevtool('comp-beforeCreate', this);
+	                // #[end]
+
+	                var props;
+
+	                if (aNode._ce && aNode._i > 2) {
+	                    props = aNode._dp;
+	                    this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
+	                }
+	                else {
+	                    props = aNode.props;
+	                    this.el = createEl(this.tagName);
+	                }
+
+	                if (this._sbindData) {
+	                    for (var key in this._sbindData) {
+	                        if (this._sbindData.hasOwnProperty(key)) {
+	                            getPropHandler(this.tagName, key)(
+	                                this.el,
+	                                this._sbindData[key],
+	                                key,
+	                                this
+	                            );
+	                        }
+	                    }
+	                }
+
+	                for (var i = 0, l = props.length; i < l; i++) {
+	                    var prop = props[i];
+	                    var value = evalExpr(prop.expr, this.data, this);
+
+	                    if (value || !styleProps[prop.name]) {
+	                        prop.handler(this.el, value, prop.name, this);
+	                    }
+	                }
+
+	                this.lifeCycle = LifeCycle.created;
+	                // #[begin] devtool
+	                emitDevtool('comp-create', this);
+	                // #[end]
+	            }
+
+	            insertBefore(this.el, parentEl, beforeEl);
+
+	            if (!this._contentReady) {
+	                var htmlDirective = aNode.directives.html;
+
+	                if (htmlDirective) {
+	                    // #[begin] error
+	                    warnSetHTML(this.el);
+	                    // #[end]
+
+	                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+	                }
+	                else {
+	                    for (var i = 0, l = aNode.children.length; i < l; i++) {
+	                        var childANode = aNode.children[i];
+	                        var child = childANode.Clazz
+	                            ? new childANode.Clazz(childANode, this, this.data, this)
+	                            : createNode(childANode, this, this.data, this);
+	                        this.children.push(child);
+	                        child.attach(this.el);
+	                    }
+	                }
+
+	                this._contentReady = 1;
+	            }
+
+	            this._attached();
+	        }
+
+	        this.lifeCycle = LifeCycle.attached;
+	        // #[begin] devtool
+	        emitDevtool('comp-attached', this);
+	        // #[end]
+	    }
+	};
+
+	/**
+	 * 类型标识
+	 *
+	 * @type {string}
+	 */
+	TemplateComponent.prototype.nodeType = 5;
+
+	TemplateComponent.prototype._getElAsRootNode = function () {
+	    return this.el;
+	};
+
+	/**
+	 * 视图更新函数
+	 *
+	 * @param {Array?} changes 数据变化信息
+	 */
+	TemplateComponent.prototype._update = function (changes) {
+	    if (this.lifeCycle.disposed) {
+	        return;
+	    }
+
+	    var me = this;
+
+
+	    var needReloadForSlot = false;
+	    this._notifyNeedReload = function () {
+	        needReloadForSlot = true;
+	    };
+
+	    if (changes) {
+	        if (this.source) {
+	            this._srcSbindData = nodeSBindUpdate(
+	                this.source.directives.bind,
+	                this._srcSbindData,
+	                this.scope,
+	                this.owner,
+	                changes,
+	                function (name, value) {
+	                    if (name in me.source._pi) {
+	                        return;
+	                    }
+
+	                    me.data.set(name, value, {
+	                        target: {
+	                            node: me.owner
+	                        }
+	                    });
+	                }
+	            );
+	        }
+
+	        each(changes, function (change) {
+	            var changeExpr = change.expr;
+
+	            each(me.binds, function (bindItem) {
+	                var relation;
+	                var setExpr = bindItem.name;
+	                var updateExpr = bindItem.expr;
+
+	                if (!isDataChangeByElement(change, me, setExpr)
+	                    && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
+	                ) {
+	                    if (relation > 2) {
+	                        setExpr = {
+	                            type: 4,
+	                            paths: [
+	                                {
+	                                    type: 1,
+	                                    value: setExpr
+	                                }
+	                            ].concat(changeExpr.paths.slice(updateExpr.paths.length))
+	                        };
+	                        updateExpr = changeExpr;
+	                    }
+
+	                    if (relation >= 2 && change.type === 2) {
+	                        me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
+	                            target: {
+	                                node: me.owner
+	                            }
+	                        });
+	                    }
+	                    else {
+	                        me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
+	                            target: {
+	                                node: me.owner
+	                            }
+	                        });
+	                    }
+	                }
+	            });
+
+	            each(me.sourceSlotNameProps, function (bindItem) {
+	                needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
+	                return !needReloadForSlot;
+	            });
+	        });
+
+	        if (needReloadForSlot) {
+	            this._initSourceSlots();
+	            this._repaintChildren();
+	        }
+	        else {
+	            var slotChildrenLen = this.slotChildren.length;
+	            while (slotChildrenLen--) {
+	                var slotChild = this.slotChildren[slotChildrenLen];
+
+	                if (slotChild.lifeCycle.disposed) {
+	                    this.slotChildren.splice(slotChildrenLen, 1);
+	                }
+	                else if (slotChild.isInserted) {
+	                    slotChild._update(changes, 1);
+	                }
+	            }
+	        }
+	    }
+
+	    var dataChanges = this._dataChanges;
+	    if (dataChanges) {
+	        // #[begin] devtool
+	        emitDevtool('comp-beforeUpdate', this);
+	        // #[end]
+
+	        this._dataChanges = null;
+
+	        this._sbindData = nodeSBindUpdate(
+	            this.aNode.directives.bind,
+	            this._sbindData,
+	            this.data,
+	            this,
+	            dataChanges,
+	            function (name, value) {
+	                if (me._rootNode || (name in me.aNode._pi)) {
+	                    return;
+	                }
+
+	                getPropHandler(me.tagName, name)(me.el, value, name, me);
+	            }
+	        );
+
+	        var htmlDirective = this.aNode.directives.html;
+
+	        if (this._rootNode) {
+	            this._rootNode._update(dataChanges);
+	            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	        }
+	        else if (htmlDirective) {
+	            var len = dataChanges.length;
+	            while (len--) {
+	                if (changeExprCompare(dataChanges[len].expr, htmlDirective.value, this.data)) {
+	                    // #[begin] error
+	                    warnSetHTML(this.el);
+	                    // #[end]
+
+	                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+	                    break;
+	                }
+	            }
+	        }
+	        else {
+	            var dynamicProps = this.aNode._dp;
+	            for (var i = 0; i < dynamicProps.length; i++) {
+	                var prop = dynamicProps[i];
+
+	                for (var j = 0; j < dataChanges.length; j++) {
+	                    var change = dataChanges[j];
+	                    if (changeExprCompare(change.expr, prop.expr, this.data)
+	                        || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
+	                    ) {
+	                        prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
+	                        break;
+	                    }
+	                }
+	            }
+
+	            for (var i = 0; i < this.children.length; i++) {
+	                this.children[i]._update(dataChanges);
+	            }
+	        }
+
+	        if (needReloadForSlot) {
+	            this._initSourceSlots();
+	            this._repaintChildren();
+	        }
+
+	        if (this.owner && this._updateBindxOwner(dataChanges)) {
+	            this.owner._update();
+	        }
+	    }
+
+	    this._notifyNeedReload = null;
+	};
+
+	TemplateComponent.prototype._updateBindxOwner = function (dataChanges) {
+	    var me = this;
+	    var xbindUped;
+
+	    each(dataChanges, function (change) {
+	        each(me.binds, function (bindItem) {
+	            var changeExpr = change.expr;
+	            if (bindItem.x
+	                && !isDataChangeByElement(change, me.owner)
+	                && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
+	            ) {
+	                var updateScopeExpr = bindItem.expr;
+	                if (changeExpr.paths.length > 1) {
+	                    updateScopeExpr = {
+	                        type: 4,
+	                        paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+	                    };
+	                }
+
+	                xbindUped = 1;
+	                me.scope.set(
+	                    updateScopeExpr,
+	                    evalExpr(changeExpr, me.data, me),
+	                    {
+	                        target: {
+	                            node: me,
+	                            prop: bindItem.name
+	                        }
+	                    }
+	                );
+	            }
+	        });
+	    });
+
+	    return xbindUped;
+	};
+
+
+	/**
+	 * 初始化创建组件外部传入的插槽对象
+	 *
+	 * @protected
+	 * @param {boolean} isFirstTime 是否初次对sourceSlots进行计算
+	 */
+	TemplateComponent.prototype._initSourceSlots = function (isFirstTime) {
+	    this.sourceSlots.named = {};
+
+	    // 组件运行时传入的结构，做slot解析
+	    if (this.source && this.scope) {
+	        var sourceChildren = this.source.children;
+
+	        for (var i = 0, l = sourceChildren.length; i < l; i++) {
+	            var child = sourceChildren[i];
+	            var target;
+
+	            var slotBind = !child.textExpr && getANodeProp(child, 'slot');
+	            if (slotBind) {
+	                isFirstTime && this.sourceSlotNameProps.push(slotBind);
+
+	                var slotName = evalExpr(slotBind.expr, this.scope, this.owner);
+	                target = this.sourceSlots.named[slotName];
+	                if (!target) {
+	                    target = this.sourceSlots.named[slotName] = [];
+	                }
+	                target.push(child);
+	            }
+	            else if (isFirstTime) {
+	                target = this.sourceSlots.noname;
+	                if (!target) {
+	                    target = this.sourceSlots.noname = [];
+	                }
+	                target.push(child);
+	            }
+	        }
+	    }
+	};
+
+	TemplateComponent.prototype._repaintChildren = function () {
+	    // TODO: repaint once?
+
+	    if (this._rootNode) {
+	        var parentEl = this._rootNode.el.parentNode;
+	        var beforeEl = this._rootNode.el.nextSibling;
+	        this._rootNode.dispose(0, 1);
+	        this.slotChildren = [];
+
+	        this._rootNode = createNode(this.aNode, this, this.data, this);
+	        this._rootNode.attach(parentEl, beforeEl);
+	        this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+	    }
+	    else {
+	        elementDisposeChildren(this.children, 0, 1);
+	        this.children = [];
+	        this.slotChildren = [];
+
+	        for (var i = 0, l = this.aNode.children.length; i < l; i++) {
+	            var child = createNode(this.aNode.children[i], this, this.data, this);
+	            this.children.push(child);
+	            child.attach(this.el);
+	        }
+	    }
+	};
+
+	TemplateComponent.prototype._leave = function () {
+	    if (this.leaveDispose) {
+	        if (!this.lifeCycle.disposed) {
+	            // #[begin] devtool
+	            emitDevtool('comp-beforeDetach', this);
+	            // #[end]
+
+	            this.data.unlisten();
+	            this.dataChanger = null;
+	            this._dataChanges = null;
+
+	            this.source = null;
+	            this.sourceSlots = null;
+	            this.sourceSlotNameProps = null;
+
+	            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+	            this.slotChildren = null;
+
+
+	            if (this._rootNode) {
+	                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+	                this._rootNode.dispose(this.disposeNoDetach && this.parent);
+	            }
+	            else {
+	                var len = this.children.length;
+	                while (len--) {
+	                    this.children[len].dispose(1, 1);
+	                }
+
+	                // #[begin] allua
+	                /* istanbul ignore if */
+	                if (this._inputTimer) {
+	                    clearInterval(this._inputTimer);
+	                    this._inputTimer = null;
+	                }
+	                // #[end]
+
+	                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+	                if (!this.disposeNoDetach || !this.parent) {
+	                    removeEl(this.el);
+	                }
+	            }
+
+	            this.lifeCycle = LifeCycle.detached;
+	            // #[begin] devtool
+	            emitDevtool('comp-detached', this);
+	            // #[end]
+
+	            // #[begin] devtool
+	            emitDevtool('comp-beforeDispose', this);
+	            // #[end]
+
+	            this._rootNode = null;
+	            this.el = null;
+	            this.owner = null;
+	            this.scope = null;
+	            this.children = null;
+
+	            this.lifeCycle = LifeCycle.disposed;
+	            // #[begin] devtool
+	            emitDevtool('comp-disposed', this);
+	            // #[end]
+
+	            if (this._ondisposed) {
+	                this._ondisposed();
+	            }
+	        }
+	    }
+	    else if (this.lifeCycle.attached) {
+	        // #[begin] devtool
+	        emitDevtool('comp-beforeDetach', this);
+	        // #[end]
+
+	        if (this._rootNode) {
+	            if (this._rootNode.detach) {
+	                this._rootNode.detach();
+	            }
+	            else {
+	                this._rootNode.dispose();
+	                this._rootNode = null;
+	            }
+	        }
+	        else {
+	            removeEl(this.el);
+	        }
+
+	        this.lifeCycle = LifeCycle.detached;
+	        // #[begin] devtool
+	        emitDevtool('comp-detached', this);
+	        // #[end]
+	    }
+	};
+
+	TemplateComponent.prototype.detach = elementOwnDetach;
+	TemplateComponent.prototype.dispose = elementOwnDispose;
+	TemplateComponent.prototype._attached = elementOwnAttached;
+
+	// exports = module.exports = TemplateComponent;
+
+
+	/**
+	 * Copyright (c) Baidu Inc. All rights reserved.
+	 *
+	 * This source code is licensed under the MIT license.
+	 * See LICENSE file in the project root for license information.
+	 *
+	 * @file 创建模板组件类
+	 */
+
+	// var TemplateComponent = require('./template-component');
+	// var inherits = require('../util/inherits');
+	 
+	/**
+	 * 创建组件类
+	 *
+	 * @param {Object|string} template 模板组件类的方法表或模板字符串
+	 * @return {Function}
+	 */
+	function defineTemplateComponent(template) {
+	     // 如果传入一个不是 san component 的 constructor，直接返回不是组件构造函数
+	     // 这种场景导致的错误 san 不予考虑
+	    switch (typeof template) {
+	        case 'function':
+	            return template;
+
+	        case 'string':
+	            template = {template: template};
+	        // #[begin] error
+	            break;
+
+	        case 'object':
+	            break;
+
+	        default:
+	            throw new Error('[SAN FATAL] defineTemplateComponent need string or plain object.');
+	        // #[end]
+	    }
+	 
+	    function ComponentClass(option) { // eslint-disable-line
+	        TemplateComponent.call(this, option);
+	    }
+	 
+	    ComponentClass.prototype = template;
+	    inherits(ComponentClass, TemplateComponent);
+	 
+	    return ComponentClass;
+	}
+	 
+	// exports = module.exports = defineTemplateComponent;
+
+	/**
+	 * Copyright (c) Baidu Inc. All rights reserved.
+	 *
+	 * This source code is licensed under the MIT license.
+	 * See LICENSE file in the project root for license information.
+	 *
 	 * @file 创建组件Loader
 	 */
 
@@ -21112,6 +22620,7 @@ var bkDocReader = (function (exports) {
 	//     var Component = require('./view/component');
 	//     var parseComponentTemplate = require('./view/parse-component-template');
 	//     var defineComponent = require('./view/define-component');
+	//     var defineTemplateComponent = require('./view/define-template-component');
 	//     var createComponentLoader = require('./view/create-component-loader');
 	//     var emitDevtool = require('./util/emit-devtool');
 	//     var Data = require('./runtime/data');
@@ -21125,7 +22634,7 @@ var bkDocReader = (function (exports) {
 	         *
 	         * @type {string}
 	         */
-	        version: '3.11.3',
+	        version: '3.12.0',
 
 	        // #[begin] devtool
 	        /**
@@ -21150,6 +22659,7 @@ var bkDocReader = (function (exports) {
 	         * @return {Function}
 	         */
 	        defineComponent: defineComponent,
+	        defineTemplateComponent: defineTemplateComponent,
 
 	        /**
 	         * 创建组件Loader
@@ -21277,6 +22787,53 @@ var bkDocReader = (function (exports) {
 	    dist.exports = san_dev.exports;
 	}
 
+	function ieVersion() {
+	    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+	    var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+	    var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+	    var isIE11 = userAgent.indexOf("Trident") > -1 && userAgent.indexOf("rv:11.0") > -1; //判断是否IE11浏览器
+	    if (isIE) {
+	        var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+	        reIE.test(userAgent);
+	        var fIEVersion = parseFloat(RegExp["$1"]);
+	        if (fIEVersion == 7) {
+	            return 7;
+	        }
+	        else if (fIEVersion == 8) {
+	            return 8;
+	        }
+	        else if (fIEVersion == 9) {
+	            return 9;
+	        }
+	        else if (fIEVersion == 10) {
+	            return 10;
+	        }
+	        else {
+	            return 6; //IE版本<=7
+	        }
+	    }
+	    else if (isEdge) {
+	        return "edge"; //edge
+	    }
+	    else if (isIE11) {
+	        return 11; //IE11
+	    }
+	    else {
+	        return -1; //不是ie浏览器
+	    }
+	}
+	function lessThan(ieNumber) {
+	    var version = ieVersion();
+	    if (version === -1 || version === "edge") {
+	        return false;
+	    }
+	    return version < ieNumber;
+	}
+	function isIe() {
+	    var version = ieVersion();
+	    return version !== -1 && version !== "edge";
+	}
+
 	/******************************************************************************
 	Copyright (c) Microsoft Corporation.
 
@@ -21302,6 +22859,44 @@ var bkDocReader = (function (exports) {
 	    };
 	    return __assign.apply(this, arguments);
 	};
+
+	function __awaiter(thisArg, _arguments, P, generator) {
+	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+	    return new (P || (P = Promise))(function (resolve, reject) {
+	        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+	        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+	        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+	        step((generator = generator.apply(thisArg, _arguments || [])).next());
+	    });
+	}
+
+	function __generator(thisArg, body) {
+	    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+	    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+	    function verb(n) { return function (v) { return step([n, v]); }; }
+	    function step(op) {
+	        if (f) throw new TypeError("Generator is already executing.");
+	        while (_) try {
+	            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+	            if (y = 0, t) op = [op[0] & 2, t.value];
+	            switch (op[0]) {
+	                case 0: case 1: t = op; break;
+	                case 4: _.label++; return { value: op[1], done: false };
+	                case 5: _.label++; y = op[1]; op = [0]; continue;
+	                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+	                default:
+	                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+	                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+	                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+	                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+	                    if (t[2]) _.ops.pop();
+	                    _.trys.pop(); continue;
+	            }
+	            op = body.call(thisArg, _);
+	        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+	        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+	    }
+	}
 
 	/**
 	 * 创建唯一id
@@ -21417,7 +23012,7 @@ var bkDocReader = (function (exports) {
 	    nodeInfo = __assign(__assign({}, nodeInfo), { renderId: renderId, evenIdList: eventIdList });
 	    return JSON.parse(JSON.stringify(nodeInfo));
 	}
-	function nodeRender(renderId, app, parent) {
+	function nodeRender(renderId, app, parent, renderToDom) {
 	    if (!renderId) {
 	        throw new Error("未获取到renderId");
 	    }
@@ -21425,7 +23020,17 @@ var bkDocReader = (function (exports) {
 	    if (!nodeInfo || !nodeInfo.render) {
 	        throw new Error("获取节点render方法失败");
 	    }
-	    return nodeInfo.render(app, nodeInfo, parent);
+	    var ele = nodeInfo.render(app, nodeInfo, parent);
+	    if (renderToDom) {
+	        if (typeof ele.attach !== "function") {
+	            renderToDom.innerHTML = "";
+	            renderToDom.appendChild(ele);
+	        }
+	        else {
+	            ele.attach(renderToDom);
+	        }
+	    }
+	    return ele;
 	}
 	/**
 	 * 节点事件调用
@@ -21483,6 +23088,25 @@ var bkDocReader = (function (exports) {
 	    _nodeRenderMap = {};
 	}
 
+	function createBlobUrlByFile(file) {
+	    if (window.createObjectURL) {
+	        return window.createObjectURL(file);
+	    }
+	    else if (window.URL.createObjectURL) {
+	        return window.URL.createObjectURL(file);
+	    }
+	    else if (window.webkitURL) {
+	        return window.webkitURL.createObjectURL(file);
+	    }
+	    return "";
+	}
+	function createElement(targetName, name) {
+	    if (name === void 0) { name = ""; }
+	    if (isIe()) {
+	        return document.createElement("<".concat(targetName, " name=\"").concat(name, "\"></").concat(targetName, ">"));
+	    }
+	    return document.createElement(targetName);
+	}
 	function styleInject$1(css, id) {
 	    var head = document.head || document.getElementsByTagName("head")[0];
 	    var style = document.createElement("style");
@@ -21677,6 +23301,8 @@ var bkDocReader = (function (exports) {
 
 	var dom = /*#__PURE__*/Object.freeze({
 		__proto__: null,
+		createBlobUrlByFile: createBlobUrlByFile,
+		createElement: createElement,
 		styleInject: styleInject$1,
 		full: full,
 		exitFullscreen: exitFullscreen,
@@ -21729,23 +23355,16 @@ var bkDocReader = (function (exports) {
 	    return data;
 	}
 
-	function lessThan(ieNumber) {
-	    if (navigator.appName == "Microsoft Internet Explorer" &&
-	        navigator.appVersion.match(/7./i) == "7.") {
-	        return 7 < ieNumber;
+	function arrayuUique(array) {
+	    var tempMap = {};
+	    for (var i = 0; i < array.length; i++) {
+	        tempMap[array[i]] = true;
 	    }
-	    else if (navigator.appName == "Microsoft Internet Explorer" &&
-	        navigator.appVersion.match(/8./i) == "8.") {
-	        return 6 < ieNumber;
+	    var res = [];
+	    for (var key in tempMap) {
+	        res.push(key);
 	    }
-	    else if (navigator.appName == "Microsoft Internet Explorer" &&
-	        navigator.appVersion.match(/9./i) == "9.") {
-	        return 9 < ieNumber;
-	    }
-	    else if (navigator.appName == "Microsoft Internet Explorer") {
-	        return 6 < ieNumber;
-	    }
-	    return false;
+	    return res;
 	}
 
 	function styleInject(css, ref) {
@@ -21775,11 +23394,11 @@ var bkDocReader = (function (exports) {
 	  }
 	}
 
-	var css_248z$d = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);\n  z-index: 2;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover > .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover > .index-module_icon__MnfZO {\n  color: #2752e7;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444C5E;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
-	var styles$b = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-	styleInject(css_248z$d);
+	var css_248z$e = ".index-module_common_font__kzEJV{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__8S-Xs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_header__bANPo{min-height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX{background:#2752e7;height:40px;overflow:hidden;position:relative;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;position:absolute;right:13px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE>span{font-size:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{color:#fff;cursor:pointer;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;text-align:center;width:98px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT>span,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH>span{font-size:12px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB{float:left}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{transition:all .3s;width:50px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH.index-module_active__a-6ac{background-color:#fff;color:#333}.index-module_header__bANPo>.index-module_tabPanels__FVo0y{background-color:#fff;box-shadow:0 4px 6px -5px rgba(11,20,54,.5);height:0;overflow:hidden;position:relative;transition:all .3s;width:100%;z-index:2}.index-module_header__bANPo>.index-module_tabPanels__FVo0y.index-module_active__a-6ac{height:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{background-color:#888;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:50px;position:absolute;text-align:center;top:0;width:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq>span,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp>span{font-size:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{left:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq{right:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u{height:100%;overflow:auto;overflow:hidden;padding:0 24px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2{float:left;height:100%;margin-right:16px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN{height:100%;width:2px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN>div{background-color:#888;height:42px;margin-top:4px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-{cursor:pointer;height:100%;overflow:hidden;width:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_text__XqzxF{color:#2752e7}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_text__XqzxF{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO>span{font-size:24px}";
+	var styles$c = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+	styleInject(css_248z$e);
 
-	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-if=\"fns.showTool(toolInfo)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 	var lodash = {exports: {}};
 
@@ -38985,11 +40604,20 @@ var bkDocReader = (function (exports) {
 	var headerToolMarginRight = 16;
 	var headerToolPanelHeight = 50;
 
+	var html$a = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
+
+	var ToolBtn = dist.exports.defineComponent({
+	    template: lodash.exports.template(html$a)({ styles: styles$c })
+	});
+
 	var template$5 = lodash.exports.template(htmlTemplate)({
-	    styles: styles$b
+	    styles: styles$c
 	});
 	var Header = dist.exports.defineComponent({
 	    template: template$5,
+	    components: {
+	        "ui-toolbtn": ToolBtn
+	    },
 	    initData: function () {
 	        return {
 	            selectTabKey: 0,
@@ -39076,6 +40704,29 @@ var bkDocReader = (function (exports) {
 	        }
 	    },
 	    fns: {
+	        showToolBar: function (toolbarConfig) {
+	            if (!toolbarConfig) {
+	                return false;
+	            }
+	            if (!toolbarConfig.tools || toolbarConfig.tools.length === 0) {
+	                return false;
+	            }
+	            return true;
+	        },
+	        showTool: function (toolInfo) {
+	            var _a, _b;
+	            if (toolInfo.type !== "separate" && (!toolInfo || !toolInfo.nodeInfo)) {
+	                return false;
+	            }
+	            var appInterface = getApp(this.data.get("appId"));
+	            if (toolInfo.needReader && !((_a = appInterface.getReader()) === null || _a === void 0 ? void 0 : _a.currentParser())) {
+	                return false;
+	            }
+	            if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b.isShow) {
+	                return toolInfo.nodeInfo.isShow(appInterface);
+	            }
+	            return true;
+	        },
 	        showControlBreakWrapper: function (show, isNext) {
 	            if (!show || show.length != 2 || (!show[0] && !show[1])) {
 	                this.data.set("marginLeft", 0);
@@ -39142,23 +40793,21 @@ var bkDocReader = (function (exports) {
 	            var expand = this.data.get("expand");
 	            this.data.set("expand", !expand);
 	        },
-	        handleRender: function (renderId) {
-	            if (!renderId) {
+	        handleRender: function (toolInfo, index) {
+	            var toolEle = this.ref("ref-tool-" + index);
+	            if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
 	                return undefined;
 	            }
-	            var toolEle = this.ref("ref-tool-" + renderId);
-	            if (!toolEle) {
+	            if (toolInfo.nodeInfo.renderId) {
+	                nodeRender(toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
 	                return undefined;
 	            }
-	            var appId = this.data.get("appId");
-	            var ele = nodeRender(renderId, getApp(appId), this);
-	            if (typeof ele.attach !== "function") {
-	                toolEle.innerHTML = "";
-	                toolEle.appendChild(ele);
+	            if (!toolInfo.nodeInfo.evenIdList ||
+	                toolInfo.nodeInfo.evenIdList.length === 0) {
+	                return undefined;
 	            }
-	            else {
-	                ele.attach(toolEle);
-	            }
+	            dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+	            return undefined;
 	        },
 	        prevAndNextToolClick: function (isNext) {
 	            var toolsPanelWidth = this.data.get("toolsPanelWidth");
@@ -39185,19 +40834,135 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
+	var html$9 = "<div class=\"<%= styles.reader %>\"></div>";
+
+	var css_248z$d = ".index-module_reader__8JtQW{height:100%;overflow:hidden;width:100%}";
+	var styles$b = {"reader":"index-module_reader__8JtQW"};
+	styleInject(css_248z$d);
+
 	var html$8 = "<div>阅读器</div>";
 
 	var css_248z$c = "";
 	var styles$a = {};
 	styleInject(css_248z$c);
 
-	var Reader = dist.exports.defineComponent({
+	var ReaderUi = dist.exports.defineComponent({
 	    template: lodash.exports.template(html$8)({ styles: styles$a })
+	});
+
+	// pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+	var PdfjsReaderImpl = /** @class */ (function () {
+	    function PdfjsReaderImpl() {
+	    }
+	    PdfjsReaderImpl.support = function () {
+	        return PdfjsReaderImpl._support;
+	    };
+	    PdfjsReaderImpl.prototype.loadFile = function (file) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            return __generator(this, function (_a) {
+	                debugger;
+	                return [2 /*return*/];
+	            });
+	        });
+	    };
+	    PdfjsReaderImpl.prototype.attachToSanComponent = function (paremtComponent) {
+	        this._readerUi = new ReaderUi({
+	            owner: paremtComponent,
+	            source: "<ui-pdfjs-reader></ui-pdfjs-reader>"
+	        });
+	        this._readerUi.attach(paremtComponent.el);
+	        this._readerUiInterface = this._readerUi;
+	    };
+	    PdfjsReaderImpl._supportNowBrowser = function () {
+	        return !isIe() && typeof ArrayBuffer !== "undefined";
+	    };
+	    PdfjsReaderImpl._support = {
+	        nowBrowser: PdfjsReaderImpl._supportNowBrowser(),
+	        fileSuffix: [".pdf"],
+	        isSupportFile: function (file) {
+	            return file.name.endsWith(".pdf") && typeof file.path !== "undefined";
+	        }
+	    };
+	    return PdfjsReaderImpl;
+	}());
+
+	var defaultReaderConstructor = PdfjsReaderImpl;
+	var Reader = dist.exports.defineComponent({
+	    template: lodash.exports.template(html$9)({ styles: styles$b }),
+	    attached: function () {
+	        this.attachParser(defaultReaderConstructor);
+	    },
+	    loadFile: function (file) {
+	        var parserList = this.getParserList();
+	        debugger;
+	        var currentParser;
+	        for (var i = 0; i < parserList.length; i++) {
+	            var Parser = parserList[i];
+	            if (Parser.support().isSupportFile(file)) {
+	                currentParser = new Parser(getApp(this.data.get("appId")));
+	                break;
+	            }
+	        }
+	        if (!currentParser) {
+	            throw new Error("没有支持的解析器");
+	        }
+	        currentParser.loadFile(file);
+	    },
+	    currentParser: function () {
+	        return undefined;
+	    },
+	    attachParser: function (service) {
+	        var services = this.getParserList();
+	        if (this.readerServiceIsHave(service) || !service.support().nowBrowser) {
+	            return;
+	        }
+	        // if (service.attachToSanComponent) {
+	        //   service.attachToSanComponent(this);
+	        // } else if (service.attachToEle) {
+	        //   service.attachToEle(this.el! as any);
+	        // } else {
+	        //   throw new Error("组件未实现attachToEle或attachToSanComponent方法");
+	        // }
+	        services.push(service);
+	    },
+	    disposeParser: function (service) {
+	        var services = this.getParserList();
+	        if (!services) {
+	            return;
+	        }
+	        for (var i = 0; i < services.length; i++) {
+	            if (services[i] === service) {
+	                services.splice(i, 1);
+	                return;
+	            }
+	        }
+	    },
+	    getReaderrServiceId: function () {
+	        return this.data.get("appId") + "_reader";
+	    },
+	    getParserList: function () {
+	        var parserList = dataStoreGet(this.getReaderrServiceId());
+	        if (!parserList) {
+	            parserList = [];
+	            dataStoreSet(this.getReaderrServiceId(), parserList);
+	            this.attachParser(defaultReaderConstructor);
+	        }
+	        return parserList;
+	    },
+	    readerServiceIsHave: function (service) {
+	        var services = this.getParserList();
+	        for (var i = 0; i < services.length; i++) {
+	            if (services[i] === service) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
 	});
 
 	var html$7 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <div s-for=\"toolbar, index in toolbars\" class=\"<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar)\">\n                <div class=\"<%= styles.icon %>\">\n                    <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                </div>\n                <div class=\"<%= styles.desc %>\">\n                    <span>{{toolbar.text}}</span>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
 
-	var css_248z$b = ".index-module_common_font__rsmEw {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__p5aoa {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_slidebarLeft__higRK {\n  position: relative;\n  height: 100%;\n  overflow: hidden;\n  background: #EFF1F3;\n  transition: all 0.3;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA {\n  width: 40px;\n  height: 100%;\n  position: relative;\n  float: left;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_comment__h9Ykh {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  position: absolute;\n  top: 0;\n  left: 0;\n  line-height: 25px;\n  width: 40px;\n  height: 25px;\n  color: #333;\n  margin-bottom: 2px;\n  border-bottom: 2px solid #e6e6e6;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 {\n  position: absolute;\n  top: 44px;\n  width: 100%;\n  bottom: 0;\n  left: 0;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 100%;\n  height: 45px;\n  padding-top: 5px;\n  cursor: pointer;\n  margin-bottom: 17px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 {\n  width: 100%;\n  text-align: center;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444C5E;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e {\n  height: 20px;\n  line-height: 20px;\n  margin-bottom: 4px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span {\n  font-size: 20px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc {\n  background-color: #FFFFFF;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_desc__MkXk0 > span {\n  color: #2752e7;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 {\n  width: 160px;\n  height: 100%;\n  overflow: hidden;\n  background-color: #FFFFFF;\n  float: left;\n  position: relative;\n  transition: all 0.3s;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1.index-module_fold__Hp4cY {\n  width: 16px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV {\n  width: 16px;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-align: center;\n  cursor: pointer;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV > span {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  display: block;\n  width: 100%;\n  text-align: center;\n  position: absolute;\n  top: 50%;\n}\n";
+	var css_248z$b = ".index-module_common_font__rsmEw{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__p5aoa{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_slidebarLeft__higRK{background:#eff1f3;height:100%;overflow:hidden;position:relative;transition:all .3}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA{float:left;height:100%;position:relative;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_comment__h9Ykh{border-bottom:2px solid #e6e6e6;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:25px;left:0;line-height:25px;margin-bottom:2px;position:absolute;text-align:center;top:0;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6{bottom:0;left:0;overflow-x:hidden;overflow-y:auto;position:absolute;top:44px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:45px;margin-bottom:17px;padding-top:5px;text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{height:20px;line-height:20px;margin-bottom:4px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{font-size:20px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc{background-color:#fff}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_icon__Zsx8e>span{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1{background-color:#fff;float:left;height:100%;overflow:hidden;position:relative;transition:all .3s;width:160px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_fold__Hp4cY{width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV{cursor:pointer;height:100%;position:absolute;right:0;text-align:center;top:0;width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>span{color:#fff;color:#333;display:block;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;position:absolute;text-align:center;top:50%;width:100%}";
 	var styles$9 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
 	styleInject(css_248z$b);
 
@@ -39250,7 +41015,7 @@ var bkDocReader = (function (exports) {
 	    template: lodash.exports.template(html$6)({ styles: styles$8 })
 	});
 
-	var css_248z$9 = "#index-module_app__DAOOy {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #eff1f3;\n  overflow: hidden;\n}\n#index-module_header__NtWW5 {\n  width: 100%;\n  max-height: 120px;\n}\n#index-module_sidebarLeft__MA3wh {\n  height: 100%;\n  float: left;\n}\n#index-module_sidebarRight__2F13Z {\n  height: 100%;\n  float: right;\n}\n#index-module_content__m20ZT {\n  width: 100%;\n}\n#index-module_reader__xIj2- {\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n";
+	var css_248z$9 = "#index-module_app__DAOOy{background:#eff1f3;height:100%;overflow:hidden;position:relative;width:100%}#index-module_header__NtWW5{max-height:120px;width:100%}#index-module_sidebarLeft__MA3wh{float:left;height:100%}#index-module_sidebarRight__2F13Z{float:right;height:100%}#index-module_content__m20ZT{width:100%}#index-module_reader__xIj2-{height:100%;overflow:hidden;position:relative}";
 	var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
 	styleInject(css_248z$9);
 
@@ -39314,11 +41079,11 @@ var bkDocReader = (function (exports) {
 
 	var classNames = classnames.exports;
 
-	var css_248z$8 = ".index-module_bookmark__1nGVp {\n  width: 100%;\n  height: 30px;\n  background: #e6e6e6;\n  position: relative;\n  overflow: hidden;\n  transition: all 0.5s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy,\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  height: 100%;\n  display: inline-block;\n  font-size: 0;\n  position: absolute;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy {\n  left: 0;\n  height: 100%;\n  padding: 0 4px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 {\n  float: left;\n  height: 100%;\n  overflow: auto;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 > div {\n  height: 100%;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p {\n  cursor: pointer;\n  float: left;\n  width: 16px;\n  height: 100%;\n  font-size: 8px;\n  line-height: 30px;\n}\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  right: 0;\n  padding-right: 1px;\n  overflow: hidden;\n  height: 100%;\n}\n";
+	var css_248z$8 = ".index-module_bookmark__1nGVp{background:#e6e6e6;height:30px;overflow:hidden;position:relative;transition:all .5s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F,.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{display:inline-block;font-size:0;height:100%;position:absolute}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{height:100%;left:0;padding:0 4px}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0{float:left;height:100%;overflow:auto}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0>div{height:100%}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabAdd__uIR8p{cursor:pointer;float:left;font-size:8px;height:100%;line-height:30px;width:16px}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F{height:100%;overflow:hidden;padding-right:1px;right:0}";
 	var styles$6 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
 	styleInject(css_248z$8);
 
-	var css_248z$7 = ".index-module_tab__nriyF {\n  width: 166px;\n  height: 100%;\n  background: #ffffff;\n  position: relative;\n  float: left;\n  margin-right: 6px;\n}\n.index-module_tab__nriyF .index-module_fileName__A6hsy {\n  position: absolute;\n  left: 21px;\n  height: 100%;\n  width: 97px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  text-align: center;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM {\n  font-size: 0px;\n  position: absolute;\n  right: 21px;\n  line-height: 30px;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM > span {\n  cursor: pointer;\n  font-size: 8px;\n}\n";
+	var css_248z$7 = ".index-module_tab__nriyF{background:#fff;float:left;height:100%;margin-right:6px;position:relative;width:166px}.index-module_tab__nriyF .index-module_fileName__A6hsy{color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:21px;line-height:30px;overflow:hidden;position:absolute;text-align:center;text-overflow:ellipsis;white-space:nowrap;width:97px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM{font-size:0;line-height:30px;position:absolute;right:21px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM>span{cursor:pointer;font-size:8px}";
 	var styles$5 = {"tab":"index-module_tab__nriyF","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
 	styleInject(css_248z$7);
 
@@ -39327,7 +41092,7 @@ var bkDocReader = (function (exports) {
 	    template: template$4
 	});
 
-	var css_248z$6 = ".index-module_btn__Z99v5 {\n  display: block;\n  width: 30px;\n  height: 30px;\n  overflow: hidden;\n  line-height: 30px;\n  text-align: center;\n  float: left;\n}\n.index-module_btn__Z99v5 > span {\n  display: block;\n  width: 24px;\n  height: 24px;\n  text-align: center;\n  line-height: 24px;\n  cursor: pointer;\n  margin-top: 3px;\n}\n";
+	var css_248z$6 = ".index-module_btn__Z99v5{display:block;float:left;height:30px;line-height:30px;overflow:hidden;text-align:center;width:30px}.index-module_btn__Z99v5>span{cursor:pointer;display:block;height:24px;line-height:24px;margin-top:3px;text-align:center;width:24px}";
 	var styles$4 = {"btn":"index-module_btn__Z99v5"};
 	styleInject(css_248z$6);
 
@@ -39475,7 +41240,7 @@ var bkDocReader = (function (exports) {
 	});
 
 	var isFirst = true;
-	var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$7.sidebarRight, "\">\n        <ui-slide-right appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\">\n        <ui-reader appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.reader||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+	var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$7.sidebarRight, "\">\n        <ui-slide-right appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\">\n        <ui-reader s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.reader||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 	var AppUi = dist.exports.defineComponent({
 	    components: {
 	        "ui-tabs": TabPages,
@@ -39537,10 +41302,13 @@ var bkDocReader = (function (exports) {
 	                clearInterval(intervalId);
 	            }, 5);
 	        }
+	    },
+	    getReader: function () {
+	        return this.ref("ref-reader");
 	    }
 	});
 
-	var css_248z$5 = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n  color: #444c5e;\n}\n.index-module_toolIconBtn__99EQS:hover {\n  color: #2752e7;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n";
+	var css_248z$5 = ".index-module_common_font__1JO7K{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__5IRoi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_toolJump__1AnPZ{height:100%;line-height:50px;text-align:center}.index-module_toolJump__1AnPZ>span{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center;transition:all .3s}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolJump__1AnPZ>span:hover{color:#2752e7}.index-module_toolJump__1AnPZ>input{width:30px}.index-module_toolIconBtn__99EQS{color:#444c5e;height:100%;line-height:50px}.index-module_toolIconBtn__99EQS:hover{color:#2752e7}.index-module_toolIconBtn__99EQS>span{font-size:24px}.index-module_toolScale__GZ9IV{height:100%;padding-top:10px;width:100%}";
 	var styles$3 = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV"};
 	styleInject(css_248z$5);
 
@@ -39676,13 +41444,13 @@ var bkDocReader = (function (exports) {
 
 	var html$1 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span>{{activeText}}</span>\n    </div>\n    <span class=\"iconfont\">&#xe71d;</span>\n</div>";
 
-	var css_248z$3 = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n  position: relative;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  position: absolute;\n  left: 6px;\n  right: 21px;\n  top: 0;\n  bottom: 0;\n  height: 100%;\n  color: #333;\n  text-align: left;\n}\n.index-module_select__2NwCG:hover,\n.index-module_select__2NwCG.index-module_active__zruap {\n  border: 1px solid #40a9ff;\n}\n.index-module_select__2NwCG > span {\n  display: block;\n  position: absolute;\n  top: 2px;\n  right: 9px;\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n";
+	var css_248z$3 = ".index-module_common_font__niHsZ{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__COYLB{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_select__2NwCG{border:1px solid #888;border-radius:4px;height:28px;line-height:28px;margin:0 auto;position:relative;transition:all .3s;width:100%}.index-module_select__2NwCG>.index-module_value__4778I{bottom:0;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:6px;overflow:hidden;position:absolute;right:21px;text-align:center;text-align:left;text-overflow:ellipsis;top:0;white-space:nowrap}.index-module_select__2NwCG.index-module_active__zruap,.index-module_select__2NwCG:hover{border:1px solid #40a9ff}.index-module_select__2NwCG>span{display:block;font-size:12px;height:12px;position:absolute;right:9px;top:2px;width:12px}";
 	var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","active":"index-module_active__zruap"};
 	styleInject(css_248z$3);
 
 	var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
-	var css_248z$2 = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  transition: all 0.3s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
+	var css_248z$2 = ".index-module_common_font__Sz-yv{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__MHvJv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_options__BzSRC{background-color:#fff;box-shadow:2px 0 7px -1px rgba(0,0,0,.25);color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;left:100px;overflow:hidden;position:absolute;text-align:center;text-align:left;text-overflow:ellipsis;top:28px;transition:all .3s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;white-space:nowrap;width:86px}.index-module_options__BzSRC>.index-module_option__7PE8z{cursor:pointer;height:28px;line-height:28px;padding-left:6px;transition:all .2s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_options__BzSRC>.index-module_option__7PE8z:hover{background-color:#f5f5f5}.index-module_options__BzSRC>.index-module_option__7PE8z.index-module_active__Xn-PG{background-color:#e9f6fe;font-weight:400}";
 	var styles = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 	styleInject(css_248z$2);
 
@@ -39866,6 +41634,13 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
+	var fileInput = createElement("input");
+	fileInput.style.display = "none";
+	function initDom() {
+	    (document.body || document.getElementsByTagName("body")[0]).appendChild(fileInput);
+	    window.removeEventListener("load", initDom);
+	}
+	window.addEventListener("load", initDom);
 	var fullBtnId = createId();
 	var headerTabsBtns = {
 	    open: {
@@ -39873,11 +41648,43 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "打开",
 	            html: "&#xe65e;",
-	            title: "打开文件"
+	            title: "打开文件",
+	            click: function (app) {
+	                return __awaiter(this, void 0, void 0, function () {
+	                    var fileSuffixList, accpet;
+	                    var _this = this;
+	                    return __generator(this, function (_a) {
+	                        fileSuffixList = app.getReader().supportFileSuffix();
+	                        if (fileSuffixList.length === 0) {
+	                            throw new Error("没有可以支持的阅读解析器");
+	                        }
+	                        accpet = fileSuffixList.join(",");
+	                        fileInput.type = "file";
+	                        fileInput.accept = accpet;
+	                        fileInput.onchange = function (event) { return __awaiter(_this, void 0, void 0, function () {
+	                            var file;
+	                            return __generator(this, function (_a) {
+	                                file = fileInput.files[0];
+	                                fileInput.value = "";
+	                                app.getReader().loadFile({
+	                                    name: file.name,
+	                                    path: createBlobUrlByFile(file)
+	                                });
+	                                console.log(event);
+	                                console.log("触发...", file.name);
+	                                return [2 /*return*/];
+	                            });
+	                        }); };
+	                        fileInput.dispatchEvent(new MouseEvent("click"));
+	                        return [2 /*return*/];
+	                    });
+	                });
+	            }
 	        }
 	    },
 	    save: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "保存",
 	            html: "&#xe65c;",
@@ -39886,6 +41693,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    saveAs: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "另存为",
 	            html: "&#xe65c;",
@@ -39894,6 +41702,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    print: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "打印",
 	            html: "&#xe65d;",
@@ -39902,6 +41711,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    jump: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            width: 80,
 	            render: function (app, nodeInfo, parent) {
@@ -39914,6 +41724,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    select: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "选择",
 	            title: "选择",
@@ -39922,6 +41733,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    move: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "移动",
 	            title: "移动",
@@ -39930,6 +41742,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    ActualSize: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "实际大小",
 	            title: "实际大小",
@@ -39938,6 +41751,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    SuitableWidth: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "适合宽度",
 	            title: "适合宽度",
@@ -39946,6 +41760,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    SuitablePage: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            text: "适合页面",
 	            title: "适合页面",
@@ -39954,8 +41769,10 @@ var bkDocReader = (function (exports) {
 	    },
 	    narrow: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            html: "&#xe67b;",
+	            needReader: true,
 	            title: "缩小",
 	            width: 24,
 	            className: styles$3.toolIconBtn
@@ -39963,6 +41780,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    scale: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            title: "缩放比率",
 	            width: 82,
@@ -39976,6 +41794,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    enlarge: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            html: "&#xe65a;",
 	            title: "放大",
@@ -39985,6 +41804,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    find: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            html: "&#xe664;",
 	            title: "查找",
@@ -39993,6 +41813,7 @@ var bkDocReader = (function (exports) {
 	    },
 	    full: {
 	        type: "default",
+	        needReader: true,
 	        nodeInfo: {
 	            html: "&#xe665;",
 	            title: "全屏",
@@ -40061,18 +41882,18 @@ var bkDocReader = (function (exports) {
 	                headerTabsBtns.save,
 	                headerTabsBtns.saveAs,
 	                headerTabsBtns.print,
-	                { type: "separate" },
+	                { type: "separate", needReader: true },
 	                headerTabsBtns.jump,
 	                headerTabsBtns.select,
 	                headerTabsBtns.move,
 	                headerTabsBtns.ActualSize,
 	                headerTabsBtns.SuitableWidth,
 	                headerTabsBtns.SuitablePage,
-	                { type: "separate" },
+	                { type: "separate", needReader: true },
 	                headerTabsBtns.scale,
 	                headerTabsBtns.narrow,
 	                headerTabsBtns.enlarge,
-	                { type: "separate" },
+	                { type: "separate", needReader: true },
 	                headerTabsBtns.find,
 	                headerTabsBtns.full,
 	                headerTabsBtns.preferenc,
@@ -40150,7 +41971,7 @@ var bkDocReader = (function (exports) {
 	    components: {
 	        "ui-app": AppUi
 	    },
-	    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
+	    template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
 	    initData: function () {
 	        return {
 	            show: true,
@@ -40171,6 +41992,31 @@ var bkDocReader = (function (exports) {
 	        }
 	    }
 	});
+	var ReaderImpl = /** @class */ (function () {
+	    function ReaderImpl(_uiAppInterface) {
+	        this._uiAppInterface = _uiAppInterface;
+	    }
+	    ReaderImpl.prototype.loadFile = function (file) {
+	        debugger;
+	        return this._uiAppInterface.getReader().loadFile(file);
+	    };
+	    ReaderImpl.prototype.currentParser = function () {
+	        return this._uiAppInterface.getReader().currentParser();
+	    };
+	    ReaderImpl.prototype.supportFileSuffix = function () {
+	        var parserList = this._uiAppInterface.getReader().getParserList();
+	        var result = [];
+	        for (var i = 0; i < parserList.length; i++) {
+	            var fileSuffixList = parserList[i].support().fileSuffix;
+	            result.push.apply(result, fileSuffixList);
+	        }
+	        return arrayuUique(result);
+	    };
+	    ReaderImpl.prototype.attach = function (parser) {
+	        this._uiAppInterface.getReader().attachParser(parser);
+	    };
+	    return ReaderImpl;
+	}());
 	var AppImpl = /** @class */ (function () {
 	    function AppImpl(_initOptions) {
 	        var _this = this;
@@ -40237,6 +42083,8 @@ var bkDocReader = (function (exports) {
 	            _this.update(defaultOptions);
 	            _this.update(_this._initOptions);
 	            _this._appComponent.attach(_this._attachEle);
+	            _this._uiAppInterface = _this._appComponent.ref("ref-app");
+	            _this._readerInterface = new ReaderImpl(_this._uiAppInterface);
 	        };
 	        /**
 	         * 更新显示
@@ -40373,6 +42221,9 @@ var bkDocReader = (function (exports) {
 	            this._createFontFaceStyle();
 	        }
 	    }
+	    AppImpl.prototype.getReader = function () {
+	        return this._readerInterface;
+	    };
 	    AppImpl.prototype.getRootEle = function () {
 	        return this._attachEle;
 	    };
@@ -40392,10 +42243,10 @@ var bkDocReader = (function (exports) {
 	    return AppImpl;
 	}());
 
-	var css_248z$1 = ".iconfont {\n  font-family: \"iconfont\" !important;\n  font-size: 16px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n";
+	var css_248z$1 = ".iconfont{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:iconfont!important;font-size:16px;font-style:normal}";
 	styleInject(css_248z$1);
 
-	var css_248z = ".clearfix:after {\n  content: \".\";\n  display: block;\n  height: 0;\n  clear: both;\n  visibility: hidden;\n}\n.clearfix {\n  *zoom: 1;\n}\n";
+	var css_248z = ".clearfix:after{clear:both;content:\".\";display:block;height:0;visibility:hidden}.clearfix{*zoom:1}";
 	styleInject(css_248z);
 
 	var App = AppImpl;
@@ -40408,4 +42259,3 @@ var bkDocReader = (function (exports) {
 	return exports;
 
 })({});
-//# sourceMappingURL=bkDocReader.js.map

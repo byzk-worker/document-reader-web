@@ -1,4 +1,3 @@
-import { dom, id } from "./utils";
 import { Component } from "san";
 
 /**
@@ -37,18 +36,9 @@ export interface TabBtnGroupConfig {
  */
 export interface NodeInfo {
   /**
-   * 将页面内的元素添加至组件内部, 如有此项，其他参数将全部失效
+   * 是否显示, 默认显示
    */
-  // el?: {
-  //   /**
-  //    * 将id对应id名称的元素移动到按钮组内
-  //    */
-  //   id?: string;
-  //   /**
-  //    * html文本
-  //    */
-  //   html?: string;
-  // };
+  isShow?(app: AppInterface): void;
   /**
    * 按钮Id
    */
@@ -191,6 +181,7 @@ export interface WebFontConfig {
 export interface ToolInfo {
   type: "default" | "separate";
   nodeInfo?: NodeInfo;
+  needReader?: true;
 }
 
 /**
@@ -308,6 +299,81 @@ export interface AppInterface {
   getNowData(expr: "tabPages.btnGroup.btns"): NodeInfo[] | undefined;
   getNowData(expr: "header.toolbars"): ToolbarConfig[] | undefined;
   getNowData(expr: "sidebars.left.toolbars"): ToolbarConfig[] | undefined;
+
+  getReader(): ReaderInterface;
+}
+
+export interface ReaderInterface {
+  /**
+   * 附加一个解析器
+   * @param parser 解析器
+   */
+  attach(parser: ReaderParserConstructor): void;
+  /**
+   * 获取支持的文件后缀
+   * @returns 文件后缀列表
+   */
+  supportFileSuffix(): string[];
+  /**
+   * 当前解析器
+   */
+  currentParser(): ReaderParserInterface | undefined;
+  /**
+   * 加载文件
+   * @param file 要加载的文件
+   * @throws {Error} 加载失败返回异常
+   */
+  loadFile(file: FileInfo): Promise<void>;
+}
+
+export interface ReaderParserSupport {
+  /**
+   * 是否支持当前浏览器
+   * @returns 是/否
+   */
+  nowBrowser: boolean;
+  /**
+   * 支持的文件后缀
+   * @returns 文件后缀列表，例如: ['pdf']
+   */
+  fileSuffix: string[];
+  /**
+   * 是否支持此文件的加载
+   * @param file 要加载的文件
+   */
+  isSupportFile(file: FileInfo): boolean;
+}
+
+export interface ReaderParserConstructor {
+  new (app: AppInterface): ReaderParserInterface;
+  /**
+   * 当前支持项
+   */
+  support(): ReaderParserSupport;
+}
+
+export interface FileInfo {
+  name: string;
+  path: string;
+}
+
+export interface ReaderParserInterface {
+  /**
+   * 将阅读器内容附加到dom元素
+   * @param domEle dom元素节点
+   */
+  attachToEle?(domEle: HTMLDivElement): void;
+  /**
+   * 将阅读器内容附加到san组件节点上
+   * @param paremtComponent san组件节点
+   */
+  attachToSanComponent?(paremtComponent: Component);
+  /**
+   * 加载文件
+   * @param file 要加载的文件
+   * @throws {Error} 加载失败返回异常
+   */
+  loadFile(file: FileInfo): Promise<void>;
 }
 
 /**

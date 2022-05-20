@@ -5,6 +5,18 @@ import styles from "./index.module.less";
 import ToolJump from "./components/ToolJump";
 import ToolScale from "./components/ToolScale";
 
+const fileInput = dom.createElement("input") as HTMLInputElement;
+fileInput.style.display = "none";
+
+function initDom() {
+  (document.body || document.getElementsByTagName("body")[0]).appendChild(
+    fileInput
+  );
+  window.removeEventListener("load", initDom);
+}
+
+window.addEventListener("load", initDom);
+
 const fullBtnId = id.createId();
 
 const headerTabsBtns = {
@@ -14,10 +26,32 @@ const headerTabsBtns = {
       text: "打开",
       html: "&#xe65e;",
       title: "打开文件",
+      async click(app) {
+        const fileSuffixList = app.getReader().supportFileSuffix();
+        if (fileSuffixList.length === 0) {
+          throw new Error("没有可以支持的阅读解析器");
+        }
+
+        const accpet = fileSuffixList.join(",");
+        fileInput.type = "file";
+        fileInput.accept = accpet;
+        fileInput.onchange = async (event) => {
+          const file = fileInput.files[0];
+          fileInput.value = "";
+          app.getReader().loadFile({
+            name: file.name,
+            path: dom.createBlobUrlByFile(file),
+          });
+          console.log(event);
+          console.log("触发...", file.name);
+        };
+        fileInput.dispatchEvent(new MouseEvent("click"));
+      },
     },
   } as ToolInfo,
   save: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "保存",
       html: "&#xe65c;",
@@ -26,6 +60,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   saveAs: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "另存为",
       html: "&#xe65c;",
@@ -34,6 +69,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   print: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "打印",
       html: "&#xe65d;",
@@ -42,6 +78,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   jump: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       width: 80,
       render(app, nodeInfo, parent): HTMLElement | Component {
@@ -54,6 +91,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   select: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "选择",
       title: "选择",
@@ -62,6 +100,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   move: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "移动",
       title: "移动",
@@ -70,6 +109,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   ActualSize: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "实际大小",
       title: "实际大小",
@@ -78,6 +118,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   SuitableWidth: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "适合宽度",
       title: "适合宽度",
@@ -86,6 +127,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   SuitablePage: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       text: "适合页面",
       title: "适合页面",
@@ -94,8 +136,10 @@ const headerTabsBtns = {
   } as ToolInfo,
   narrow: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       html: "&#xe67b;",
+      needReader: true,
       title: "缩小",
       width: 24,
       className: styles.toolIconBtn,
@@ -110,6 +154,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   scale: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       title: "缩放比率",
       width: 82,
@@ -123,6 +168,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   enlarge: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       html: "&#xe65a;",
       title: "放大",
@@ -132,6 +178,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   find: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       html: "&#xe664;",
       title: "查找",
@@ -140,6 +187,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   full: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       html: "&#xe665;",
       title: "全屏",
@@ -209,18 +257,18 @@ export const defaultData = {
         headerTabsBtns.save,
         headerTabsBtns.saveAs,
         headerTabsBtns.print,
-        { type: "separate" },
+        { type: "separate", needReader: true },
         headerTabsBtns.jump,
         headerTabsBtns.select,
         headerTabsBtns.move,
         headerTabsBtns.ActualSize,
         headerTabsBtns.SuitableWidth,
         headerTabsBtns.SuitablePage,
-        { type: "separate" },
+        { type: "separate", needReader: true },
         headerTabsBtns.scale,
         headerTabsBtns.narrow,
         headerTabsBtns.enlarge,
-        { type: "separate" },
+        { type: "separate", needReader: true },
         headerTabsBtns.find,
         headerTabsBtns.full,
         headerTabsBtns.preferenc,

@@ -1,0 +1,8 @@
+<fragment>
+    <div s-if="html" class="{{className || '<%= styles.icon %>'}}">
+        <span class="iconfont">{{html | raw}}</span>
+    </div>
+    <div s-if="text" class="{{className || '<%= styles.text %>'}}">
+        <span>{{text}}</span>
+    </div>
+</fragment>

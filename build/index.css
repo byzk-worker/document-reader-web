@@ -76,6 +76,8 @@
   transition: all 0.3s;
   overflow: hidden;
   position: relative;
+  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);
+  z-index: 2;
 }
 .index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {
   height: 50px;
@@ -133,24 +135,36 @@
   cursor: pointer;
   overflow: hidden;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_text__XqzxF {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_text__XqzxF,
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_icon__MnfZO {
+  color: #2752e7;
+}
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_text__XqzxF {
   font-size: 12px;
   text-align: center;
   font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
   font-weight: 400;
   color: #fff;
-  color: #333;
+  color: #444c5e;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO {
   width: 24px;
   height: 24px;
   border-radius: 24px;
   margin: 4px auto 2px auto;
   text-align: center;
+  color: #444c5e;
 }
-.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {
+.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO > span {
   font-size: 24px;
 }
+
+.index-module_reader__8JtQW {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 
 .index-module_common_font__rsmEw {
   font-size: 12px;
@@ -168,7 +182,7 @@
   position: relative;
   height: 100%;
   overflow: hidden;
-  background: #f5f5f5;
+  background: #EFF1F3;
   transition: all 0.3;
 }
 .index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA {
@@ -226,7 +240,7 @@
   font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
   font-weight: 400;
   color: #fff;
-  color: #c4c4c4;
+  color: #444C5E;
 }
 .index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e {
   height: 20px;
@@ -237,7 +251,7 @@
   font-size: 20px;
 }
 .index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc {
-  background-color: #e6e6e6;
+  background-color: #FFFFFF;
 }
 .index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_icon__Zsx8e > span,
 .index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_desc__MkXk0 > span {
@@ -247,7 +261,7 @@
   width: 160px;
   height: 100%;
   overflow: hidden;
-  background-color: #e6e6e6;
+  background-color: #FFFFFF;
   float: left;
   position: relative;
   transition: all 0.3s;
@@ -277,11 +291,12 @@
   top: 50%;
 }
 
+
 #index-module_app__DAOOy {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #F5F7F9;
+  background: #eff1f3;
   overflow: hidden;
 }
 #index-module_header__NtWW5 {
@@ -292,8 +307,17 @@
   height: 100%;
   float: left;
 }
+#index-module_sidebarRight__2F13Z {
+  height: 100%;
+  float: right;
+}
 #index-module_content__m20ZT {
   width: 100%;
+}
+#index-module_reader__xIj2- {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .index-module_bookmark__1nGVp {
@@ -438,6 +462,10 @@
 .index-module_toolIconBtn__99EQS {
   height: 100%;
   line-height: 50px;
+  color: #444c5e;
+}
+.index-module_toolIconBtn__99EQS:hover {
+  color: #2752e7;
 }
 .index-module_toolIconBtn__99EQS > span {
   font-size: 24px;
@@ -565,166 +593,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-@font-face {
-  font-family: "iconfont"; /* Project id 3350382 */
-  src: url('iconfont.woff2?t=1652492852244') format('woff2'),
-       url('iconfont.woff?t=1652492852244') format('woff'),
-       url('iconfont.ttf?t=1652492852244') format('truetype');
-}
-
-.iconfont {
-  font-family: "iconfont" !important;
-  font-size: 16px;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.icon-shouxuanxiang:before {
-  content: "\e666";
-}
-
-.icon-quanping:before {
-  content: "\e665";
-}
-
-.icon-chazhao1:before {
-  content: "\e664";
-}
-
-.icon-shiheyemian:before {
-  content: "\e663";
-}
-
-.icon-heshikuandu:before {
-  content: "\e662";
-}
-
-.icon-shijidaxiao1:before {
-  content: "\e661";
-}
-
-.icon-yidong:before {
-  content: "\e660";
-}
-
-.icon-yidong1:before {
-  content: "\e65f";
-}
-
-.icon-dayin1:before {
-  content: "\e65e";
-}
-
-.icon-dayin:before {
-  content: "\e65d";
-}
-
-.icon-baocun:before {
-  content: "\e65c";
-}
-
-.icon-lingcunwei:before {
-  content: "\e65b";
-}
-
-.icon-cha:before {
-  content: "\e659";
-}
-
-.icon-zuixiaohua:before {
-  content: "\e657";
-}
-
-.icon-xiala:before {
-  content: "\e656";
-}
-
-.icon-xiala-copy:before {
-  content: "\e71d";
-}
-
-.icon-caidan:before {
-  content: "\e655";
-}
-
-.icon-suolvetu:before {
-  content: "\e651";
-}
-
-.icon-suolvetu-copy:before {
-  content: "\e71c";
-}
-
-.icon-zhushiliebiao:before {
-  content: "\e650";
-}
-
-.icon-zhushiliebiao-copy:before {
-  content: "\e71b";
-}
-
-.icon-qianzhangliebiao:before {
-  content: "\e64f";
-}
-
-.icon-qianzhangliebiao-copy:before {
-  content: "\e71a";
-}
-
-.icon-zhang:before {
-  content: "\e610";
-}
-
-.icon-tiaozhuanweiye:before {
-  content: "\e690";
-}
-
-.icon-tiaozhuanweiye-copy:before {
-  content: "\e719";
-}
-
-.icon-shangyiye:before {
-  content: "\e615";
-}
-
-.icon-shangyiye-copy:before {
-  content: "\e718";
-}
-
-.icon-icon_rotate:before {
-  content: "\e61d";
-}
-
-.icon-line-barcodeboxtiaoxingma-02:before {
-  content: "\e717";
-}
-
-.icon-wenzishuiyin:before {
-  content: "\e64c";
-}
-
-.icon-cuowu:before {
-  content: "\e600";
-}
-
-.icon-jiajianzujianjiahao:before {
-  content: "\e64d";
-}
-
-.icon-shuiyin:before {
-  content: "\e603";
-}
-
-.icon-suoxiao:before {
-  content: "\e67b";
-}
-
-.icon-fangda:before {
-  content: "\e65a";
-}
-
 
 .clearfix:after {
   content: ".";

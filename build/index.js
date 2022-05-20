@@ -2,6 +2,53 @@ import { defineComponent, DataTypes } from 'san';
 import { template as template$6 } from 'lodash';
 import classNames from 'classnames';
 
+function ieVersion() {
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+    var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+    var isIE11 = userAgent.indexOf("Trident") > -1 && userAgent.indexOf("rv:11.0") > -1; //判断是否IE11浏览器
+    if (isIE) {
+        var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+        reIE.test(userAgent);
+        var fIEVersion = parseFloat(RegExp["$1"]);
+        if (fIEVersion == 7) {
+            return 7;
+        }
+        else if (fIEVersion == 8) {
+            return 8;
+        }
+        else if (fIEVersion == 9) {
+            return 9;
+        }
+        else if (fIEVersion == 10) {
+            return 10;
+        }
+        else {
+            return 6; //IE版本<=7
+        }
+    }
+    else if (isEdge) {
+        return "edge"; //edge
+    }
+    else if (isIE11) {
+        return 11; //IE11
+    }
+    else {
+        return -1; //不是ie浏览器
+    }
+}
+function lessThan(ieNumber) {
+    var version = ieVersion();
+    if (version === -1 || version === "edge") {
+        return false;
+    }
+    return version < ieNumber;
+}
+function isIe() {
+    var version = ieVersion();
+    return version !== -1 && version !== "edge";
+}
+
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -27,6 +74,44 @@ var __assign = function() {
     };
     return __assign.apply(this, arguments);
 };
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
 
 /**
  * 创建唯一id
@@ -142,7 +227,7 @@ function handleNodeInfo(nodeInfo) {
     nodeInfo = __assign(__assign({}, nodeInfo), { renderId: renderId, evenIdList: eventIdList });
     return JSON.parse(JSON.stringify(nodeInfo));
 }
-function nodeRender(renderId, app, parent) {
+function nodeRender(renderId, app, parent, renderToDom) {
     if (!renderId) {
         throw new Error("未获取到renderId");
     }
@@ -150,7 +235,17 @@ function nodeRender(renderId, app, parent) {
     if (!nodeInfo || !nodeInfo.render) {
         throw new Error("获取节点render方法失败");
     }
-    return nodeInfo.render(app, nodeInfo, parent);
+    var ele = nodeInfo.render(app, nodeInfo, parent);
+    if (renderToDom) {
+        if (typeof ele.attach !== "function") {
+            renderToDom.innerHTML = "";
+            renderToDom.appendChild(ele);
+        }
+        else {
+            ele.attach(renderToDom);
+        }
+    }
+    return ele;
 }
 /**
  * 节点事件调用
@@ -208,6 +303,25 @@ function nodeRenderDestroyAll() {
     _nodeRenderMap = {};
 }
 
+function createBlobUrlByFile(file) {
+    if (window.createObjectURL) {
+        return window.createObjectURL(file);
+    }
+    else if (window.URL.createObjectURL) {
+        return window.URL.createObjectURL(file);
+    }
+    else if (window.webkitURL) {
+        return window.webkitURL.createObjectURL(file);
+    }
+    return "";
+}
+function createElement(targetName, name) {
+    if (name === void 0) { name = ""; }
+    if (isIe()) {
+        return document.createElement("<".concat(targetName, " name=\"").concat(name, "\"></").concat(targetName, ">"));
+    }
+    return document.createElement(targetName);
+}
 function styleInject(css, id) {
     var head = document.head || document.getElementsByTagName("head")[0];
     var style = document.createElement("style");
@@ -402,6 +516,8 @@ function getBoundingClientRect(ele) {
 
 var dom = /*#__PURE__*/Object.freeze({
     __proto__: null,
+    createBlobUrlByFile: createBlobUrlByFile,
+    createElement: createElement,
     styleInject: styleInject,
     full: full,
     exitFullscreen: exitFullscreen,
@@ -454,37 +570,39 @@ function dataStoreRemove(key) {
     return data;
 }
 
-function lessThan(ieNumber) {
-    if (navigator.appName == "Microsoft Internet Explorer" &&
-        navigator.appVersion.match(/7./i) == "7.") {
-        return 7 < ieNumber;
+function arrayuUique(array) {
+    var tempMap = {};
+    for (var i = 0; i < array.length; i++) {
+        tempMap[array[i]] = true;
     }
-    else if (navigator.appName == "Microsoft Internet Explorer" &&
-        navigator.appVersion.match(/8./i) == "8.") {
-        return 6 < ieNumber;
+    var res = [];
+    for (var key in tempMap) {
+        res.push(key);
     }
-    else if (navigator.appName == "Microsoft Internet Explorer" &&
-        navigator.appVersion.match(/9./i) == "9.") {
-        return 9 < ieNumber;
-    }
-    else if (navigator.appName == "Microsoft Internet Explorer") {
-        return 6 < ieNumber;
-    }
-    return false;
+    return res;
 }
 
-var styles$9 = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+var styles$c = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
 
-var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont icon-caidan\">\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <!-- <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" -->\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-if=\"fns.showTool(toolInfo)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 var headerToolMarginRight = 16;
 var headerToolPanelHeight = 50;
 
+var html$a = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
+
+var ToolBtn = defineComponent({
+    template: template$6(html$a)({ styles: styles$c })
+});
+
 var template$5 = template$6(htmlTemplate)({
-    styles: styles$9
+    styles: styles$c
 });
 var Header = defineComponent({
     template: template$5,
+    components: {
+        "ui-toolbtn": ToolBtn
+    },
     initData: function () {
         return {
             selectTabKey: 0,
@@ -505,10 +623,9 @@ var Header = defineComponent({
         eventUtil.removeHandler(window, "resize", this.events.resize);
     },
     updated: function () {
-        var _this = this;
-        setTimeout(function () {
-            _this.dispatch("app::resize", {});
-        }, 500);
+        // setTimeout(() => {
+        this.dispatch("app::resize", {});
+        // }, 300);
     },
     computed: {
         showControlBreak: function () {
@@ -572,6 +689,29 @@ var Header = defineComponent({
         }
     },
     fns: {
+        showToolBar: function (toolbarConfig) {
+            if (!toolbarConfig) {
+                return false;
+            }
+            if (!toolbarConfig.tools || toolbarConfig.tools.length === 0) {
+                return false;
+            }
+            return true;
+        },
+        showTool: function (toolInfo) {
+            var _a, _b;
+            if (toolInfo.type !== "separate" && (!toolInfo || !toolInfo.nodeInfo)) {
+                return false;
+            }
+            var appInterface = getApp(this.data.get("appId"));
+            if (toolInfo.needReader && !((_a = appInterface.getReader()) === null || _a === void 0 ? void 0 : _a.currentParser())) {
+                return false;
+            }
+            if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b.isShow) {
+                return toolInfo.nodeInfo.isShow(appInterface);
+            }
+            return true;
+        },
         showControlBreakWrapper: function (show, isNext) {
             if (!show || show.length != 2 || (!show[0] && !show[1])) {
                 this.data.set("marginLeft", 0);
@@ -638,23 +778,21 @@ var Header = defineComponent({
             var expand = this.data.get("expand");
             this.data.set("expand", !expand);
         },
-        handleRender: function (renderId) {
-            if (!renderId) {
+        handleRender: function (toolInfo, index) {
+            var toolEle = this.ref("ref-tool-" + index);
+            if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
                 return undefined;
             }
-            var toolEle = this.ref("ref-tool-" + renderId);
-            if (!toolEle) {
+            if (toolInfo.nodeInfo.renderId) {
+                nodeRender(toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
                 return undefined;
             }
-            var appId = this.data.get("appId");
-            var ele = nodeRender(renderId, getApp(appId), this);
-            if (typeof ele.attach !== "function") {
-                toolEle.innerHTML = "";
-                toolEle.appendChild(ele);
+            if (!toolInfo.nodeInfo.evenIdList ||
+                toolInfo.nodeInfo.evenIdList.length === 0) {
+                return undefined;
             }
-            else {
-                ele.attach(toolEle);
-            }
+            dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+            return undefined;
         },
         prevAndNextToolClick: function (isNext) {
             var toolsPanelWidth = this.data.get("toolsPanelWidth");
@@ -681,12 +819,134 @@ var Header = defineComponent({
     }
 });
 
-var html$6 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <div s-for=\"toolbar, index in toolbars\" class=\"<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar)\">\n                <div class=\"<%= styles.icon %>\">\n                    <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                </div>\n                <div class=\"<%= styles.desc %>\">\n                    <span>{{toolbar.text}}</span>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+var html$9 = "<div class=\"<%= styles.reader %>\"></div>";
 
-var styles$8 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
+var styles$b = {"reader":"index-module_reader__8JtQW"};
+
+var html$8 = "<div>阅读器</div>";
+
+var styles$a = {};
+
+var ReaderUi = defineComponent({
+    template: template$6(html$8)({ styles: styles$a })
+});
+
+// pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+var PdfjsReaderImpl = /** @class */ (function () {
+    function PdfjsReaderImpl() {
+    }
+    PdfjsReaderImpl.support = function () {
+        return PdfjsReaderImpl._support;
+    };
+    PdfjsReaderImpl.prototype.loadFile = function (file) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                debugger;
+                return [2 /*return*/];
+            });
+        });
+    };
+    PdfjsReaderImpl.prototype.attachToSanComponent = function (paremtComponent) {
+        this._readerUi = new ReaderUi({
+            owner: paremtComponent,
+            source: "<ui-pdfjs-reader></ui-pdfjs-reader>"
+        });
+        this._readerUi.attach(paremtComponent.el);
+        this._readerUiInterface = this._readerUi;
+    };
+    PdfjsReaderImpl._supportNowBrowser = function () {
+        return !isIe() && typeof ArrayBuffer !== "undefined";
+    };
+    PdfjsReaderImpl._support = {
+        nowBrowser: PdfjsReaderImpl._supportNowBrowser(),
+        fileSuffix: [".pdf"],
+        isSupportFile: function (file) {
+            return file.name.endsWith(".pdf") && typeof file.path !== "undefined";
+        }
+    };
+    return PdfjsReaderImpl;
+}());
+
+var defaultReaderConstructor = PdfjsReaderImpl;
+var Reader = defineComponent({
+    template: template$6(html$9)({ styles: styles$b }),
+    attached: function () {
+        this.attachParser(defaultReaderConstructor);
+    },
+    loadFile: function (file) {
+        var parserList = this.getParserList();
+        debugger;
+        var currentParser;
+        for (var i = 0; i < parserList.length; i++) {
+            var Parser = parserList[i];
+            if (Parser.support().isSupportFile(file)) {
+                currentParser = new Parser(getApp(this.data.get("appId")));
+                break;
+            }
+        }
+        if (!currentParser) {
+            throw new Error("没有支持的解析器");
+        }
+        currentParser.loadFile(file);
+    },
+    currentParser: function () {
+        return undefined;
+    },
+    attachParser: function (service) {
+        var services = this.getParserList();
+        if (this.readerServiceIsHave(service) || !service.support().nowBrowser) {
+            return;
+        }
+        // if (service.attachToSanComponent) {
+        //   service.attachToSanComponent(this);
+        // } else if (service.attachToEle) {
+        //   service.attachToEle(this.el! as any);
+        // } else {
+        //   throw new Error("组件未实现attachToEle或attachToSanComponent方法");
+        // }
+        services.push(service);
+    },
+    disposeParser: function (service) {
+        var services = this.getParserList();
+        if (!services) {
+            return;
+        }
+        for (var i = 0; i < services.length; i++) {
+            if (services[i] === service) {
+                services.splice(i, 1);
+                return;
+            }
+        }
+    },
+    getReaderrServiceId: function () {
+        return this.data.get("appId") + "_reader";
+    },
+    getParserList: function () {
+        var parserList = dataStoreGet(this.getReaderrServiceId());
+        if (!parserList) {
+            parserList = [];
+            dataStoreSet(this.getReaderrServiceId(), parserList);
+            this.attachParser(defaultReaderConstructor);
+        }
+        return parserList;
+    },
+    readerServiceIsHave: function (service) {
+        var services = this.getParserList();
+        for (var i = 0; i < services.length; i++) {
+            if (services[i] === service) {
+                return true;
+            }
+        }
+        return false;
+    }
+});
+
+var html$7 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <div s-for=\"toolbar, index in toolbars\" class=\"<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar)\">\n                <div class=\"<%= styles.icon %>\">\n                    <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                </div>\n                <div class=\"<%= styles.desc %>\">\n                    <span>{{toolbar.text}}</span>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+
+var styles$9 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
 
 var SlidebarLeft = defineComponent({
-    template: template$6(html$6)({ styles: styles$8 }),
+    template: template$6(html$7)({ styles: styles$9 }),
     initData: function () {
         return {
             expand: false
@@ -724,7 +984,15 @@ var SlidebarLeft = defineComponent({
     }
 });
 
-var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","content":"index-module_content__m20ZT"};
+var html$6 = "<div>右侧</div>";
+
+var styles$8 = {};
+
+var SlidebarRight = defineComponent({
+    template: template$6(html$6)({ styles: styles$8 })
+});
+
+var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
 
 var styles$6 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
 
@@ -850,10 +1118,9 @@ var TabPages = defineComponent({
     },
     template: template$1,
     attached: function () {
-        var _this = this;
-        setTimeout(function () {
-            _this.dispatch("app::resize", {});
-        }, 500);
+        // setTimeout(() => {
+        this.dispatch("app::resize", {});
+        // }, 300);
     },
     computed: {
         classNames: function () {
@@ -881,17 +1148,20 @@ var TabPages = defineComponent({
     }
 });
 
-var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\"></div>\n      <div id=\"").concat(styles$7.sidebarRight, "\"></div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var isFirst = true;
+var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$7.sidebarRight, "\">\n        <ui-slide-right appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\">\n        <ui-reader s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.reader||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
         "ui-header": Header,
-        "ui-slide-left": SlidebarLeft
+        "ui-slide-left": SlidebarLeft,
+        "ui-slide-right": SlidebarRight,
+        "ui-reader": Reader
     },
     template: template,
     messages: {
         "app::resize": function () {
-            this.events.resize();
+            this.events.resize(this.data.get("contentHeight"));
         }
     },
     attached: function () {
@@ -910,19 +1180,40 @@ var AppUi = defineComponent({
             eventUtil.stopPropagation(event);
             eventUtil.preventDefault(event);
         },
-        resize: function () {
+        resize: function (current) {
+            var _this = this;
             if (!this.ref) {
                 return;
             }
-            var headerEle = this.ref("header");
-            var fotterEle = this.ref("fotter");
-            var root = this.el;
-            if (!headerEle || !fotterEle || !root) {
-                return;
-            }
-            var contentHeight = root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
-            this.data.set("contentHeight", contentHeight);
+            var i = 0;
+            var intervalId = setInterval(function () {
+                var headerEle = _this.ref("header");
+                var fotterEle = _this.ref("fotter");
+                var root = _this.el;
+                if (!headerEle || !fotterEle || !root) {
+                    return;
+                }
+                var contentHeight = root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
+                var currentContentHeight = _this.data.get("contentHeight");
+                if (currentContentHeight !== contentHeight) {
+                    if (typeof current !== "undefined" && isFirst) {
+                        isFirst = false;
+                        return;
+                    }
+                    _this.data.set("contentHeight", contentHeight);
+                    i = 0;
+                    return;
+                }
+                if (i < 10) {
+                    i++;
+                    return;
+                }
+                clearInterval(intervalId);
+            }, 5);
         }
+    },
+    getReader: function () {
+        return this.ref("ref-reader");
     }
 });
 
@@ -1244,6 +1535,13 @@ var ToolScale = defineComponent({
     }
 });
 
+var fileInput = createElement("input");
+fileInput.style.display = "none";
+function initDom() {
+    (document.body || document.getElementsByTagName("body")[0]).appendChild(fileInput);
+    window.removeEventListener("load", initDom);
+}
+window.addEventListener("load", initDom);
 var fullBtnId = createId();
 var headerTabsBtns = {
     open: {
@@ -1251,11 +1549,43 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "打开",
             html: "&#xe65e;",
-            title: "打开文件"
+            title: "打开文件",
+            click: function (app) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var fileSuffixList, accpet;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        fileSuffixList = app.getReader().supportFileSuffix();
+                        if (fileSuffixList.length === 0) {
+                            throw new Error("没有可以支持的阅读解析器");
+                        }
+                        accpet = fileSuffixList.join(",");
+                        fileInput.type = "file";
+                        fileInput.accept = accpet;
+                        fileInput.onchange = function (event) { return __awaiter(_this, void 0, void 0, function () {
+                            var file;
+                            return __generator(this, function (_a) {
+                                file = fileInput.files[0];
+                                fileInput.value = "";
+                                app.getReader().loadFile({
+                                    name: file.name,
+                                    path: createBlobUrlByFile(file)
+                                });
+                                console.log(event);
+                                console.log("触发...", file.name);
+                                return [2 /*return*/];
+                            });
+                        }); };
+                        fileInput.dispatchEvent(new MouseEvent("click"));
+                        return [2 /*return*/];
+                    });
+                });
+            }
         }
     },
     save: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "保存",
             html: "&#xe65c;",
@@ -1264,6 +1594,7 @@ var headerTabsBtns = {
     },
     saveAs: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "另存为",
             html: "&#xe65c;",
@@ -1272,6 +1603,7 @@ var headerTabsBtns = {
     },
     print: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "打印",
             html: "&#xe65d;",
@@ -1280,6 +1612,7 @@ var headerTabsBtns = {
     },
     jump: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             width: 80,
             render: function (app, nodeInfo, parent) {
@@ -1292,6 +1625,7 @@ var headerTabsBtns = {
     },
     select: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "选择",
             title: "选择",
@@ -1300,6 +1634,7 @@ var headerTabsBtns = {
     },
     move: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "移动",
             title: "移动",
@@ -1308,6 +1643,7 @@ var headerTabsBtns = {
     },
     ActualSize: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "实际大小",
             title: "实际大小",
@@ -1316,6 +1652,7 @@ var headerTabsBtns = {
     },
     SuitableWidth: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "适合宽度",
             title: "适合宽度",
@@ -1324,6 +1661,7 @@ var headerTabsBtns = {
     },
     SuitablePage: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             text: "适合页面",
             title: "适合页面",
@@ -1332,8 +1670,10 @@ var headerTabsBtns = {
     },
     narrow: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             html: "&#xe67b;",
+            needReader: true,
             title: "缩小",
             width: 24,
             className: styles$3.toolIconBtn
@@ -1341,6 +1681,7 @@ var headerTabsBtns = {
     },
     scale: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             title: "缩放比率",
             width: 82,
@@ -1354,6 +1695,7 @@ var headerTabsBtns = {
     },
     enlarge: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             html: "&#xe65a;",
             title: "放大",
@@ -1363,6 +1705,7 @@ var headerTabsBtns = {
     },
     find: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             html: "&#xe664;",
             title: "查找",
@@ -1371,6 +1714,7 @@ var headerTabsBtns = {
     },
     full: {
         type: "default",
+        needReader: true,
         nodeInfo: {
             html: "&#xe665;",
             title: "全屏",
@@ -1439,18 +1783,18 @@ var defaultData = {
                 headerTabsBtns.save,
                 headerTabsBtns.saveAs,
                 headerTabsBtns.print,
-                { type: "separate" },
+                { type: "separate", needReader: true },
                 headerTabsBtns.jump,
                 headerTabsBtns.select,
                 headerTabsBtns.move,
                 headerTabsBtns.ActualSize,
                 headerTabsBtns.SuitableWidth,
                 headerTabsBtns.SuitablePage,
-                { type: "separate" },
+                { type: "separate", needReader: true },
                 headerTabsBtns.scale,
                 headerTabsBtns.narrow,
                 headerTabsBtns.enlarge,
-                { type: "separate" },
+                { type: "separate", needReader: true },
                 headerTabsBtns.find,
                 headerTabsBtns.full,
                 headerTabsBtns.preferenc,
@@ -1520,14 +1864,15 @@ var defaultOptions = {
                 defaultData.sildebarLeftTabs.comment,
                 defaultData.sildebarLeftTabs.thumbnail,
             ]
-        }
+        },
+        right: false
     }
 };
 var App$1 = defineComponent({
     components: {
         "ui-app": AppUi
     },
-    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
+    template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
     initData: function () {
         return {
             show: true,
@@ -1548,6 +1893,31 @@ var App$1 = defineComponent({
         }
     }
 });
+var ReaderImpl = /** @class */ (function () {
+    function ReaderImpl(_uiAppInterface) {
+        this._uiAppInterface = _uiAppInterface;
+    }
+    ReaderImpl.prototype.loadFile = function (file) {
+        debugger;
+        return this._uiAppInterface.getReader().loadFile(file);
+    };
+    ReaderImpl.prototype.currentParser = function () {
+        return this._uiAppInterface.getReader().currentParser();
+    };
+    ReaderImpl.prototype.supportFileSuffix = function () {
+        var parserList = this._uiAppInterface.getReader().getParserList();
+        var result = [];
+        for (var i = 0; i < parserList.length; i++) {
+            var fileSuffixList = parserList[i].support().fileSuffix;
+            result.push.apply(result, fileSuffixList);
+        }
+        return arrayuUique(result);
+    };
+    ReaderImpl.prototype.attach = function (parser) {
+        this._uiAppInterface.getReader().attachParser(parser);
+    };
+    return ReaderImpl;
+}());
 var AppImpl = /** @class */ (function () {
     function AppImpl(_initOptions) {
         var _this = this;
@@ -1614,6 +1984,8 @@ var AppImpl = /** @class */ (function () {
             _this.update(defaultOptions);
             _this.update(_this._initOptions);
             _this._appComponent.attach(_this._attachEle);
+            _this._uiAppInterface = _this._appComponent.ref("ref-app");
+            _this._readerInterface = new ReaderImpl(_this._uiAppInterface);
         };
         /**
          * 更新显示
@@ -1750,6 +2122,9 @@ var AppImpl = /** @class */ (function () {
             this._createFontFaceStyle();
         }
     }
+    AppImpl.prototype.getReader = function () {
+        return this._readerInterface;
+    };
     AppImpl.prototype.getRootEle = function () {
         return this._attachEle;
     };

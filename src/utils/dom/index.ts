@@ -1,3 +1,25 @@
+import { isIe } from "../ie";
+
+export function createBlobUrlByFile(file: File) {
+  if ((window as any).createObjectURL) {
+    return (window as any).createObjectURL(file);
+  } else if (window.URL.createObjectURL) {
+    return window.URL.createObjectURL(file);
+  } else if (window.webkitURL) {
+    return window.webkitURL.createObjectURL(file);
+  }
+  return "";
+}
+
+export function createElement(targetName: string, name: string = ""): any {
+  if (isIe()) {
+    return document.createElement(
+      `<${targetName} name="${name}"></${targetName}>`
+    );
+  }
+  return document.createElement(targetName);
+}
+
 export function styleInject(css: string, id: string) {
   const head = document.head || document.getElementsByTagName("head")[0];
   const style = document.createElement("style");

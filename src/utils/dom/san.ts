@@ -137,7 +137,8 @@ export function handleNodeInfo(nodeInfo: NodeInfo): NodeInfo {
 export function nodeRender(
   renderId: string,
   app: AppInterface,
-  parent: Component
+  parent: Component,
+  renderToDom?: any
 ): HTMLElement | Component {
   if (!renderId) {
     throw new Error("未获取到renderId");
@@ -148,7 +149,17 @@ export function nodeRender(
     throw new Error("获取节点render方法失败");
   }
 
-  return nodeInfo.render(app, nodeInfo, parent);
+  const ele =  nodeInfo.render(app, nodeInfo, parent);
+  if (renderToDom) {
+    if (typeof (ele as any).attach !== "function") {
+      renderToDom.innerHTML = "";
+      renderToDom.appendChild(ele as any);
+    } else {
+      (ele as any).attach(renderToDom);
+    }
+  }
+
+  return ele
 }
 
 /**

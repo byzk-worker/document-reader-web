@@ -32,13 +32,18 @@ console.info("正在编译ts文件...");
 //   path.join(distDir, "dist", "lib"),
 //   ".less"
 // );
-copyFile(
-  resolveFile("configs", "compile", "types.d.ts"),
-  resolveFile("build", "types.d.ts")
-);
-copyFile(
-  resolveFile("configs", "compile", "index.d.ts"),
-  resolveFile("build", "index.d.ts")
+// copyFile(
+//   resolveFile("configs", "compile", "types.d.ts"),
+//   resolveFile("build", "types.d.ts")
+// );
+// copyFile(
+//   resolveFile("configs", "compile", "index.d.ts"),
+//   resolveFile("build", "index.d.ts")
+// );
+copyHasSuffixFileToDest(
+  resolveFile("configs", "compile", "types"),
+  resolveFile("build"),
+  ".d.ts"
 );
 handlePackageJsonFile();
 
@@ -76,8 +81,13 @@ console.info("正在生成typescript文档...");
 //   )} --out ${docsDir} ${resolveFile("src")}`
 // );
 
+const dTsFilesPath = resolveFile("build", "types");
+const fileList = fs
+  .readdirSync(dTsFilesPath)
+  .map((v) => path.join(dTsFilesPath, v));
+
 execNodeModulesBin(
-  `typedoc --out ${docsDir} ${resolveFile("build", "index.d.ts")} ${resolveFile("build", "types.d.ts")}`
+  `typedoc --out ${docsDir} ${resolveFile("build", "index.d.ts")} ${fileList.join(" ")}`
 );
 
 console.log("正在拷贝字体文件...");

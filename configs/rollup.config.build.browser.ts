@@ -144,7 +144,7 @@ export default {
     }),
     typescript(),
     commonjs(),
-    nodeResolve(),
+    nodeResolve({ browser: true, preferBuiltins: true }),
     babel({
       exclude: "node_modules/**", // 防止打包node_modules下的文件
       babelHelpers: "runtime", // 使plugin-transform-runtime生效

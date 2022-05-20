@@ -2,7 +2,7 @@ import { defineComponent, Component } from "san";
 import { AppOptions } from "../../types";
 import { dom } from "../../utils";
 import Header from "../Header";
-import Reader from "../Reader";
+import Reader, {  ReaderUiInterface } from "../Reader";
 import SlidebarLeft from "../SlidebarLeft";
 import SlidebarRight from "../SlidebarRight";
 
@@ -25,7 +25,7 @@ const template = `
         <ui-slide-right appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
       </div>
       <div id="${styles.reader}">
-        <ui-reader appId="{{appId}}" s-bind="{{{...(sidebars.reader||{})}}}"></ui-reader>
+        <ui-reader s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(sidebars.reader||{})}}}"></ui-reader>
       </div>
     </div>
     <div id="${styles.fotter}" s-ref="fotter"></div>
@@ -42,6 +42,10 @@ type AppComponent = Component<DataType> & {
     resize(currentHeight?: number): void;
   };
 };
+
+export interface AppUiInterface {
+  getReader(): ReaderUiInterface;
+}
 
 export default defineComponent<DataType>({
   components: {
@@ -106,5 +110,8 @@ export default defineComponent<DataType>({
         clearInterval(intervalId);
       }, 5);
     },
+  },
+  getReader(this: AppComponent) {
+    return this.ref("ref-reader");
   },
 });
