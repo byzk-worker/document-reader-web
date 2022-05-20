@@ -13,13 +13,12 @@
             </div>
         </div>
         <div class="<%= styles.tabFold %>" title="{{expand ? '收起' : '展开'}}" on-click="events.tabPanExpandClick()">
-            <span class="iconfont">{{expand?'&#xe656;':'&#xe615;' | raw}}</span>
+            <span class="iconfont">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>
         </div>
     </div>
     <div s-ref="tabPanels" class="<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}">
         <div on-click="events.prevAndNextToolClick(false)" class="<%= styles.prevTool %>"
             s-show="fns.showControlBreakWrapper(showControlBreak, false)"></div>
-        <!-- <div s-for="toolbarConfig, i in toolbars" s-show="selectTabKey !== undefined && selectTabKey === i" -->
         <div s-ref="toolsPanel" class="<%= styles.tabPanel %>"
             style="{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;">
             <div class="<%= styles.wrapper %>" s-for="toolInfo in handlePanelTools">

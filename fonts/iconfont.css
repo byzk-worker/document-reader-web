@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3350382 */
-  src: url('iconfont.woff2?t=1652082520777') format('woff2'),
-       url('iconfont.woff?t=1652082520777') format('woff'),
-       url('iconfont.ttf?t=1652082520777') format('truetype');
+  src: url('iconfont.woff2?t=1652492852244') format('woff2'),
+       url('iconfont.woff?t=1652492852244') format('woff'),
+       url('iconfont.ttf?t=1652492852244') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,54 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shouxuanxiang:before {
+  content: "\e666";
+}
+
+.icon-quanping:before {
+  content: "\e665";
+}
+
+.icon-chazhao1:before {
+  content: "\e664";
+}
+
+.icon-shiheyemian:before {
+  content: "\e663";
+}
+
+.icon-heshikuandu:before {
+  content: "\e662";
+}
+
+.icon-shijidaxiao1:before {
+  content: "\e661";
+}
+
+.icon-yidong:before {
+  content: "\e660";
+}
+
+.icon-yidong1:before {
+  content: "\e65f";
+}
+
+.icon-dayin1:before {
+  content: "\e65e";
+}
+
+.icon-dayin:before {
+  content: "\e65d";
+}
+
+.icon-baocun:before {
+  content: "\e65c";
+}
+
+.icon-lingcunwei:before {
+  content: "\e65b";
 }
 
 .icon-cha:before {
@@ -23,6 +71,10 @@
 
 .icon-xiala:before {
   content: "\e656";
+}
+
+.icon-xiala-copy:before {
+  content: "\e71d";
 }
 
 .icon-caidan:before {
@@ -97,59 +149,11 @@
   content: "\e603";
 }
 
-.icon-tiaoxuanxiangmu:before {
-  content: "\e6df";
-}
-
-.icon-quanping:before {
-  content: "\e613";
-}
-
-.icon-chazhao:before {
-  content: "\e6ac";
-}
-
 .icon-suoxiao:before {
   content: "\e67b";
 }
 
 .icon-fangda:before {
   content: "\e65a";
-}
-
-.icon-shiheyemian:before {
-  content: "\e693";
-}
-
-.icon-shihekuandu:before {
-  content: "\e69a";
-}
-
-.icon-shijidaxiao:before {
-  content: "\e636";
-}
-
-.icon-yidong:before {
-  content: "\e62d";
-}
-
-.icon-xuanze:before {
-  content: "\e623";
-}
-
-.icon-dayinji:before {
-  content: "\e609";
-}
-
-.icon-lingcunwei:before {
-  content: "\e64a";
-}
-
-.icon-baocun:before {
-  content: "\e627";
-}
-
-.icon-a-01dakaituxing:before {
-  content: "\e658";
 }
 

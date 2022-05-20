@@ -1,25 +1,42 @@
 @import "../../styles/commom.less";
+@selectHeight: 28px;
 
 .select {
   width: 100%;
-  height: 28px;
+  height: @selectHeight;
   border: 1px solid #888;
   border-radius: 4px;
   margin: 0 auto;
   transition: all 0.3s;
   line-height: 28px;
+  position: relative;
 
   > .value {
     .common_font;
     .text_overflow;
-    width: 100%;
+    position: absolute;
+    left: 6px;
+    right: 21px;
+    top: 0;
+    bottom: 0;
+    // width: 100%;
     height: 100%;
-    padding: 0 6px;
+    // padding: 0 6px;
     color: #333;
     text-align: left;
   }
 
-  &:hover {
+  &:hover, &.active {
     border: 1px solid #40a9ff;
+  }
+
+  > span {
+    display: block;
+    position: absolute;
+    top: (@selectHeight / 2 - 12px);
+    right: 9px;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
   }
 }

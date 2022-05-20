@@ -5,15 +5,3 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-.icon-yuanjiaofangkuang:before {
-  content: "\e648";
-}
-
-.icon-guanbi:before {
-  content: "\eaf2";
-}
-
-.icon-suoxiao:before {
-  content: "\e61b";
-}

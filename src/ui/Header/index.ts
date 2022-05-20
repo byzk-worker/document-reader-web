@@ -49,9 +49,9 @@ export default defineComponent<DataType>({
     dom.eventUtil.removeHandler(window as any, "resize", this.events.resize);
   },
   updated() {
-    setTimeout(() => {
-      this.dispatch("app::resize", {});
-    }, 500);
+    // setTimeout(() => {
+    this.dispatch("app::resize", {});
+    // }, 300);
   },
   computed: {
     showControlBreak(this: HeaderComponent) {
@@ -67,7 +67,6 @@ export default defineComponent<DataType>({
         return result;
       }
 
-      debugger;
       if (marginLeft > 0) {
         result[0] = "prev";
       }
@@ -134,8 +133,6 @@ export default defineComponent<DataType>({
       show: string[],
       isNext: boolean
     ) {
-      debugger;
-
       if (!show || show.length != 2 || (!show[0] && !show[1])) {
         this.data.set("marginLeft", 0);
         return;
@@ -219,15 +216,14 @@ export default defineComponent<DataType>({
       }
       const appId = this.data.get("appId");
       const ele = dom.nodeRender(renderId, app.getApp(appId), this);
-      if (ele instanceof HTMLElement) {
+      if (typeof (ele as any).attach !== "function") {
         toolEle.innerHTML = "";
-        toolEle.appendChild(ele);
+        toolEle.appendChild(ele as any);
       } else {
-        ele.attach(toolEle);
+        (ele as any).attach(toolEle);
       }
     },
     prevAndNextToolClick(this: HeaderComponent, isNext: boolean) {
-      debugger;
       const toolsPanelWidth = this.data.get("toolsPanelWidth");
       const tabPanelsWidth = this.data.get("tabPanelsWidth");
       let marginLeft = this.data.get("marginLeft");

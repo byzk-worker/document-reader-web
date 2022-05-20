@@ -147,7 +147,7 @@ const configs: RollupOptions = {
     }),
     serve({
       // 装备serve武器并配置参数
-      port: 3000,
+      port: 3008,
       contentBase: [resolveFile("")],
     }),
     livereload(resolveFile("build", "dist")),

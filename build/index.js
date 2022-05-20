@@ -433,15 +433,55 @@ function getApp(id) {
     return _appMap[id];
 }
 
-var styles$8 = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+/**
+ * 数据存储Map
+ */
+var dataStoreMap = {};
+function dataStoreGet(key) {
+    return dataStoreMap[key];
+}
+function dataStoreSet(key, val) {
+    dataStoreMap[key] = val;
+}
+/**
+ * 删除数据存储元素
+ * @param key 要删除的key
+ * @returns 被删除的元素
+ */
+function dataStoreRemove(key) {
+    var data = dataStoreMap[key];
+    delete dataStoreMap[key];
+    return data;
+}
 
-var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe615;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <!-- <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" -->\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+function lessThan(ieNumber) {
+    if (navigator.appName == "Microsoft Internet Explorer" &&
+        navigator.appVersion.match(/7./i) == "7.") {
+        return 7 < ieNumber;
+    }
+    else if (navigator.appName == "Microsoft Internet Explorer" &&
+        navigator.appVersion.match(/8./i) == "8.") {
+        return 6 < ieNumber;
+    }
+    else if (navigator.appName == "Microsoft Internet Explorer" &&
+        navigator.appVersion.match(/9./i) == "9.") {
+        return 9 < ieNumber;
+    }
+    else if (navigator.appName == "Microsoft Internet Explorer") {
+        return 6 < ieNumber;
+    }
+    return false;
+}
+
+var styles$9 = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+
+var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont icon-caidan\">\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <!-- <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" -->\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 var headerToolMarginRight = 16;
 var headerToolPanelHeight = 50;
 
 var template$5 = template$6(htmlTemplate)({
-    styles: styles$8
+    styles: styles$9
 });
 var Header = defineComponent({
     template: template$5,
@@ -482,7 +522,6 @@ var Header = defineComponent({
             if (pannelsWidth >= width) {
                 return result;
             }
-            debugger;
             if (marginLeft > 0) {
                 result[0] = "prev";
             }
@@ -534,7 +573,6 @@ var Header = defineComponent({
     },
     fns: {
         showControlBreakWrapper: function (show, isNext) {
-            debugger;
             if (!show || show.length != 2 || (!show[0] && !show[1])) {
                 this.data.set("marginLeft", 0);
                 return;
@@ -610,7 +648,7 @@ var Header = defineComponent({
             }
             var appId = this.data.get("appId");
             var ele = nodeRender(renderId, getApp(appId), this);
-            if (ele instanceof HTMLElement) {
+            if (typeof ele.attach !== "function") {
                 toolEle.innerHTML = "";
                 toolEle.appendChild(ele);
             }
@@ -619,7 +657,6 @@ var Header = defineComponent({
             }
         },
         prevAndNextToolClick: function (isNext) {
-            debugger;
             var toolsPanelWidth = this.data.get("toolsPanelWidth");
             var tabPanelsWidth = this.data.get("tabPanelsWidth");
             var marginLeft = this.data.get("marginLeft");
@@ -644,7 +681,50 @@ var Header = defineComponent({
     }
 });
 
-var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","content":"index-module_content__m20ZT"};
+var html$6 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <div s-for=\"toolbar, index in toolbars\" class=\"<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar)\">\n                <div class=\"<%= styles.icon %>\">\n                    <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                </div>\n                <div class=\"<%= styles.desc %>\">\n                    <span>{{toolbar.text}}</span>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+
+var styles$8 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
+
+var SlidebarLeft = defineComponent({
+    template: template$6(html$6)({ styles: styles$8 }),
+    initData: function () {
+        return {
+            expand: false
+        };
+    },
+    computed: {
+        slideWrapperIeStyle: function () {
+            var isLessThan9 = lessThan(9);
+            if (!isLessThan9) {
+                return;
+            }
+            var activeKey = this.data.get("activeKey");
+            if (typeof activeKey !== "number") {
+                return;
+            }
+            var width = 40 + 16;
+            var expand = this.data.get("expand");
+            if (expand) {
+                width = 40 + 160;
+            }
+            return "width: " + width + "px;";
+        }
+    },
+    events: {
+        tabClick: function (event, key, toolbar) {
+            var nowActiveKey = this.data.get("activeKey");
+            this.data.set("activeKey", key);
+            if (nowActiveKey !== key) {
+                this.data.set("expand", true);
+            }
+        },
+        expandChange: function () {
+            this.data.set("expand", !this.data.get("expand"));
+        }
+    }
+});
+
+var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","content":"index-module_content__m20ZT"};
 
 var styles$6 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
 
@@ -687,7 +767,7 @@ var TabBtn = defineComponent({
     }
 });
 
-var html$5 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\">\n            </h-tab></div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\">\n    </tab-btn></div>\n</div>";
+var html$5 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\"></h-tab>\n            </div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\"></tab-btn>\n    </div>\n</div>";
 
 var template$2 = template$6(html$5)({
     styles: styles$6
@@ -763,7 +843,7 @@ var Bookmark = defineComponent({
     }
 });
 
-var template$1 = "<h-bookmark class=\"{{classNames}}\" style=\"{{styles}}\" btnGroup=\"{{btnGroup}}\" />";
+var template$1 = "<h-bookmark class=\"{{classNames}}\" style=\"{{styles}}\" btnGroup=\"{{btnGroup}}\" ></h-bookmark>";
 var TabPages = defineComponent({
     components: {
         "h-bookmark": Bookmark
@@ -801,11 +881,12 @@ var TabPages = defineComponent({
     }
 });
 
-var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" />\n        <ui-header s-bind={{{...areas.header}}} appId=\"{{appId}}\" />\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\"></div>\n      <div id=\"").concat(styles$7.sidebarRight, "\"></div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
-        "ui-header": Header
+        "ui-header": Header,
+        "ui-slide-left": SlidebarLeft
     },
     template: template,
     messages: {
@@ -847,7 +928,7 @@ var AppUi = defineComponent({
 
 var styles$3 = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV"};
 
-var html$4 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <!-- <input placeholder=\"\" type=\"number\" value=\"1\" /> -->\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+var html$4 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
 var html$3 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
@@ -973,90 +1054,158 @@ var ToolJump = defineComponent({
     }
 });
 
-var html$2 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select></c-select>\n</div>";
+var html$2 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-select>\n</div>";
 
-var html$1 = "<div class=\"<%= styles.select %>\">\n    <div class=\"<%= styles.value %>\" on-click=\"events.selectClick($event)\">\n        <span>哈哈</span>\n    </div>\n    <c-options show=\"{{showOptions}}\" activeVal=\"{{activeVal}}\" options=\"{{options}}\"></c-options>\n</div>";
+var html$1 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span>{{activeText}}</span>\n    </div>\n    <span class=\"iconfont\">&#xe71d;</span>\n</div>";
 
-var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I"};
+var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","active":"index-module_active__zruap"};
 
-var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\">{{option.text}}</div>\n</div>";
+var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
 var styles = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 
-function getDataJoinStyle(dataSource, name, key) {
-    key = key || name;
-    var d = dataSource.data.get(name);
-    if (typeof d === "undefined") {
-        return "";
-    }
-    return key + ": " + d + "px;";
-}
 var Options = defineComponent({
     template: template$6(html)({ styles: styles }),
+    attached: function () {
+        this.events.documentClick = this.events.documentClick.bind(this);
+        eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
+        eventUtil.addHandler(window, "resize", this.events.documentClick);
+    },
     initData: function () {
         return {
             options: [],
             show: false,
             top: 0,
-            left: 0
+            left: 0,
+            baseEleKey: createId()
         };
     },
     computed: {
         optionsStyle: function () {
             var show = this.data.get("show");
             if (!show) {
-                return "height: 0";
+                return "display: none";
             }
-            var styleStr = getDataJoinStyle(this, "left") +
-                getDataJoinStyle(this, "right") +
-                getDataJoinStyle(this, "top") +
-                getDataJoinStyle(this, "bottom");
-            return styleStr;
+            var mod = this.data.get("mod") || "contextmenu";
+            var offset = this.data.get("offset") || {};
+            if (typeof offset.x === "undefined") {
+                offset.x = 0;
+            }
+            if (typeof offset.y === "undefined") {
+                offset.y = 0;
+            }
+            var x = this.data.get("x");
+            var y = this.data.get("y");
+            var isHaveX = typeof x === "number";
+            var isHaveY = typeof y === "number";
+            switch (mod) {
+                case "contextmenu":
+                    break;
+                case "options":
+                    if (isHaveX && isHaveY) {
+                        break;
+                    }
+                    var baseEle = dataStoreGet(this.data.get("baseEleKey"));
+                    var rect = getBoundingClientRect(baseEle);
+                    if (!isHaveX) {
+                        x = rect.x + offset.x;
+                    }
+                    if (!isHaveY) {
+                        y = rect.y + rect.height + offset.y;
+                    }
+                    break;
+                default:
+                    return "display: none";
+            }
+            return "left:".concat(x, "px;top:").concat(y, "px;");
         }
+    },
+    events: {
+        documentClick: function () {
+            this.data.set("show", false);
+        },
+        optionClick: function (event, option) {
+            var optionsClickFn = this.data.get("optionClick");
+            if (optionsClickFn) {
+                optionsClickFn(event, option.val, option);
+                return;
+            }
+            this.data.set("activeVal", option.val);
+        }
+    },
+    setBaseEle: function (ele) {
+        var baseEleKey = this.data.get("baseEleKey");
+        dataStoreSet(baseEleKey, ele || document.body);
+    },
+    getBaseEle: function () {
+        var baseEleKey = this.data.get("baseEleKey");
+        var ele = dataStoreGet(baseEleKey);
+        if (!ele) {
+            ele = document.body;
+            this.setBaseEle(ele);
+        }
+        return ele;
+    },
+    disposed: function () {
+        dataStoreRemove(this.data.get("baseEleKey"));
+        eventUtil.removeHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
+        eventUtil.removeHandler(window, "resize", this.events.documentClick);
     }
 });
 
 var Select = defineComponent({
-    components: {
-        "c-options": Options
-    },
     template: template$6(html$1)({ styles: styles$1 }),
+    attached: function () {
+        // const optionsInterface = (this.ref(
+        //   "optionsRef"
+        // ) as any) as OptionsInterface;
+        // optionsInterface.setBaseEle(this.el as any);
+        if (!this.OptionsComponent) {
+            this.OptionsComponent = new Options({
+                owner: this,
+                source: "<c-options s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
+            });
+            this.OptionsComponent.attach(document.body);
+        }
+        this.OptionsComponent.setBaseEle(this.el);
+    },
     initData: function () {
         return {
-            showOoptions: false,
+            showOptions: false,
             activeVal: 1,
-            options: [
-                {
-                    val: 1,
-                    text: "测试"
-                },
-                {
-                    val: 2,
-                    text: "测试2"
-                },
-                {
-                    val: 4,
-                    text: "测试3"
-                },
-            ]
+            options: []
         };
+    },
+    computed: {
+        activeText: function () {
+            var activeVal = this.data.get("activeVal");
+            var options = this.data.get("options") || [];
+            for (var i = 0; i < options.length; i++) {
+                var option = options[i];
+                if (option.val === activeVal) {
+                    return option.text;
+                }
+            }
+            return "";
+        }
     },
     events: {
         selectClick: function (event) {
-            var ele = event.target;
+            this.data.set("showOptions", true);
+            // const ele = event.target as HTMLDivElement;
             //   console.log(ele.clientTop);
             //   console.log(ele.offsetTop);
             //   console.log(ele.scrollTop);
             //   console.log(ele.style.top);
             //   console.log("=====================");
-            console.log("clientLeft=", ele.clientLeft);
-            console.log("offsetLeft=", ele.offsetLeft);
-            console.log("scrollLeft=", ele.scrollLeft);
-            console.log("clientWidth", ele.clientWidth);
-            console.log("offsetWidth", ele.offsetWidth);
-            console.log("scrollWidth", ele.scrollWidth);
-            console.log(ele.getBoundingClientRect());
-            console.log(getBoundingClientRect(ele));
+            // console.log("clientLeft=", ele.clientLeft);
+            // console.log("offsetLeft=", ele.offsetLeft);
+            // console.log("scrollLeft=", ele.scrollLeft);
+            // console.log("clientWidth", ele.clientWidth);
+            // console.log("offsetWidth", ele.offsetWidth);
+            // console.log("scrollWidth", ele.scrollWidth);
+            // console.log(ele.getBoundingClientRect());
+            // console.log(dom.getBoundingClientRect(ele));
         }
     }
 });
@@ -1065,7 +1214,34 @@ var ToolScale = defineComponent({
     components: {
         "c-select": Select
     },
-    template: template$6(html$2)({ styles: styles$3 })
+    template: template$6(html$2)({ styles: styles$3 }),
+    initData: function () {
+        return {
+            activeVal: 100,
+            options: [
+                {
+                    val: 20,
+                    text: "20%"
+                },
+                {
+                    val: 50,
+                    text: "50%"
+                },
+                {
+                    val: 100,
+                    text: "100%"
+                },
+                {
+                    val: 200,
+                    text: "200%"
+                },
+                {
+                    val: 400,
+                    text: "400%"
+                },
+            ]
+        };
+    }
 });
 
 var fullBtnId = createId();
@@ -1074,7 +1250,7 @@ var headerTabsBtns = {
         type: "default",
         nodeInfo: {
             text: "打开",
-            html: "&#xe658;",
+            html: "&#xe65e;",
             title: "打开文件"
         }
     },
@@ -1082,7 +1258,7 @@ var headerTabsBtns = {
         type: "default",
         nodeInfo: {
             text: "保存",
-            html: "&#xe627;",
+            html: "&#xe65c;",
             title: "保存"
         }
     },
@@ -1090,7 +1266,7 @@ var headerTabsBtns = {
         type: "default",
         nodeInfo: {
             text: "另存为",
-            html: "&#xe64a;",
+            html: "&#xe65c;",
             title: "另存为"
         }
     },
@@ -1098,7 +1274,7 @@ var headerTabsBtns = {
         type: "default",
         nodeInfo: {
             text: "打印",
-            html: "&#xe609;",
+            html: "&#xe65d;",
             title: "打印"
         }
     },
@@ -1119,7 +1295,7 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "选择",
             title: "选择",
-            html: "&#xe623;"
+            html: "&#xe65f;"
         }
     },
     move: {
@@ -1127,7 +1303,7 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "移动",
             title: "移动",
-            html: "&#xe62d;"
+            html: "&#xe660;"
         }
     },
     ActualSize: {
@@ -1135,7 +1311,7 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "实际大小",
             title: "实际大小",
-            html: "&#xe636;"
+            html: "&#xe661;"
         }
     },
     SuitableWidth: {
@@ -1143,7 +1319,7 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "适合宽度",
             title: "适合宽度",
-            html: "&#xe69a;"
+            html: "&#xe662;"
         }
     },
     SuitablePage: {
@@ -1151,7 +1327,7 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "适合页面",
             title: "适合页面",
-            html: "&#xe693;"
+            html: "&#xe663;"
         }
     },
     narrow: {
@@ -1188,7 +1364,7 @@ var headerTabsBtns = {
     find: {
         type: "default",
         nodeInfo: {
-            html: "&#xe6ac;",
+            html: "&#xe664;",
             title: "查找",
             text: "查找"
         }
@@ -1196,7 +1372,7 @@ var headerTabsBtns = {
     full: {
         type: "default",
         nodeInfo: {
-            html: "&#xe613;",
+            html: "&#xe665;",
             title: "全屏",
             text: "全屏"
         }
@@ -1204,7 +1380,7 @@ var headerTabsBtns = {
     preferenc: {
         type: "default",
         nodeInfo: {
-            html: "&#xe6df;",
+            html: "&#xe666;",
             title: "首选项",
             text: "首选项"
         }
@@ -1295,6 +1471,20 @@ var defaultData = {
         help: {
             text: "帮助"
         }
+    },
+    sildebarLeftTabs: {
+        sign: {
+            text: "签名",
+            iconHtml: "&#xe64f;"
+        },
+        comment: {
+            text: "注释",
+            iconHtml: "&#xe650;"
+        },
+        thumbnail: {
+            text: "缩图",
+            iconHtml: "&#xe651;"
+        }
     }
 };
 
@@ -1314,14 +1504,21 @@ var defaultOptions = {
         },
         autoHide: "noPage"
     },
-    areas: {
-        header: {
+    header: {
+        toolbars: [
+            defaultData.headerTabs.start,
+            defaultData.headerTabs.tools,
+            defaultData.headerTabs.view,
+            defaultData.headerTabs.safety,
+            defaultData.headerTabs.help,
+        ]
+    },
+    sidebars: {
+        left: {
             toolbars: [
-                defaultData.headerTabs.start,
-                defaultData.headerTabs.tools,
-                defaultData.headerTabs.view,
-                defaultData.headerTabs.safety,
-                defaultData.headerTabs.help,
+                defaultData.sildebarLeftTabs.sign,
+                defaultData.sildebarLeftTabs.comment,
+                defaultData.sildebarLeftTabs.thumbnail,
             ]
         }
     }
@@ -1330,7 +1527,7 @@ var App$1 = defineComponent({
     components: {
         "ui-app": AppUi
     },
-    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" />",
+    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
     initData: function () {
         return {
             show: true,
@@ -1344,6 +1541,10 @@ var App$1 = defineComponent({
         },
         "TABS::ADD": function () {
             console.log("标签新增被触发");
+        },
+        "EVENT::ID::HANDLE": function (arg) {
+            var val = arg.value;
+            console.log(val);
         }
     }
 });
@@ -1423,6 +1624,26 @@ var AppImpl = /** @class */ (function () {
             }
             _this._appComponent.data.set("show", _this._isShow);
         };
+        this._handleToobarConfigs = function (toolbarConfigs) {
+            for (var i = 0; i < toolbarConfigs.length; i++) {
+                var toolbar_1 = toolbarConfigs[i];
+                if (toolbar_1.activeChange) {
+                    var activeChangeFnId = createId();
+                    dataStoreSet(activeChangeFnId, toolbar_1.activeChange);
+                    toolbar_1._activeChangeFnId = activeChangeFnId;
+                }
+                if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
+                    continue;
+                }
+                for (var j = 0; j < toolbar_1.tools.length; j++) {
+                    var toolInfo = toolbar_1.tools[j];
+                    if (!toolInfo.nodeInfo) {
+                        continue;
+                    }
+                    toolInfo.nodeInfo = handleNodeInfo(toolInfo.nodeInfo);
+                }
+            }
+        };
         this.getInitConfig = function () {
             return _this._initOptions;
         };
@@ -1468,21 +1689,25 @@ var AppImpl = /** @class */ (function () {
                     btns[i] = handleNodeInfo(btns[i]);
                 }
             }
-            if (options.areas) {
-                if (options.areas.header && options.areas.header.toolbars) {
-                    for (var i = 0; i < options.areas.header.toolbars.length; i++) {
-                        var toolbar_1 = options.areas.header.toolbars[i];
-                        if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
-                            continue;
-                        }
-                        for (var j = 0; j < toolbar_1.tools.length; j++) {
-                            var toolInfo = toolbar_1.tools[j];
-                            if (!toolInfo.nodeInfo) {
-                                continue;
-                            }
-                            toolInfo.nodeInfo = handleNodeInfo(toolInfo.nodeInfo);
-                        }
-                    }
+            if (options.header && options.header.toolbars) {
+                _this._handleToobarConfigs(options.header.toolbars);
+                // for (let i = 0; i < options.header.toolbars.length; i++) {
+                //   const toolbar = options.header.toolbars[i];
+                //   if (!toolbar.tools || toolbar.tools.length === 0) {
+                //     continue;
+                //   }
+                //   for (let j = 0; j < toolbar.tools.length; j++) {
+                //     const toolInfo = toolbar.tools[j];
+                //     if (!toolInfo.nodeInfo) {
+                //       continue;
+                //     }
+                //     toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
+                //   }
+                // }
+            }
+            if (options.sidebars) {
+                if (options.sidebars.left) {
+                    _this._handleToobarConfigs(options.sidebars.left.toolbars);
                 }
             }
             _this._appComponent.data.merge("appOptions", JSON.parse(JSON.stringify(options)), { force: true });

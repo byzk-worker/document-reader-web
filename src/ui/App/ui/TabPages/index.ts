@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { defineComponent, Component } from "san";
 import { TabPagesConfig } from "../../../../types";
 import Bookmark from "./components/Bookmark";
-const template = `<h-bookmark class="{{classNames}}" style="{{styles}}" btnGroup="{{btnGroup}}" />`;
+const template = `<h-bookmark class="{{classNames}}" style="{{styles}}" btnGroup="{{btnGroup}}" ></h-bookmark>`;
 
 export interface TabPagesProps extends TabPagesConfig {
   tabsInfo: {}[];
@@ -14,9 +14,9 @@ export default defineComponent<TabPagesProps>({
   },
   template,
   attached(this: Component) {
-    setTimeout(() => {
-      this.dispatch("app::resize", {});
-    }, 500);
+    // setTimeout(() => {
+    this.dispatch("app::resize", {});
+    // }, 300);
   },
   computed: {
     classNames() {

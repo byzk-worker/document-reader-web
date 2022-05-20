@@ -1,4 +1,4 @@
-import { AppInterface } from "../../../build";
+import { AppInterface } from "../../types";
 import { createId } from "../id";
 
 let _appMap: { [key: string]: AppInterface } = {};

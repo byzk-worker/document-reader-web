@@ -2,8 +2,10 @@ interface CssExports {
   app: string;
   header: string;
   fotter: string;
-  sidebars: string;
+  sidebarLeft: string;
+  sidebarRight: string;
   content: string;
+  reader: string;
 }
 
 export const cssExports: CssExports;

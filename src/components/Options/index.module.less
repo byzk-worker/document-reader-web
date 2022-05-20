@@ -6,19 +6,25 @@
   text-align: left;
   color: #333;
   width: 86px;
-//   height: 100px;
+  //   height: 100px;
   position: absolute;
   left: 100px;
   top: 28px;
   overflow: hidden;
   box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);
   background-color: white;
+  user-select: none;
+  transition: all 0.3s;
+
   > .option {
     padding-left: 6px;
     height: 28px;
     width: 100%;
     line-height: 28px;
     transition: all 0.2s;
+    user-select: none;
+    cursor: pointer;
+
     &:hover {
       background-color: rgb(245, 245, 245);
     }

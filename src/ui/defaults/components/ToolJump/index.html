@@ -1,6 +1,5 @@
 <div class="<%= styles.toolJump %>">
     <span class="iconfont {{prevDisableClass}}" on-click="events.prevOrNextClick(false)" title="上一页">&#xe615;</span>
-    <!-- <input placeholder="" type="number" value="1" /> -->
     <input-number s-ref="input-number" minValue="1" maxValue="{{maxValue}}" value="{= value =}"></input-number>
     <span class="iconfont {{nextDisableClass}}" on-click="events.prevOrNextClick(true)" title="下一页">&#xe718;</span>
 </div>

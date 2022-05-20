@@ -1,0 +1,122 @@
+@import "../../styles/commom.less";
+
+@toolbarWidth: 40px;
+@panelFoldWidth: 16px;
+@panelExpandWidth: 160px;
+
+.slidebarLeft {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #EFF1F3;
+  transition: all 0.3;
+//   &.expand {
+//     width: (@toolbarWidth + @panelExpandWidth);
+//   }
+
+//   &.fold {
+//     width: (@toolbarWidth + @panelFoldWidth);
+//   }
+
+  > .tabsWrapper {
+    width: @toolbarWidth;
+    height: 100%;
+    position: relative;
+    float: left;
+
+    > .comment {
+      .common_font;
+      position: absolute;
+      top: 0;
+      left: 0;
+      line-height: 25px;
+      width: 40px;
+      height: 25px;
+      color: #333;
+      margin-bottom: 2px;
+      border-bottom: 2px solid #e6e6e6;
+    }
+
+    > .tabs {
+      position: absolute;
+      top: 44px;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      > .tab {
+        .common_font;
+        width: 100%;
+        height: 45px;
+        padding-top: 5px;
+        cursor: pointer;
+        margin-bottom: 17px;
+
+        > .icon,
+        > .desc {
+          width: 100%;
+          text-align: center;
+          > span {
+            .common_font;
+            color: #444C5E;
+          }
+        }
+
+        > .icon {
+          height: 20px;
+          line-height: 20px;
+          margin-bottom: 4px;
+          > span {
+            font-size: 20px;
+          }
+        }
+
+        &.active {
+          background-color: #FFFFFF;
+          > .icon,
+          > .desc {
+            > span {
+              color: #2752e7;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > .tabPannel {
+    width: @panelExpandWidth;
+    height: 100%;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    float: left;
+    position: relative;
+    transition: all 0.3s;
+
+    &.fold {
+      width: @panelFoldWidth;
+    }
+
+    > .expand {
+      width: 16px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      text-align: center;
+      cursor: pointer;
+
+      > span {
+        .common_font;
+        color: #333;
+        display: block;
+        width: 100%;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+      }
+    }
+  }
+}

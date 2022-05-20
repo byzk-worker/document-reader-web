@@ -77,7 +77,7 @@ console.info("正在生成typescript文档...");
 // );
 
 execNodeModulesBin(
-  `typedoc --out ${docsDir} ${resolveFile("configs", "compile", "types.d.ts")}`
+  `typedoc --out ${docsDir} ${resolveFile("build", "index.d.ts")} ${resolveFile("build", "types.d.ts")}`
 );
 
 console.log("正在拷贝字体文件...");

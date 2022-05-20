@@ -111,10 +111,6 @@ export interface AppUpdateOptions {
    */
   tabPages?: TabPagesConfig | false;
   /**
-   * 区域设置
-   */
-  areas?: Areas;
-  /**
    * class的名称
    */
   classNames?: string[] | string;
@@ -126,6 +122,33 @@ export interface AppUpdateOptions {
    * 应用最小高度, 默认: 800px
    */
   minHeight?: number;
+  /**
+   * 头部
+   */
+  header?: HeaderConfig | false;
+  /**
+   * 尾部
+   */
+  footer?: any;
+  /**
+   * 内容区域
+   */
+  content?: any;
+  /**
+   * 侧边栏
+   */
+  sidebars?:
+    | {
+        /**
+         * 左侧边栏
+         */
+        left?: SlidebarLeftConfig | false;
+        /**
+         * 右侧边栏
+         */
+        right?: any | false;
+      }
+    | false;
 }
 
 /**
@@ -194,6 +217,22 @@ export interface ToolbarConfig {
    * 工具信息
    */
   tools?: ToolInfo[];
+  /**
+   * 激活切换事件ID
+   */
+  _activeChangeFnId: string;
+  /**
+   * 选中状态变更
+   * @param active 是/否选中
+   */
+  activeChange?(app: AppInterface, event: ToolbarConfigActiveChangeEvent): void;
+}
+
+export interface ToolbarConfigActiveChangeEvent {
+  active: boolean;
+  currentIndex: number;
+  nowInfo: ToolbarConfig;
+  update: (newInfo: ToolbarConfig) => void;
 }
 
 /**
@@ -214,32 +253,10 @@ export interface HeaderConfig {
   toolbars?: ToolbarConfig[];
 }
 
-export interface Areas {
-  /**
-   * 头部
-   */
-  header?: HeaderConfig;
-  /**
-   * 尾部
-   */
-  footer?: any;
-  /**
-   * 内容区域
-   */
-  content?: any;
-  /**
-   * 侧边栏
-   */
-  sidebars?: {
-    /**
-     * 左侧边栏
-     */
-    left?: any;
-    /**
-     * 右侧边栏
-     */
-    right?: any;
-  };
+export interface SlidebarLeftConfig {
+  id?: string;
+  className?: string;
+  toolbars?: ToolbarConfig[];
 }
 
 /**
@@ -271,6 +288,8 @@ export interface AppInterface {
   updateByExpr(expr: "tabPages", options: TabPagesConfig | false): void;
   updateByExpr(expr: "tabPages.btnGroup", options: TabBtnGroupConfig): void;
   updateByExpr(expr: "tabPages.btnGroup.btns", options: NodeInfo[]): void;
+  updateByExpr(expr: "header.toolbars", options: ToolbarConfig[]): void;
+  updateByExpr(expr: "sidebars.left.toolbars", options: ToolbarConfig[]): void;
 
   /**
    * 获取初始化参数.
@@ -287,6 +306,8 @@ export interface AppInterface {
   getNowData(expr: "tabPages"): TabPagesConfig | false | undefined;
   getNowData(expr: "tabPages.btnGroup"): TabBtnGroupConfig | undefined;
   getNowData(expr: "tabPages.btnGroup.btns"): NodeInfo[] | undefined;
+  getNowData(expr: "header.toolbars"): ToolbarConfig[] | undefined;
+  getNowData(expr: "sidebars.left.toolbars"): ToolbarConfig[] | undefined;
 }
 
 /**

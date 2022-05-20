@@ -1,4 +1,10 @@
-var process={env:{NODE_ENV: 'development'}};
+var process = {
+  env: {
+    NODE_ENV: 'development'
+  }
+};
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
 var bkDocReader = (function (exports) {
 	'use strict';
 
@@ -21702,6 +21708,46 @@ var bkDocReader = (function (exports) {
 	    return _appMap[id];
 	}
 
+	/**
+	 * 数据存储Map
+	 */
+	var dataStoreMap = {};
+	function dataStoreGet(key) {
+	    return dataStoreMap[key];
+	}
+	function dataStoreSet(key, val) {
+	    dataStoreMap[key] = val;
+	}
+	/**
+	 * 删除数据存储元素
+	 * @param key 要删除的key
+	 * @returns 被删除的元素
+	 */
+	function dataStoreRemove(key) {
+	    var data = dataStoreMap[key];
+	    delete dataStoreMap[key];
+	    return data;
+	}
+
+	function lessThan(ieNumber) {
+	    if (navigator.appName == "Microsoft Internet Explorer" &&
+	        navigator.appVersion.match(/7./i) == "7.") {
+	        return 7 < ieNumber;
+	    }
+	    else if (navigator.appName == "Microsoft Internet Explorer" &&
+	        navigator.appVersion.match(/8./i) == "8.") {
+	        return 6 < ieNumber;
+	    }
+	    else if (navigator.appName == "Microsoft Internet Explorer" &&
+	        navigator.appVersion.match(/9./i) == "9.") {
+	        return 9 < ieNumber;
+	    }
+	    else if (navigator.appName == "Microsoft Internet Explorer") {
+	        return 6 < ieNumber;
+	    }
+	    return false;
+	}
+
 	function styleInject(css, ref) {
 	  if ( ref === void 0 ) ref = {};
 	  var insertAt = ref.insertAt;
@@ -21729,11 +21775,11 @@ var bkDocReader = (function (exports) {
 	  }
 	}
 
-	var css_248z$9 = ".index-module_common_font__kzEJV{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__8S-Xs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_header__bANPo{min-height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX{background:#2752e7;height:40px;overflow:hidden;position:relative;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;position:absolute;right:13px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE>span{font-size:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{color:#fff;cursor:pointer;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;text-align:center;width:98px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT>span,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH>span{font-size:12px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB{float:left}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{transition:all .3s;width:50px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH.index-module_active__a-6ac{background-color:#fff;color:#333}.index-module_header__bANPo>.index-module_tabPanels__FVo0y{background-color:#fff;height:0;overflow:hidden;position:relative;transition:all .3s;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y.index-module_active__a-6ac{height:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{background-color:#888;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:50px;position:absolute;text-align:center;top:0;width:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq>span,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp>span{font-size:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{left:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq{right:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u{height:100%;overflow:auto;overflow:hidden;padding:0 24px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2{float:left;height:100%;margin-right:16px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN{height:100%;width:2px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN>div{background-color:#888;height:42px;margin-top:4px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-{cursor:pointer;height:100%;overflow:hidden;width:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f->.index-module_text__XqzxF{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f->.index-module_icon__MnfZO{border-radius:24px;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f->.index-module_icon__MnfZO>span{font-size:24px}";
-	var styles$8 = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-	styleInject(css_248z$9);
+	var css_248z$d = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);\n  z-index: 2;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover > .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover > .index-module_icon__MnfZO {\n  color: #2752e7;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444C5E;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- > .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
+	var styles$b = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+	styleInject(css_248z$d);
 
-	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe615;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <!-- <div s-for=\"toolbarConfig, i in toolbars\" s-show=\"selectTabKey !== undefined && selectTabKey === i\" -->\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+	var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <div s-for=\"toolbarConfig, i in toolbars\" class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\">\n            <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                <span>{{toolbarConfig.text}}</span>\n            </div>\n        </div>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <div class=\"<%= styles.wrapper %>\" s-for=\"toolInfo in handlePanelTools\">\n                <div s-ref=\"ref-tool-{{toolInfo.nodeInfo && toolInfo.nodeInfo.renderId}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.icon %>'}}\">\n                        <span class=\"iconfont\">{{toolInfo.nodeInfo.html | raw}}</span>\n                    </div>\n                    <div s-if=\"toolInfo.nodeInfo && !toolInfo.nodeInfo.renderId && toolInfo.nodeInfo.text\" class=\"{{toolInfo.nodeInfo.className || '<%= styles.text %>'}}\">\n                        <span>{{toolInfo.nodeInfo.text}}</span>\n                    </div>\n                    {{(toolInfo.type === 'default' && toolInfo.nodeInfo && toolInfo.nodeInfo.renderId) ?\n                    events.handleRender(toolInfo.nodeInfo.renderId) : undefined}}\n                </div>\n                <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                    <div></div>\n                </div>\n            </div>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 	var lodash = {exports: {}};
 
@@ -38940,7 +38986,7 @@ var bkDocReader = (function (exports) {
 	var headerToolPanelHeight = 50;
 
 	var template$5 = lodash.exports.template(htmlTemplate)({
-	    styles: styles$8
+	    styles: styles$b
 	});
 	var Header = dist.exports.defineComponent({
 	    template: template$5,
@@ -38964,10 +39010,9 @@ var bkDocReader = (function (exports) {
 	        eventUtil.removeHandler(window, "resize", this.events.resize);
 	    },
 	    updated: function () {
-	        var _this = this;
-	        setTimeout(function () {
-	            _this.dispatch("app::resize", {});
-	        }, 500);
+	        // setTimeout(() => {
+	        this.dispatch("app::resize", {});
+	        // }, 300);
 	    },
 	    computed: {
 	        showControlBreak: function () {
@@ -38981,7 +39026,6 @@ var bkDocReader = (function (exports) {
 	            if (pannelsWidth >= width) {
 	                return result;
 	            }
-	            debugger;
 	            if (marginLeft > 0) {
 	                result[0] = "prev";
 	            }
@@ -39033,7 +39077,6 @@ var bkDocReader = (function (exports) {
 	    },
 	    fns: {
 	        showControlBreakWrapper: function (show, isNext) {
-	            debugger;
 	            if (!show || show.length != 2 || (!show[0] && !show[1])) {
 	                this.data.set("marginLeft", 0);
 	                return;
@@ -39109,7 +39152,7 @@ var bkDocReader = (function (exports) {
 	            }
 	            var appId = this.data.get("appId");
 	            var ele = nodeRender(renderId, getApp(appId), this);
-	            if (ele instanceof HTMLElement) {
+	            if (typeof ele.attach !== "function") {
 	                toolEle.innerHTML = "";
 	                toolEle.appendChild(ele);
 	            }
@@ -39118,7 +39161,6 @@ var bkDocReader = (function (exports) {
 	            }
 	        },
 	        prevAndNextToolClick: function (isNext) {
-	            debugger;
 	            var toolsPanelWidth = this.data.get("toolsPanelWidth");
 	            var tabPanelsWidth = this.data.get("tabPanelsWidth");
 	            var marginLeft = this.data.get("marginLeft");
@@ -39143,9 +39185,74 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var css_248z$8 = "#index-module_app__DAOOy{background:#f5f7f9;height:100%;overflow:hidden;position:relative;width:100%}#index-module_header__NtWW5{max-height:120px;width:100%}#index-module_content__m20ZT{width:100%}";
-	var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","content":"index-module_content__m20ZT"};
-	styleInject(css_248z$8);
+	var html$8 = "<div>阅读器</div>";
+
+	var css_248z$c = "";
+	var styles$a = {};
+	styleInject(css_248z$c);
+
+	var Reader = dist.exports.defineComponent({
+	    template: lodash.exports.template(html$8)({ styles: styles$a })
+	});
+
+	var html$7 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <div s-for=\"toolbar, index in toolbars\" class=\"<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar)\">\n                <div class=\"<%= styles.icon %>\">\n                    <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                </div>\n                <div class=\"<%= styles.desc %>\">\n                    <span>{{toolbar.text}}</span>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+
+	var css_248z$b = ".index-module_common_font__rsmEw {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__p5aoa {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_slidebarLeft__higRK {\n  position: relative;\n  height: 100%;\n  overflow: hidden;\n  background: #EFF1F3;\n  transition: all 0.3;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA {\n  width: 40px;\n  height: 100%;\n  position: relative;\n  float: left;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_comment__h9Ykh {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  position: absolute;\n  top: 0;\n  left: 0;\n  line-height: 25px;\n  width: 40px;\n  height: 25px;\n  color: #333;\n  margin-bottom: 2px;\n  border-bottom: 2px solid #e6e6e6;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 {\n  position: absolute;\n  top: 44px;\n  width: 100%;\n  bottom: 0;\n  left: 0;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 100%;\n  height: 45px;\n  padding-top: 5px;\n  cursor: pointer;\n  margin-bottom: 17px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 {\n  width: 100%;\n  text-align: center;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444C5E;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e {\n  height: 20px;\n  line-height: 20px;\n  margin-bottom: 4px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span {\n  font-size: 20px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc {\n  background-color: #FFFFFF;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_desc__MkXk0 > span {\n  color: #2752e7;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 {\n  width: 160px;\n  height: 100%;\n  overflow: hidden;\n  background-color: #FFFFFF;\n  float: left;\n  position: relative;\n  transition: all 0.3s;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1.index-module_fold__Hp4cY {\n  width: 16px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV {\n  width: 16px;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-align: center;\n  cursor: pointer;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV > span {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  display: block;\n  width: 100%;\n  text-align: center;\n  position: absolute;\n  top: 50%;\n}\n";
+	var styles$9 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
+	styleInject(css_248z$b);
+
+	var SlidebarLeft = dist.exports.defineComponent({
+	    template: lodash.exports.template(html$7)({ styles: styles$9 }),
+	    initData: function () {
+	        return {
+	            expand: false
+	        };
+	    },
+	    computed: {
+	        slideWrapperIeStyle: function () {
+	            var isLessThan9 = lessThan(9);
+	            if (!isLessThan9) {
+	                return;
+	            }
+	            var activeKey = this.data.get("activeKey");
+	            if (typeof activeKey !== "number") {
+	                return;
+	            }
+	            var width = 40 + 16;
+	            var expand = this.data.get("expand");
+	            if (expand) {
+	                width = 40 + 160;
+	            }
+	            return "width: " + width + "px;";
+	        }
+	    },
+	    events: {
+	        tabClick: function (event, key, toolbar) {
+	            var nowActiveKey = this.data.get("activeKey");
+	            this.data.set("activeKey", key);
+	            if (nowActiveKey !== key) {
+	                this.data.set("expand", true);
+	            }
+	        },
+	        expandChange: function () {
+	            this.data.set("expand", !this.data.get("expand"));
+	        }
+	    }
+	});
+
+	var html$6 = "<div>右侧</div>";
+
+	var css_248z$a = "";
+	var styles$8 = {};
+	styleInject(css_248z$a);
+
+	var SlidebarRight = dist.exports.defineComponent({
+	    template: lodash.exports.template(html$6)({ styles: styles$8 })
+	});
+
+	var css_248z$9 = "#index-module_app__DAOOy {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #eff1f3;\n  overflow: hidden;\n}\n#index-module_header__NtWW5 {\n  width: 100%;\n  max-height: 120px;\n}\n#index-module_sidebarLeft__MA3wh {\n  height: 100%;\n  float: left;\n}\n#index-module_sidebarRight__2F13Z {\n  height: 100%;\n  float: right;\n}\n#index-module_content__m20ZT {\n  width: 100%;\n}\n#index-module_reader__xIj2- {\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n";
+	var styles$7 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
+	styleInject(css_248z$9);
 
 	var classnames = {exports: {}};
 
@@ -39207,22 +39314,22 @@ var bkDocReader = (function (exports) {
 
 	var classNames = classnames.exports;
 
-	var css_248z$7 = ".index-module_bookmark__1nGVp{background:#e6e6e6;height:30px;overflow:hidden;position:relative;transition:all .5s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F,.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{display:inline-block;font-size:0;height:100%;position:absolute}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{height:100%;left:0;padding:0 4px}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0{float:left;height:100%;overflow:auto}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0>div{height:100%}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabAdd__uIR8p{cursor:pointer;float:left;font-size:8px;height:100%;line-height:30px;width:16px}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F{height:100%;overflow:hidden;padding-right:1px;right:0}";
+	var css_248z$8 = ".index-module_bookmark__1nGVp {\n  width: 100%;\n  height: 30px;\n  background: #e6e6e6;\n  position: relative;\n  overflow: hidden;\n  transition: all 0.5s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy,\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  height: 100%;\n  display: inline-block;\n  font-size: 0;\n  position: absolute;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy {\n  left: 0;\n  height: 100%;\n  padding: 0 4px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 {\n  float: left;\n  height: 100%;\n  overflow: auto;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 > div {\n  height: 100%;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p {\n  cursor: pointer;\n  float: left;\n  width: 16px;\n  height: 100%;\n  font-size: 8px;\n  line-height: 30px;\n}\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  right: 0;\n  padding-right: 1px;\n  overflow: hidden;\n  height: 100%;\n}\n";
 	var styles$6 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
-	styleInject(css_248z$7);
+	styleInject(css_248z$8);
 
-	var css_248z$6 = ".index-module_tab__nriyF{background:#fff;float:left;height:100%;margin-right:6px;position:relative;width:166px}.index-module_tab__nriyF .index-module_fileName__A6hsy{color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:21px;line-height:30px;overflow:hidden;position:absolute;text-align:center;text-overflow:ellipsis;white-space:nowrap;width:97px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM{font-size:0;line-height:30px;position:absolute;right:21px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM>span{cursor:pointer;font-size:8px}";
+	var css_248z$7 = ".index-module_tab__nriyF {\n  width: 166px;\n  height: 100%;\n  background: #ffffff;\n  position: relative;\n  float: left;\n  margin-right: 6px;\n}\n.index-module_tab__nriyF .index-module_fileName__A6hsy {\n  position: absolute;\n  left: 21px;\n  height: 100%;\n  width: 97px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  text-align: center;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM {\n  font-size: 0px;\n  position: absolute;\n  right: 21px;\n  line-height: 30px;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM > span {\n  cursor: pointer;\n  font-size: 8px;\n}\n";
 	var styles$5 = {"tab":"index-module_tab__nriyF","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
-	styleInject(css_248z$6);
+	styleInject(css_248z$7);
 
 	var template$4 = "\n    <div class=\"".concat(styles$5.tab, "\">\n      <div title={{name}} class=\"").concat(styles$5.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div class=\"").concat(styles$5.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
 	var BookmarkTab = dist.exports.defineComponent({
 	    template: template$4
 	});
 
-	var css_248z$5 = ".index-module_btn__Z99v5{display:block;float:left;height:30px;line-height:30px;overflow:hidden;text-align:center;width:30px}.index-module_btn__Z99v5>span{cursor:pointer;display:block;height:24px;line-height:24px;margin-top:3px;text-align:center;width:24px}";
+	var css_248z$6 = ".index-module_btn__Z99v5 {\n  display: block;\n  width: 30px;\n  height: 30px;\n  overflow: hidden;\n  line-height: 30px;\n  text-align: center;\n  float: left;\n}\n.index-module_btn__Z99v5 > span {\n  display: block;\n  width: 24px;\n  height: 24px;\n  text-align: center;\n  line-height: 24px;\n  cursor: pointer;\n  margin-top: 3px;\n}\n";
 	var styles$4 = {"btn":"index-module_btn__Z99v5"};
-	styleInject(css_248z$5);
+	styleInject(css_248z$6);
 
 	var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles$4.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
 	var TabBtn = dist.exports.defineComponent({
@@ -39254,7 +39361,7 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var html$5 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\">\n            </h-tab></div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\">\n    </tab-btn></div>\n</div>";
+	var html$5 = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"t in tabs\" id=\"{{t.id}}\" name=\"{{t.name}}\"></h-tab>\n            </div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\"></tab-btn>\n    </div>\n</div>";
 
 	var template$2 = lodash.exports.template(html$5)({
 	    styles: styles$6
@@ -39330,17 +39437,16 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var template$1 = "<h-bookmark class=\"{{classNames}}\" style=\"{{styles}}\" btnGroup=\"{{btnGroup}}\" />";
+	var template$1 = "<h-bookmark class=\"{{classNames}}\" style=\"{{styles}}\" btnGroup=\"{{btnGroup}}\" ></h-bookmark>";
 	var TabPages = dist.exports.defineComponent({
 	    components: {
 	        "h-bookmark": Bookmark
 	    },
 	    template: template$1,
 	    attached: function () {
-	        var _this = this;
-	        setTimeout(function () {
-	            _this.dispatch("app::resize", {});
-	        }, 500);
+	        // setTimeout(() => {
+	        this.dispatch("app::resize", {});
+	        // }, 300);
 	    },
 	    computed: {
 	        classNames: function () {
@@ -39368,16 +39474,20 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" />\n        <ui-header s-bind={{{...areas.header}}} appId=\"{{appId}}\" />\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+	var isFirst = true;
+	var template = "\n<div id=\"".concat(styles$7.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$7.header, "\" s-ref=\"header\">\n        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$7.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$7.sidebarLeft, "\">\n        <ui-slide-left appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$7.sidebarRight, "\">\n        <ui-slide-right appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$7.reader, "\">\n        <ui-reader appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.reader||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$7.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 	var AppUi = dist.exports.defineComponent({
 	    components: {
 	        "ui-tabs": TabPages,
-	        "ui-header": Header
+	        "ui-header": Header,
+	        "ui-slide-left": SlidebarLeft,
+	        "ui-slide-right": SlidebarRight,
+	        "ui-reader": Reader
 	    },
 	    template: template,
 	    messages: {
 	        "app::resize": function () {
-	            this.events.resize();
+	            this.events.resize(this.data.get("contentHeight"));
 	        }
 	    },
 	    attached: function () {
@@ -39396,33 +39506,51 @@ var bkDocReader = (function (exports) {
 	            eventUtil.stopPropagation(event);
 	            eventUtil.preventDefault(event);
 	        },
-	        resize: function () {
+	        resize: function (current) {
+	            var _this = this;
 	            if (!this.ref) {
 	                return;
 	            }
-	            var headerEle = this.ref("header");
-	            var fotterEle = this.ref("fotter");
-	            var root = this.el;
-	            if (!headerEle || !fotterEle || !root) {
-	                return;
-	            }
-	            var contentHeight = root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
-	            this.data.set("contentHeight", contentHeight);
+	            var i = 0;
+	            var intervalId = setInterval(function () {
+	                var headerEle = _this.ref("header");
+	                var fotterEle = _this.ref("fotter");
+	                var root = _this.el;
+	                if (!headerEle || !fotterEle || !root) {
+	                    return;
+	                }
+	                var contentHeight = root.clientHeight - headerEle.clientHeight - fotterEle.clientHeight;
+	                var currentContentHeight = _this.data.get("contentHeight");
+	                if (currentContentHeight !== contentHeight) {
+	                    if (typeof current !== "undefined" && isFirst) {
+	                        isFirst = false;
+	                        return;
+	                    }
+	                    _this.data.set("contentHeight", contentHeight);
+	                    i = 0;
+	                    return;
+	                }
+	                if (i < 10) {
+	                    i++;
+	                    return;
+	                }
+	                clearInterval(intervalId);
+	            }, 5);
 	        }
 	    }
 	});
 
-	var css_248z$4 = ".index-module_common_font__1JO7K{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__5IRoi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_toolJump__1AnPZ{height:100%;line-height:50px;text-align:center}.index-module_toolJump__1AnPZ>span{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center;transition:all .3s}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolJump__1AnPZ>span:hover{color:#2752e7}.index-module_toolJump__1AnPZ>input{width:30px}.index-module_toolIconBtn__99EQS{height:100%;line-height:50px}.index-module_toolIconBtn__99EQS>span{font-size:24px}.index-module_toolScale__GZ9IV{height:100%;padding-top:10px;width:100%}";
+	var css_248z$5 = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n  color: #444c5e;\n}\n.index-module_toolIconBtn__99EQS:hover {\n  color: #2752e7;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n";
 	var styles$3 = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV"};
-	styleInject(css_248z$4);
+	styleInject(css_248z$5);
 
-	var html$4 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <!-- <input placeholder=\"\" type=\"number\" value=\"1\" /> -->\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+	var html$4 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
 	var html$3 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-	var css_248z$3 = "";
+	var css_248z$4 = "";
 	var styles$2 = {};
-	styleInject(css_248z$3);
+	styleInject(css_248z$4);
 
 	var allowKeys = [8, 37, 39, 46];
 	var InputNumber = dist.exports.defineComponent({
@@ -39544,94 +39672,162 @@ var bkDocReader = (function (exports) {
 	    }
 	});
 
-	var html$2 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select></c-select>\n</div>";
+	var html$2 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-select>\n</div>";
 
-	var html$1 = "<div class=\"<%= styles.select %>\">\n    <div class=\"<%= styles.value %>\" on-click=\"events.selectClick($event)\">\n        <span>哈哈</span>\n    </div>\n    <c-options show=\"{{showOptions}}\" activeVal=\"{{activeVal}}\" options=\"{{options}}\"></c-options>\n</div>";
+	var html$1 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span>{{activeText}}</span>\n    </div>\n    <span class=\"iconfont\">&#xe71d;</span>\n</div>";
 
-	var css_248z$2 = ".index-module_common_font__niHsZ{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__COYLB{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_select__2NwCG{border:1px solid #888;border-radius:4px;height:28px;line-height:28px;margin:0 auto;transition:all .3s;width:100%}.index-module_select__2NwCG>.index-module_value__4778I{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;overflow:hidden;padding:0 6px;text-align:center;text-align:left;text-overflow:ellipsis;white-space:nowrap;width:100%}.index-module_select__2NwCG:hover{border:1px solid #40a9ff}";
-	var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I"};
+	var css_248z$3 = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n  position: relative;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  position: absolute;\n  left: 6px;\n  right: 21px;\n  top: 0;\n  bottom: 0;\n  height: 100%;\n  color: #333;\n  text-align: left;\n}\n.index-module_select__2NwCG:hover,\n.index-module_select__2NwCG.index-module_active__zruap {\n  border: 1px solid #40a9ff;\n}\n.index-module_select__2NwCG > span {\n  display: block;\n  position: absolute;\n  top: 2px;\n  right: 9px;\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n";
+	var styles$1 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","active":"index-module_active__zruap"};
+	styleInject(css_248z$3);
+
+	var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
+
+	var css_248z$2 = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  transition: all 0.3s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
+	var styles = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 	styleInject(css_248z$2);
 
-	var html = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\">{{option.text}}</div>\n</div>";
-
-	var css_248z$1 = ".index-module_common_font__Sz-yv{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_options__BzSRC,.index-module_text_overflow__MHvJv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_options__BzSRC{background-color:#fff;box-shadow:2px 0 7px -1px rgba(0,0,0,.25);color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;left:100px;position:absolute;text-align:center;text-align:left;top:28px;width:86px}.index-module_options__BzSRC>.index-module_option__7PE8z{height:28px;line-height:28px;padding-left:6px;transition:all .2s;width:100%}.index-module_options__BzSRC>.index-module_option__7PE8z:hover{background-color:#f5f5f5}.index-module_options__BzSRC>.index-module_option__7PE8z.index-module_active__Xn-PG{background-color:#e9f6fe;font-weight:400}";
-	var styles = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
-	styleInject(css_248z$1);
-
-	function getDataJoinStyle(dataSource, name, key) {
-	    key = key || name;
-	    var d = dataSource.data.get(name);
-	    if (typeof d === "undefined") {
-	        return "";
-	    }
-	    return key + ": " + d + "px;";
-	}
 	var Options = dist.exports.defineComponent({
 	    template: lodash.exports.template(html)({ styles: styles }),
+	    attached: function () {
+	        this.events.documentClick = this.events.documentClick.bind(this);
+	        eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
+	        eventUtil.addHandler(window, "resize", this.events.documentClick);
+	    },
 	    initData: function () {
 	        return {
 	            options: [],
 	            show: false,
 	            top: 0,
-	            left: 0
+	            left: 0,
+	            baseEleKey: createId()
 	        };
 	    },
 	    computed: {
 	        optionsStyle: function () {
 	            var show = this.data.get("show");
 	            if (!show) {
-	                return "height: 0";
+	                return "display: none";
 	            }
-	            var styleStr = getDataJoinStyle(this, "left") +
-	                getDataJoinStyle(this, "right") +
-	                getDataJoinStyle(this, "top") +
-	                getDataJoinStyle(this, "bottom");
-	            return styleStr;
+	            var mod = this.data.get("mod") || "contextmenu";
+	            var offset = this.data.get("offset") || {};
+	            if (typeof offset.x === "undefined") {
+	                offset.x = 0;
+	            }
+	            if (typeof offset.y === "undefined") {
+	                offset.y = 0;
+	            }
+	            var x = this.data.get("x");
+	            var y = this.data.get("y");
+	            var isHaveX = typeof x === "number";
+	            var isHaveY = typeof y === "number";
+	            switch (mod) {
+	                case "contextmenu":
+	                    break;
+	                case "options":
+	                    if (isHaveX && isHaveY) {
+	                        break;
+	                    }
+	                    var baseEle = dataStoreGet(this.data.get("baseEleKey"));
+	                    var rect = getBoundingClientRect(baseEle);
+	                    if (!isHaveX) {
+	                        x = rect.x + offset.x;
+	                    }
+	                    if (!isHaveY) {
+	                        y = rect.y + rect.height + offset.y;
+	                    }
+	                    break;
+	                default:
+	                    return "display: none";
+	            }
+	            return "left:".concat(x, "px;top:").concat(y, "px;");
 	        }
+	    },
+	    events: {
+	        documentClick: function () {
+	            this.data.set("show", false);
+	        },
+	        optionClick: function (event, option) {
+	            var optionsClickFn = this.data.get("optionClick");
+	            if (optionsClickFn) {
+	                optionsClickFn(event, option.val, option);
+	                return;
+	            }
+	            this.data.set("activeVal", option.val);
+	        }
+	    },
+	    setBaseEle: function (ele) {
+	        var baseEleKey = this.data.get("baseEleKey");
+	        dataStoreSet(baseEleKey, ele || document.body);
+	    },
+	    getBaseEle: function () {
+	        var baseEleKey = this.data.get("baseEleKey");
+	        var ele = dataStoreGet(baseEleKey);
+	        if (!ele) {
+	            ele = document.body;
+	            this.setBaseEle(ele);
+	        }
+	        return ele;
+	    },
+	    disposed: function () {
+	        dataStoreRemove(this.data.get("baseEleKey"));
+	        eventUtil.removeHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
+	        eventUtil.removeHandler(window, "resize", this.events.documentClick);
 	    }
 	});
 
 	var Select = dist.exports.defineComponent({
-	    components: {
-	        "c-options": Options
-	    },
 	    template: lodash.exports.template(html$1)({ styles: styles$1 }),
+	    attached: function () {
+	        // const optionsInterface = (this.ref(
+	        //   "optionsRef"
+	        // ) as any) as OptionsInterface;
+	        // optionsInterface.setBaseEle(this.el as any);
+	        if (!this.OptionsComponent) {
+	            this.OptionsComponent = new Options({
+	                owner: this,
+	                source: "<c-options s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
+	            });
+	            this.OptionsComponent.attach(document.body);
+	        }
+	        this.OptionsComponent.setBaseEle(this.el);
+	    },
 	    initData: function () {
 	        return {
-	            showOoptions: false,
+	            showOptions: false,
 	            activeVal: 1,
-	            options: [
-	                {
-	                    val: 1,
-	                    text: "测试"
-	                },
-	                {
-	                    val: 2,
-	                    text: "测试2"
-	                },
-	                {
-	                    val: 4,
-	                    text: "测试3"
-	                },
-	            ]
+	            options: []
 	        };
+	    },
+	    computed: {
+	        activeText: function () {
+	            var activeVal = this.data.get("activeVal");
+	            var options = this.data.get("options") || [];
+	            for (var i = 0; i < options.length; i++) {
+	                var option = options[i];
+	                if (option.val === activeVal) {
+	                    return option.text;
+	                }
+	            }
+	            return "";
+	        }
 	    },
 	    events: {
 	        selectClick: function (event) {
-	            var ele = event.target;
+	            this.data.set("showOptions", true);
+	            // const ele = event.target as HTMLDivElement;
 	            //   console.log(ele.clientTop);
 	            //   console.log(ele.offsetTop);
 	            //   console.log(ele.scrollTop);
 	            //   console.log(ele.style.top);
 	            //   console.log("=====================");
-	            console.log("clientLeft=", ele.clientLeft);
-	            console.log("offsetLeft=", ele.offsetLeft);
-	            console.log("scrollLeft=", ele.scrollLeft);
-	            console.log("clientWidth", ele.clientWidth);
-	            console.log("offsetWidth", ele.offsetWidth);
-	            console.log("scrollWidth", ele.scrollWidth);
-	            console.log(ele.getBoundingClientRect());
-	            console.log(getBoundingClientRect(ele));
+	            // console.log("clientLeft=", ele.clientLeft);
+	            // console.log("offsetLeft=", ele.offsetLeft);
+	            // console.log("scrollLeft=", ele.scrollLeft);
+	            // console.log("clientWidth", ele.clientWidth);
+	            // console.log("offsetWidth", ele.offsetWidth);
+	            // console.log("scrollWidth", ele.scrollWidth);
+	            // console.log(ele.getBoundingClientRect());
+	            // console.log(dom.getBoundingClientRect(ele));
 	        }
 	    }
 	});
@@ -39640,7 +39836,34 @@ var bkDocReader = (function (exports) {
 	    components: {
 	        "c-select": Select
 	    },
-	    template: lodash.exports.template(html$2)({ styles: styles$3 })
+	    template: lodash.exports.template(html$2)({ styles: styles$3 }),
+	    initData: function () {
+	        return {
+	            activeVal: 100,
+	            options: [
+	                {
+	                    val: 20,
+	                    text: "20%"
+	                },
+	                {
+	                    val: 50,
+	                    text: "50%"
+	                },
+	                {
+	                    val: 100,
+	                    text: "100%"
+	                },
+	                {
+	                    val: 200,
+	                    text: "200%"
+	                },
+	                {
+	                    val: 400,
+	                    text: "400%"
+	                },
+	            ]
+	        };
+	    }
 	});
 
 	var fullBtnId = createId();
@@ -39649,7 +39872,7 @@ var bkDocReader = (function (exports) {
 	        type: "default",
 	        nodeInfo: {
 	            text: "打开",
-	            html: "&#xe658;",
+	            html: "&#xe65e;",
 	            title: "打开文件"
 	        }
 	    },
@@ -39657,7 +39880,7 @@ var bkDocReader = (function (exports) {
 	        type: "default",
 	        nodeInfo: {
 	            text: "保存",
-	            html: "&#xe627;",
+	            html: "&#xe65c;",
 	            title: "保存"
 	        }
 	    },
@@ -39665,7 +39888,7 @@ var bkDocReader = (function (exports) {
 	        type: "default",
 	        nodeInfo: {
 	            text: "另存为",
-	            html: "&#xe64a;",
+	            html: "&#xe65c;",
 	            title: "另存为"
 	        }
 	    },
@@ -39673,7 +39896,7 @@ var bkDocReader = (function (exports) {
 	        type: "default",
 	        nodeInfo: {
 	            text: "打印",
-	            html: "&#xe609;",
+	            html: "&#xe65d;",
 	            title: "打印"
 	        }
 	    },
@@ -39694,7 +39917,7 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "选择",
 	            title: "选择",
-	            html: "&#xe623;"
+	            html: "&#xe65f;"
 	        }
 	    },
 	    move: {
@@ -39702,7 +39925,7 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "移动",
 	            title: "移动",
-	            html: "&#xe62d;"
+	            html: "&#xe660;"
 	        }
 	    },
 	    ActualSize: {
@@ -39710,7 +39933,7 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "实际大小",
 	            title: "实际大小",
-	            html: "&#xe636;"
+	            html: "&#xe661;"
 	        }
 	    },
 	    SuitableWidth: {
@@ -39718,7 +39941,7 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "适合宽度",
 	            title: "适合宽度",
-	            html: "&#xe69a;"
+	            html: "&#xe662;"
 	        }
 	    },
 	    SuitablePage: {
@@ -39726,7 +39949,7 @@ var bkDocReader = (function (exports) {
 	        nodeInfo: {
 	            text: "适合页面",
 	            title: "适合页面",
-	            html: "&#xe693;"
+	            html: "&#xe663;"
 	        }
 	    },
 	    narrow: {
@@ -39763,7 +39986,7 @@ var bkDocReader = (function (exports) {
 	    find: {
 	        type: "default",
 	        nodeInfo: {
-	            html: "&#xe6ac;",
+	            html: "&#xe664;",
 	            title: "查找",
 	            text: "查找"
 	        }
@@ -39771,7 +39994,7 @@ var bkDocReader = (function (exports) {
 	    full: {
 	        type: "default",
 	        nodeInfo: {
-	            html: "&#xe613;",
+	            html: "&#xe665;",
 	            title: "全屏",
 	            text: "全屏"
 	        }
@@ -39779,7 +40002,7 @@ var bkDocReader = (function (exports) {
 	    preferenc: {
 	        type: "default",
 	        nodeInfo: {
-	            html: "&#xe6df;",
+	            html: "&#xe666;",
 	            title: "首选项",
 	            text: "首选项"
 	        }
@@ -39870,6 +40093,20 @@ var bkDocReader = (function (exports) {
 	        help: {
 	            text: "帮助"
 	        }
+	    },
+	    sildebarLeftTabs: {
+	        sign: {
+	            text: "签名",
+	            iconHtml: "&#xe64f;"
+	        },
+	        comment: {
+	            text: "注释",
+	            iconHtml: "&#xe650;"
+	        },
+	        thumbnail: {
+	            text: "缩图",
+	            iconHtml: "&#xe651;"
+	        }
 	    }
 	};
 
@@ -39889,23 +40126,31 @@ var bkDocReader = (function (exports) {
 	        },
 	        autoHide: "noPage"
 	    },
-	    areas: {
-	        header: {
+	    header: {
+	        toolbars: [
+	            defaultData.headerTabs.start,
+	            defaultData.headerTabs.tools,
+	            defaultData.headerTabs.view,
+	            defaultData.headerTabs.safety,
+	            defaultData.headerTabs.help,
+	        ]
+	    },
+	    sidebars: {
+	        left: {
 	            toolbars: [
-	                defaultData.headerTabs.start,
-	                defaultData.headerTabs.tools,
-	                defaultData.headerTabs.view,
-	                defaultData.headerTabs.safety,
-	                defaultData.headerTabs.help,
+	                defaultData.sildebarLeftTabs.sign,
+	                defaultData.sildebarLeftTabs.comment,
+	                defaultData.sildebarLeftTabs.thumbnail,
 	            ]
-	        }
+	        },
+	        right: false
 	    }
 	};
 	var App$1 = dist.exports.defineComponent({
 	    components: {
 	        "ui-app": AppUi
 	    },
-	    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" />",
+	    template: "<ui-app s-show=\"show\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions}}}\" appId=\"{{appId}}\" ></<ui-app>",
 	    initData: function () {
 	        return {
 	            show: true,
@@ -39919,6 +40164,10 @@ var bkDocReader = (function (exports) {
 	        },
 	        "TABS::ADD": function () {
 	            console.log("标签新增被触发");
+	        },
+	        "EVENT::ID::HANDLE": function (arg) {
+	            var val = arg.value;
+	            console.log(val);
 	        }
 	    }
 	});
@@ -39998,6 +40247,26 @@ var bkDocReader = (function (exports) {
 	            }
 	            _this._appComponent.data.set("show", _this._isShow);
 	        };
+	        this._handleToobarConfigs = function (toolbarConfigs) {
+	            for (var i = 0; i < toolbarConfigs.length; i++) {
+	                var toolbar_1 = toolbarConfigs[i];
+	                if (toolbar_1.activeChange) {
+	                    var activeChangeFnId = createId();
+	                    dataStoreSet(activeChangeFnId, toolbar_1.activeChange);
+	                    toolbar_1._activeChangeFnId = activeChangeFnId;
+	                }
+	                if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
+	                    continue;
+	                }
+	                for (var j = 0; j < toolbar_1.tools.length; j++) {
+	                    var toolInfo = toolbar_1.tools[j];
+	                    if (!toolInfo.nodeInfo) {
+	                        continue;
+	                    }
+	                    toolInfo.nodeInfo = handleNodeInfo(toolInfo.nodeInfo);
+	                }
+	            }
+	        };
 	        this.getInitConfig = function () {
 	            return _this._initOptions;
 	        };
@@ -40043,21 +40312,25 @@ var bkDocReader = (function (exports) {
 	                    btns[i] = handleNodeInfo(btns[i]);
 	                }
 	            }
-	            if (options.areas) {
-	                if (options.areas.header && options.areas.header.toolbars) {
-	                    for (var i = 0; i < options.areas.header.toolbars.length; i++) {
-	                        var toolbar_1 = options.areas.header.toolbars[i];
-	                        if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
-	                            continue;
-	                        }
-	                        for (var j = 0; j < toolbar_1.tools.length; j++) {
-	                            var toolInfo = toolbar_1.tools[j];
-	                            if (!toolInfo.nodeInfo) {
-	                                continue;
-	                            }
-	                            toolInfo.nodeInfo = handleNodeInfo(toolInfo.nodeInfo);
-	                        }
-	                    }
+	            if (options.header && options.header.toolbars) {
+	                _this._handleToobarConfigs(options.header.toolbars);
+	                // for (let i = 0; i < options.header.toolbars.length; i++) {
+	                //   const toolbar = options.header.toolbars[i];
+	                //   if (!toolbar.tools || toolbar.tools.length === 0) {
+	                //     continue;
+	                //   }
+	                //   for (let j = 0; j < toolbar.tools.length; j++) {
+	                //     const toolInfo = toolbar.tools[j];
+	                //     if (!toolInfo.nodeInfo) {
+	                //       continue;
+	                //     }
+	                //     toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
+	                //   }
+	                // }
+	            }
+	            if (options.sidebars) {
+	                if (options.sidebars.left) {
+	                    _this._handleToobarConfigs(options.sidebars.left.toolbars);
 	                }
 	            }
 	            _this._appComponent.data.merge("appOptions", JSON.parse(JSON.stringify(options)), { force: true });
@@ -40119,7 +40392,10 @@ var bkDocReader = (function (exports) {
 	    return AppImpl;
 	}());
 
-	var css_248z = ".iconfont{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:iconfont!important;font-size:16px;font-style:normal}.icon-yuanjiaofangkuang:before{content:\"\\e648\"}.icon-guanbi:before{content:\"\\eaf2\"}.icon-suoxiao:before{content:\"\\e61b\"}";
+	var css_248z$1 = ".iconfont {\n  font-family: \"iconfont\" !important;\n  font-size: 16px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n";
+	styleInject(css_248z$1);
+
+	var css_248z = ".clearfix:after {\n  content: \".\";\n  display: block;\n  height: 0;\n  clear: both;\n  visibility: hidden;\n}\n.clearfix {\n  *zoom: 1;\n}\n";
 	styleInject(css_248z);
 
 	var App = AppImpl;
@@ -40132,3 +40408,4 @@ var bkDocReader = (function (exports) {
 	return exports;
 
 })({});
+//# sourceMappingURL=bkDocReader.js.map

@@ -1,0 +1,22 @@
+<div class="<%= styles.slidebarLeft %>" style="{{slideWrapperIeStyle}}">
+    <div class="clearfix <%= styles.tabsWrapper %>">
+        <div class="<%= styles.comment %>">
+            <span>缩图</span>
+        </div>
+        <div class="<%= styles.tabs %>">
+            <div s-for="toolbar, index in toolbars" class="<%= styles.tab %> {{activeKey === index ? '<%= styles.active %>':''}}" title="{{toolbar.text}}" on-click="events.tabClick($event, index, toolbar)">
+                <div class="<%= styles.icon %>">
+                    <span class="iconfont">{{toolbar.iconHtml|raw}}</span>
+                </div>
+                <div class="<%= styles.desc %>">
+                    <span>{{toolbar.text}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div s-show="{{activeKey >= 0}}" class="clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}">
+        <div class="<%= styles.expand %>" on-click="events.expandChange()">
+            <span class="iconfont">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>
+        </div>
+    </div>
+</div>

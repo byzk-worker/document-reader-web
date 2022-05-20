@@ -6,6 +6,90 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "29708955",
+      "name": "首选项",
+      "font_class": "shouxuanxiang",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "29708870",
+      "name": "全屏",
+      "font_class": "quanping",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "29708802",
+      "name": "查找",
+      "font_class": "chazhao1",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
+      "icon_id": "29708711",
+      "name": "适合页面",
+      "font_class": "shiheyemian",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "29708650",
+      "name": "合适宽度",
+      "font_class": "heshikuandu",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "29707635",
+      "name": "实际大小",
+      "font_class": "shijidaxiao1",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "29707553",
+      "name": "移动",
+      "font_class": "yidong",
+      "unicode": "e660",
+      "unicode_decimal": 58976
+    },
+    {
+      "icon_id": "29707493",
+      "name": "选择",
+      "font_class": "yidong1",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "29707280",
+      "name": "文件",
+      "font_class": "dayin1",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "29707214",
+      "name": "打印",
+      "font_class": "dayin",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "29707092",
+      "name": "保存",
+      "font_class": "baocun",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "29706169",
+      "name": "另存为",
+      "font_class": "lingcunwei",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
       "icon_id": "29557794",
       "name": "叉",
       "font_class": "cha",
@@ -25,6 +109,13 @@
       "font_class": "xiala",
       "unicode": "e656",
       "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "29702253",
+      "name": "下拉",
+      "font_class": "xiala-copy",
+      "unicode": "e71d",
+      "unicode_decimal": 59165
     },
     {
       "icon_id": "29557781",
@@ -153,27 +244,6 @@
       "unicode_decimal": 58883
     },
     {
-      "icon_id": "17407349",
-      "name": "挑选项目",
-      "font_class": "tiaoxuanxiangmu",
-      "unicode": "e6df",
-      "unicode_decimal": 59103
-    },
-    {
-      "icon_id": "1447724",
-      "name": "全屏",
-      "font_class": "quanping",
-      "unicode": "e613",
-      "unicode_decimal": 58899
-    },
-    {
-      "icon_id": "169952",
-      "name": "查找",
-      "font_class": "chazhao",
-      "unicode": "e6ac",
-      "unicode_decimal": 59052
-    },
-    {
       "icon_id": "5651498",
       "name": "缩小",
       "font_class": "suoxiao",
@@ -186,69 +256,6 @@
       "font_class": "fangda",
       "unicode": "e65a",
       "unicode_decimal": 58970
-    },
-    {
-      "icon_id": "1767376",
-      "name": "适合页面",
-      "font_class": "shiheyemian",
-      "unicode": "e693",
-      "unicode_decimal": 59027
-    },
-    {
-      "icon_id": "1769070",
-      "name": "适合宽度",
-      "font_class": "shihekuandu",
-      "unicode": "e69a",
-      "unicode_decimal": 59034
-    },
-    {
-      "icon_id": "4888580",
-      "name": "icon-design-39",
-      "font_class": "shijidaxiao",
-      "unicode": "e636",
-      "unicode_decimal": 58934
-    },
-    {
-      "icon_id": "3978076",
-      "name": "移动",
-      "font_class": "yidong",
-      "unicode": "e62d",
-      "unicode_decimal": 58925
-    },
-    {
-      "icon_id": "10048839",
-      "name": "选择",
-      "font_class": "xuanze",
-      "unicode": "e623",
-      "unicode_decimal": 58915
-    },
-    {
-      "icon_id": "11746725",
-      "name": "打印机",
-      "font_class": "dayinji",
-      "unicode": "e609",
-      "unicode_decimal": 58889
-    },
-    {
-      "icon_id": "29486960",
-      "name": "另存为",
-      "font_class": "lingcunwei",
-      "unicode": "e64a",
-      "unicode_decimal": 58954
-    },
-    {
-      "icon_id": "17833678",
-      "name": "保存",
-      "font_class": "baocun",
-      "unicode": "e627",
-      "unicode_decimal": 58919
-    },
-    {
-      "icon_id": "29049609",
-      "name": "01 打开图形",
-      "font_class": "a-01dakaituxing",
-      "unicode": "e658",
-      "unicode_decimal": 58968
     }
   ]
 }

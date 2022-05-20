@@ -12,7 +12,7 @@ const headerTabsBtns = {
     type: "default",
     nodeInfo: {
       text: "打开",
-      html: "&#xe658;",
+      html: "&#xe65e;",
       title: "打开文件",
     },
   } as ToolInfo,
@@ -20,7 +20,7 @@ const headerTabsBtns = {
     type: "default",
     nodeInfo: {
       text: "保存",
-      html: "&#xe627;",
+      html: "&#xe65c;",
       title: "保存",
     },
   } as ToolInfo,
@@ -28,7 +28,7 @@ const headerTabsBtns = {
     type: "default",
     nodeInfo: {
       text: "另存为",
-      html: "&#xe64a;",
+      html: "&#xe65c;",
       title: "另存为",
     },
   } as ToolInfo,
@@ -36,7 +36,7 @@ const headerTabsBtns = {
     type: "default",
     nodeInfo: {
       text: "打印",
-      html: "&#xe609;",
+      html: "&#xe65d;",
       title: "打印",
     },
   } as ToolInfo,
@@ -57,7 +57,7 @@ const headerTabsBtns = {
     nodeInfo: {
       text: "选择",
       title: "选择",
-      html: "&#xe623;",
+      html: "&#xe65f;",
     },
   } as ToolInfo,
   move: {
@@ -65,7 +65,7 @@ const headerTabsBtns = {
     nodeInfo: {
       text: "移动",
       title: "移动",
-      html: "&#xe62d;",
+      html: "&#xe660;",
     },
   } as ToolInfo,
   ActualSize: {
@@ -73,7 +73,7 @@ const headerTabsBtns = {
     nodeInfo: {
       text: "实际大小",
       title: "实际大小",
-      html: "&#xe636;",
+      html: "&#xe661;",
     },
   } as ToolInfo,
   SuitableWidth: {
@@ -81,7 +81,7 @@ const headerTabsBtns = {
     nodeInfo: {
       text: "适合宽度",
       title: "适合宽度",
-      html: "&#xe69a;",
+      html: "&#xe662;",
     },
   } as ToolInfo,
   SuitablePage: {
@@ -89,7 +89,7 @@ const headerTabsBtns = {
     nodeInfo: {
       text: "适合页面",
       title: "适合页面",
-      html: "&#xe693;",
+      html: "&#xe663;",
     },
   } as ToolInfo,
   narrow: {
@@ -133,7 +133,7 @@ const headerTabsBtns = {
   find: {
     type: "default",
     nodeInfo: {
-      html: "&#xe6ac;",
+      html: "&#xe664;",
       title: "查找",
       text: "查找",
     },
@@ -141,7 +141,7 @@ const headerTabsBtns = {
   full: {
     type: "default",
     nodeInfo: {
-      html: "&#xe613;",
+      html: "&#xe665;",
       title: "全屏",
       text: "全屏",
     },
@@ -149,7 +149,7 @@ const headerTabsBtns = {
   preferenc: {
     type: "default",
     nodeInfo: {
-      html: "&#xe6df;",
+      html: "&#xe666;",
       title: "首选项",
       text: "首选项",
     },
@@ -240,6 +240,20 @@ export const defaultData = {
     } as ToolbarConfig,
     help: {
       text: "帮助",
+    } as ToolbarConfig,
+  },
+  sildebarLeftTabs: {
+    sign: {
+      text: "签名",
+      iconHtml: "&#xe64f;",
+    } as ToolbarConfig,
+    comment: {
+      text: "注释",
+      iconHtml: "&#xe650;",
+    } as ToolbarConfig,
+    thumbnail: {
+      text: "缩图",
+      iconHtml: "&#xe651;",
     } as ToolbarConfig,
   },
 };

@@ -59,6 +59,8 @@
     transition: all 0.3s;
     overflow: hidden;
     position: relative;
+    box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);
+    z-index: 2;
 
     &.active {
       height: @headerToolPanelHeight;
@@ -115,10 +117,16 @@
           height: 100%;
           cursor: pointer;
           overflow: hidden;
+          &:hover {
+            > .text,
+            > .icon {
+              color: #2752e7;
+            }
+          }
 
           > .text {
             .common_font;
-            color: #333;
+            color: #444C5E;
           }
           > .icon {
             width: 24px;
@@ -126,6 +134,7 @@
             border-radius: 24px;
             margin: 4px auto 2px auto;
             text-align: center;
+            color: #444c5e;
             > span {
               font-size: 24px;
             }

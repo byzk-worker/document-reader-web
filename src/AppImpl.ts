@@ -5,9 +5,10 @@ import {
   AppInterface,
   AppOptions,
   AppUpdateOptions,
+  ToolbarConfig,
   WebFontConfig,
 } from "./types";
-import { app, dom, id as idUtils } from "./utils";
+import { app, datas, dom, id, id as idUtils } from "./utils";
 import { defaultData } from "./ui/defaults/default";
 
 const fontfaceStyleId = new Date().getTime() + "";
@@ -28,16 +29,24 @@ const defaultOptions: AppUpdateOptions = {
     },
     autoHide: "noPage",
   },
-  areas: {
-    header: {
+  header: {
+    toolbars: [
+      defaultData.headerTabs.start,
+      defaultData.headerTabs.tools,
+      defaultData.headerTabs.view,
+      defaultData.headerTabs.safety,
+      defaultData.headerTabs.help,
+    ],
+  },
+  sidebars: {
+    left: {
       toolbars: [
-        defaultData.headerTabs.start,
-        defaultData.headerTabs.tools,
-        defaultData.headerTabs.view,
-        defaultData.headerTabs.safety,
-        defaultData.headerTabs.help,
+        defaultData.sildebarLeftTabs.sign,
+        defaultData.sildebarLeftTabs.comment,
+        defaultData.sildebarLeftTabs.thumbnail,
       ],
     },
+    right: false,
   },
 };
 
@@ -51,7 +60,7 @@ const App = defineComponent<AppProps>({
   components: {
     "ui-app": AppUi,
   },
-  template: `<ui-app s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" />`,
+  template: `<ui-app s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" ></<ui-app>`,
   initData: function () {
     return {
       show: true,
@@ -65,6 +74,10 @@ const App = defineComponent<AppProps>({
     },
     "TABS::ADD"() {
       console.log("标签新增被触发");
+    },
+    "EVENT::ID::HANDLE"(arg) {
+      const val = arg.value as any;
+      console.log(val);
     },
   },
 });
@@ -170,6 +183,30 @@ export class AppImpl implements AppInterface {
     this._appComponent.data.set("show", this._isShow);
   };
 
+  private _handleToobarConfigs = (toolbarConfigs: ToolbarConfig[]) => {
+    for (let i = 0; i < toolbarConfigs.length; i++) {
+      const toolbar = toolbarConfigs[i];
+
+      if (toolbar.activeChange) {
+        const activeChangeFnId = id.createId();
+        datas.dataStoreSet(activeChangeFnId, toolbar.activeChange);
+        toolbar._activeChangeFnId = activeChangeFnId;
+      }
+
+      if (!toolbar.tools || toolbar.tools.length === 0) {
+        continue;
+      }
+
+      for (let j = 0; j < toolbar.tools.length; j++) {
+        const toolInfo = toolbar.tools[j];
+        if (!toolInfo.nodeInfo) {
+          continue;
+        }
+        toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
+      }
+    }
+  };
+
   public getRootEle(): HTMLElement | undefined {
     return this._attachEle;
   }
@@ -226,22 +263,27 @@ export class AppImpl implements AppInterface {
       }
     }
 
-    if (options.areas) {
-      if (options.areas.header && options.areas.header.toolbars) {
-        for (let i = 0; i < options.areas.header.toolbars.length; i++) {
-          const toolbar = options.areas.header.toolbars[i];
-          if (!toolbar.tools || toolbar.tools.length === 0) {
-            continue;
-          }
+    if (options.header && options.header.toolbars) {
+      this._handleToobarConfigs(options.header.toolbars);
+      // for (let i = 0; i < options.header.toolbars.length; i++) {
+      //   const toolbar = options.header.toolbars[i];
+      //   if (!toolbar.tools || toolbar.tools.length === 0) {
+      //     continue;
+      //   }
 
-          for (let j = 0; j < toolbar.tools.length; j++) {
-            const toolInfo = toolbar.tools[j];
-            if (!toolInfo.nodeInfo) {
-              continue;
-            }
-            toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
-          }
-        }
+      //   for (let j = 0; j < toolbar.tools.length; j++) {
+      //     const toolInfo = toolbar.tools[j];
+      //     if (!toolInfo.nodeInfo) {
+      //       continue;
+      //     }
+      //     toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
+      //   }
+      // }
+    }
+
+    if (options.sidebars) {
+      if (options.sidebars.left) {
+        this._handleToobarConfigs(options.sidebars.left.toolbars);
       }
     }
 

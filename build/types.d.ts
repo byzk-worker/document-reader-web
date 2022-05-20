@@ -115,6 +115,9 @@ export declare interface Areas {
   };
 }
 
+/**
+ * 应用更新参数
+ */
 export declare interface AppUpdateOptions {
   /**
    * 标签页信息配置
@@ -130,6 +133,9 @@ export declare interface AppUpdateOptions {
   classNames?: string[] | string;
 }
 
+/**
+ * 应用初始化选项
+ */
 export declare interface AppOptions extends AppUpdateOptions {
   /**
    * 字体配置, 目前只支持更改一次不支持修改
@@ -137,6 +143,9 @@ export declare interface AppOptions extends AppUpdateOptions {
   fontConfig?: WebFontConfig;
 }
 
+/**
+ * web字体库配置
+ */
 export declare interface WebFontConfig {
   /**
    * 所在目录

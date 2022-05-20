@@ -2,15 +2,7 @@ import { defineComponent, Component } from "san";
 import { template as templateParser } from "lodash";
 import html from "./index.html";
 import styles from "./index.module.less";
-
-function getDataJoinStyle(dataSource: any, name: string, key?: string): string {
-  key = key || name;
-  const d = dataSource.data.get(name);
-  if (typeof d === "undefined") {
-    return "";
-  }
-  return key + ": " + d + "px;";
-}
+import { datas, dom, id } from "../../utils";
 
 export interface OptionInfo {
   val: any;
@@ -20,40 +12,145 @@ export interface OptionInfo {
 export interface OptionsProps {
   options: OptionInfo[];
   activeVal?: string;
-  left?: number;
-  right?: number;
-  top?: number;
-  bottom?: number;
+  mod?: "contextmenu" | "options";
+  x?: number;
+  y?: number;
+  offset?: {
+    x?: number;
+    y?: number;
+  };
+  optionClick?: (
+    event: MouseEvent,
+    val: string,
+    optionInfo: OptionInfo
+  ) => void;
 }
 interface OptionsStates {
   show: boolean;
+  baseEleKey: string;
 }
 type DataType = OptionsProps & OptionsStates;
-type OptionsComponent = Component<DataType>;
+export interface OptionsInterface {
+  setBaseEle(ele: HTMLElement | undefined): void;
+  getBaseEle(): HTMLElement | undefined;
+}
+type OptionsComponent = Component<DataType> &
+  OptionsInterface & {
+    events: {
+      documentClick: () => void;
+    };
+  };
+
 export default defineComponent<DataType>({
   template: templateParser(html)({ styles }),
+  attached(this: OptionsComponent) {
+    this.events.documentClick = this.events.documentClick.bind(this);
+    dom.eventUtil.addHandler(
+      document.body || document.getElementsByTagName("body")[0],
+      "click",
+      this.events.documentClick
+    );
+    dom.eventUtil.addHandler(
+      window as any,
+      "resize",
+      this.events.documentClick
+    );
+  },
   initData() {
     return {
       options: [],
       show: false,
       top: 0,
       left: 0,
+      baseEleKey: id.createId(),
     };
   },
   computed: {
     optionsStyle() {
       const show = this.data.get("show");
       if (!show) {
-        return "height: 0";
+        return "display: none";
       }
 
-      let styleStr =
-        getDataJoinStyle(this, "left") +
-        getDataJoinStyle(this, "right") +
-        getDataJoinStyle(this, "top") +
-        getDataJoinStyle(this, "bottom");
+      const mod = this.data.get("mod") || "contextmenu";
+      const offset = this.data.get("offset") || {};
+      if (typeof offset.x === "undefined") {
+        offset.x = 0;
+      }
 
-      return styleStr;
+      if (typeof offset.y === "undefined") {
+        offset.y = 0;
+      }
+
+      let x = this.data.get("x");
+      let y = this.data.get("y");
+      const isHaveX = typeof x === "number";
+      const isHaveY = typeof y === "number";
+      switch (mod) {
+        case "contextmenu":
+          break;
+        case "options":
+          if (isHaveX && isHaveY) {
+            break;
+          }
+
+          const baseEle = datas.dataStoreGet<HTMLElement>(
+            this.data.get("baseEleKey")
+          );
+          const rect = dom.getBoundingClientRect(baseEle);
+          if (!isHaveX) {
+            x = rect.x + offset.x;
+          }
+
+          if (!isHaveY) {
+            y = rect.y + rect.height + offset.y;
+          }
+
+          break;
+        default:
+          return "display: none";
+      }
+
+      return `left:${x}px;top:${y}px;`;
     },
+  },
+  events: {
+    documentClick(this: OptionsComponent) {
+      this.data.set("show", false);
+    },
+    optionClick(this: OptionsComponent, event: MouseEvent, option: OptionInfo) {
+      const optionsClickFn = this.data.get("optionClick");
+      if (optionsClickFn) {
+        optionsClickFn(event, option.val, option);
+        return;
+      }
+      this.data.set("activeVal", option.val);
+    },
+  },
+  setBaseEle(this: OptionsComponent, ele: HTMLElement | undefined) {
+    const baseEleKey = this.data.get("baseEleKey");
+    datas.dataStoreSet(baseEleKey, ele || document.body);
+  },
+  getBaseEle(this: OptionsComponent): HTMLElement {
+    const baseEleKey = this.data.get("baseEleKey");
+    let ele = datas.dataStoreGet<HTMLElement>(baseEleKey);
+    if (!ele) {
+      ele = document.body;
+      this.setBaseEle(ele);
+    }
+    return ele;
+  },
+  disposed(this: OptionsComponent) {
+    datas.dataStoreRemove(this.data.get("baseEleKey"));
+    dom.eventUtil.removeHandler(
+      document.body || document.getElementsByTagName("body")[0],
+      "click",
+      this.events.documentClick
+    );
+    dom.eventUtil.removeHandler(
+      window as any,
+      "resize",
+      this.events.documentClick
+    );
   },
 });
