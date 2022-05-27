@@ -2,8 +2,8 @@ import { defineComponent, Component } from "san";
 import { template as templateParser } from "lodash";
 import html from "./index.html";
 import styles from "./index.module.less";
-import { ToolbarConfig } from "../../types";
-import { ie } from "../../utils";
+import { Diasble, ToolbarConfig } from "../../types";
+import { app, ie } from "../../utils";
 
 interface SlidebarLeftProps {}
 interface SlidebarLeftStates {
@@ -15,6 +15,7 @@ export interface SlidebarLeftInterface {}
 type DataType = SlidebarLeftProps & SlidebarLeftStates;
 type SlidebarLeftComponent = Component<DataType>;
 export default defineComponent<DataType>({
+  components: {},
   template: templateParser(html)({ styles }),
   initData() {
     return {
@@ -46,8 +47,12 @@ export default defineComponent<DataType>({
       this: SlidebarLeftComponent,
       event: MouseEvent,
       key: number,
-      toolbar: ToolbarConfig
+      toolbar: ToolbarConfig,
+      disabled: string
     ) {
+      if (disabled) {
+        return;
+      }
       const nowActiveKey = this.data.get("activeKey");
       this.data.set("activeKey", key);
       if (nowActiveKey !== key) {
@@ -56,6 +61,42 @@ export default defineComponent<DataType>({
     },
     expandChange(this: SlidebarLeftComponent) {
       this.data.set("expand", !this.data.get("expand"));
+    },
+  },
+  fns: {
+    disabled(this: SlidebarLeftComponent, disabled: Diasble) {
+      if (typeof disabled === "boolean") {
+        return disabled ? styles.disabled : "";
+      } else if (typeof disabled !== "string") {
+        return "";
+      }
+
+      const appInterface = app.getApp(this.data.get("appId"));
+
+      const datas = app.getAppDataStore(this.data.get("appId"));
+      const fn = datas.get(disabled) as any;
+      return fn(appInterface) ? styles.disabled : "";
+    },
+    showTab(this: SlidebarLeftComponent, toolbar: ToolbarConfig) {
+      if (!toolbar.needLoadFileOK) {
+        return true;
+      }
+
+      const appInterface = app.getApp(this.data.get("appId"));
+      if (!appInterface) {
+        return false;
+      }
+
+      const currentBookmark = appInterface.currentBookmark();
+      if (
+        !currentBookmark ||
+        !currentBookmark.parserWrapperInfo ||
+        !currentBookmark.parserWrapperInfo.parserInterface
+      ) {
+        return false;
+      }
+
+      return true;
     },
   },
 });

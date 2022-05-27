@@ -8,15 +8,16 @@
   position: relative;
   height: 100%;
   overflow: hidden;
-  background: #EFF1F3;
+  background: #eff1f3;
   transition: all 0.3;
-//   &.expand {
-//     width: (@toolbarWidth + @panelExpandWidth);
-//   }
+  user-select: none;
+  //   &.expand {
+  //     width: (@toolbarWidth + @panelExpandWidth);
+  //   }
 
-//   &.fold {
-//     width: (@toolbarWidth + @panelFoldWidth);
-//   }
+  //   &.fold {
+  //     width: (@toolbarWidth + @panelFoldWidth);
+  //   }
 
   > .tabsWrapper {
     width: @toolbarWidth;
@@ -53,6 +54,11 @@
         padding-top: 5px;
         cursor: pointer;
         margin-bottom: 17px;
+        border: none;
+
+        &.disabled {
+          cursor: not-allowed;
+        }
 
         > .icon,
         > .desc {
@@ -60,7 +66,7 @@
           text-align: center;
           > span {
             .common_font;
-            color: #444C5E;
+            color: #444c5e;
           }
         }
 
@@ -74,7 +80,7 @@
         }
 
         &.active {
-          background-color: #FFFFFF;
+          background-color: #ffffff;
           > .icon,
           > .desc {
             > span {
@@ -90,7 +96,7 @@
     width: @panelExpandWidth;
     height: 100%;
     overflow: hidden;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     float: left;
     position: relative;
     transition: all 0.3s;

@@ -1,6 +1,7 @@
-import { AppInterface, NodeInfo } from "../../types";
+import { AppInterface, Diasble, NodeInfo } from "../../types";
 import { Component } from "san";
 import { createId } from "../id";
+import { DataStore } from "../../dataStore";
 
 /**
  * 派发DOM事件消息
@@ -73,6 +74,20 @@ function nodeEvenBindEvent(
  */
 export function nodeEventInfoGet(eventId: string): NodeEventInfo | undefined {
   return _nodeEventMap[eventId];
+}
+
+export function handleDisabled(
+  disabledInfo: Diasble,
+  datas: DataStore
+): boolean | string {
+  const disabledType = typeof disabledInfo;
+  if (disabledType !== "function") {
+    return disabledInfo as boolean;
+  }
+
+  const disableFnId = createId();
+  datas.set(disableFnId, disabledInfo);
+  return disableFnId;
 }
 
 /**
@@ -149,7 +164,7 @@ export function nodeRender(
     throw new Error("获取节点render方法失败");
   }
 
-  const ele =  nodeInfo.render(app, nodeInfo, parent);
+  const ele = nodeInfo.render(app, nodeInfo, parent);
   if (renderToDom) {
     if (typeof (ele as any).attach !== "function") {
       renderToDom.innerHTML = "";
@@ -159,7 +174,7 @@ export function nodeRender(
     }
   }
 
-  return ele
+  return ele;
 }
 
 /**

@@ -52,7 +52,8 @@ export default defineComponent<DataType>({
   detached(this: HeaderComponent) {
     dom.eventUtil.removeHandler(window as any, "resize", this.events.resize);
   },
-  updated() {
+  updated(this: HeaderComponent) {
+    this.events.resize();
     // setTimeout(() => {
     this.dispatch("app::resize", {});
     // }, 300);
@@ -198,6 +199,9 @@ export default defineComponent<DataType>({
   },
   events: {
     resize(this: HeaderComponent) {
+      if (!this.data.get("appShow")) {
+        return;
+      }
       const tabPanelsEle = (this.ref("tabPanels") as any) as HTMLElement;
       if (!tabPanelsEle) {
         return;
@@ -262,6 +266,9 @@ export default defineComponent<DataType>({
       return undefined;
     },
     prevAndNextToolClick(this: HeaderComponent, isNext: boolean) {
+      if (!this.data.get("appShow")) {
+        return;
+      }
       const toolsPanelWidth = this.data.get("toolsPanelWidth");
       const tabPanelsWidth = this.data.get("tabPanelsWidth");
       let marginLeft = this.data.get("marginLeft");

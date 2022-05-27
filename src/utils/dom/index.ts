@@ -1,4 +1,4 @@
-import { isIe } from "../ie";
+import { lessThan } from "../ie";
 
 export function createBlobUrlByFile(file: File) {
   if ((window as any).createObjectURL) {
@@ -12,7 +12,7 @@ export function createBlobUrlByFile(file: File) {
 }
 
 export function createElement(targetName: string, name: string = ""): any {
-  if (isIe()) {
+  if (lessThan(9)) {
     return document.createElement(
       `<${targetName} name="${name}"></${targetName}>`
     );
@@ -100,8 +100,19 @@ export function isFullScreen() {
 }
 
 export const eventUtil = {
+  once(
+    ele: HTMLElement | Window,
+    type: string,
+    handler: (...args: any) => void
+  ) {
+    const tempFn = function (...args) {
+      handler(...args);
+      eventUtil.removeHandler(ele, type, tempFn);
+    };
+    eventUtil.addHandler(ele, type, tempFn);
+  },
   addHandler: function (
-    element: HTMLElement,
+    element: HTMLElement | Window,
     type: string,
     handler: (...args: any) => void
   ) {
@@ -114,7 +125,7 @@ export const eventUtil = {
     }
   },
   removeHandler: function (
-    element: HTMLElement,
+    element: HTMLElement | Window,
     type: string,
     handler: (...args: any) => void
   ) {

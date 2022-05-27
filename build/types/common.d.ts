@@ -1,5 +1,10 @@
 import { Component } from "san";
 import { AppInterface } from "./app";
+
+/**
+ * 禁用信息
+ */
+export type Diasble = boolean | ((app: AppInterface) => boolean);
 /**
  * dom元素节点信息
  */
@@ -82,6 +87,10 @@ export declare interface ToolInfo {
    * 是否需要已经打开阅读器在显示
    */
   needReader?: true;
+  /**
+   * 禁用信息
+   */
+  disabled?: Diasble;
 }
 
 /**
@@ -97,6 +106,10 @@ export declare interface ToolbarConfig {
    */
   className?: string | string[];
   /**
+   * 是否需要打开文件完成之后进行显示
+   */
+  needLoadFileOK?: boolean;
+  /**
    * 文本
    */
   text?: string;
@@ -108,6 +121,10 @@ export declare interface ToolbarConfig {
    * 工具信息
    */
   tools?: ToolInfo[];
+  /**
+   * 是否禁用.
+   */
+  disabled?: Diasble;
   /**
    * 激活切换事件ID
    */

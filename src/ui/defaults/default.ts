@@ -1,21 +1,10 @@
-import { NodeInfo, ToolbarConfig, ToolInfo } from "../../types";
+import { AppInterface, NodeInfo, ToolbarConfig, ToolInfo } from "../../types";
 import { dom, id } from "../../utils";
 import { Component } from "san";
 import styles from "./index.module.less";
 import ToolJump from "./components/ToolJump";
 import ToolScale from "./components/ToolScale";
-
-const fileInput = dom.createElement("input") as HTMLInputElement;
-fileInput.style.display = "none";
-
-function initDom() {
-  (document.body || document.getElementsByTagName("body")[0]).appendChild(
-    fileInput
-  );
-  window.removeEventListener("load", initDom);
-}
-
-window.addEventListener("load", initDom);
+import TempReaderContent from "./components/TempReaderContent";
 
 const fullBtnId = id.createId();
 
@@ -27,25 +16,11 @@ const headerTabsBtns = {
       html: "&#xe65e;",
       title: "打开文件",
       async click(app) {
-        const fileSuffixList = app.getReader().supportFileSuffix();
-        if (fileSuffixList.length === 0) {
-          throw new Error("没有可以支持的阅读解析器");
+        const result = await app.getReader().selectFile();
+        if (!result) {
+          return;
         }
-
-        const accpet = fileSuffixList.join(",");
-        fileInput.type = "file";
-        fileInput.accept = accpet;
-        fileInput.onchange = async (event) => {
-          const file = fileInput.files[0];
-          fileInput.value = "";
-          app.getReader().loadFile({
-            name: file.name,
-            path: dom.createBlobUrlByFile(file),
-          });
-          console.log(event);
-          console.log("触发...", file.name);
-        };
-        fileInput.dispatchEvent(new MouseEvent("click"));
+        await result.loadFile();
       },
     },
   } as ToolInfo,
@@ -196,6 +171,7 @@ const headerTabsBtns = {
   } as ToolInfo,
   preferenc: {
     type: "default",
+    needReader: true,
     nodeInfo: {
       html: "&#xe666;",
       title: "首选项",
@@ -294,14 +270,38 @@ export const defaultData = {
     sign: {
       text: "签名",
       iconHtml: "&#xe64f;",
+      disabled: slidebarLeftToolbarDisabled,
     } as ToolbarConfig,
     comment: {
       text: "注释",
       iconHtml: "&#xe650;",
+      disabled: slidebarLeftToolbarDisabled,
     } as ToolbarConfig,
     thumbnail: {
       text: "缩图",
       iconHtml: "&#xe651;",
+      disabled: slidebarLeftToolbarDisabled,
     } as ToolbarConfig,
   },
 };
+
+export const defaultContentTemp: (
+  app: AppInterface,
+  parent: Component
+) => HTMLElement | Component = (app, parent) => {
+  const tempReaderComponent = new TempReaderContent({
+    owner: parent,
+    source: "<content-temp></content-temp>",
+  });
+  (tempReaderComponent as any).app = app;
+  return tempReaderComponent;
+};
+
+function slidebarLeftToolbarDisabled(app: AppInterface) {
+  const currentBookmark = app.currentBookmark();
+  return (
+    !currentBookmark ||
+    !currentBookmark.parserWrapperInfo ||
+    !currentBookmark.parserWrapperInfo.parserInterface
+  );
+}

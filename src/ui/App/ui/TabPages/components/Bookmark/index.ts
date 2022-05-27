@@ -6,10 +6,10 @@ import { TabBtnGroupConfig } from "../../../../../../types";
 import { TabPagesProps } from "../..";
 import { dom } from "../../../../../../utils";
 
-import { template as templateParser } from 'lodash';
+import { template as templateParser } from "lodash";
 import html from "./index.html";
 
-const template = templateParser(html) ({
+const template = templateParser(html)({
   styles,
 });
 
@@ -46,6 +46,9 @@ export default defineComponent({
       this.dispatch("TABS::ADD", {});
     },
   },
+  updated(this: Component<TabPagesProps> & { watchTabGroup(): void }) {
+    this.watchTabGroup();
+  },
   watchTabGroup(this: Component<TabPagesProps>) {
     const tabGroupEle = (this.ref("tab-group") as any) as HTMLElement;
     const tabWrapperEle = (this.ref("tab-wrapper") as any) as HTMLElement;
@@ -56,7 +59,7 @@ export default defineComponent({
       return;
     }
 
-    const tabs = this.data.get("tabsInfo") || [];
+    const tabs = this.data.get("bookmarks") || [];
     const tabWrapperWidth = tabs.length * (166 + 20);
     tabWrapperEle.style.width = tabWrapperWidth + "px";
 
@@ -67,17 +70,10 @@ export default defineComponent({
       tabWrapperScrollEle.style.width = "";
     }
   },
-  dataTypes: {
-    tabs: DataTypes.arrayOf(
-      DataTypes.shape({
-        id: DataTypes.string,
-        name: DataTypes.string,
-      })
-    ),
-  },
   initData: function () {
     return {
-      tabs: [],
+      currentIndex: -1,
+      bookmarks: [],
     };
   },
   computed: {

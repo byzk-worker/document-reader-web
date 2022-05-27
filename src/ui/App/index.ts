@@ -2,7 +2,7 @@ import { defineComponent, Component } from "san";
 import { AppOptions } from "../../types";
 import { dom } from "../../utils";
 import Header from "../Header";
-import Reader, {  ReaderUiInterface } from "../Reader";
+import Reader from "../Reader";
 import SlidebarLeft from "../SlidebarLeft";
 import SlidebarRight from "../SlidebarRight";
 
@@ -14,18 +14,18 @@ let isFirst = true;
 const template = `
 <div id="${styles.app}" on-contextmenu="events.contextmenu($event)">
     <div id="${styles.header}" s-ref="header">
-        <ui-tabs s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} appId="{{appId}}" ></ui-tabs>
-        <ui-header s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" ></ui-header>
+        <ui-tabs appShow="{{appShow}}" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos="{{bookmarkInfos}}" appId="{{appId}}" ></ui-tabs>
+        <ui-header appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" ></ui-header>
     </div>
     <div id="${styles.content}" style="height: {{contentHeight}}px">
       <div s-if="{{!sidebars || sidebars.left !== false}}" id="${styles.sidebarLeft}">
-        <ui-slide-left appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
+        <ui-slide-left appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
       </div>
       <div  s-if="{{!sidebars || sidebars.right !== false}}" id="${styles.sidebarRight}">
-        <ui-slide-right appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
+        <ui-slide-right appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
       </div>
       <div id="${styles.reader}">
-        <ui-reader s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(sidebars.reader||{})}}}"></ui-reader>
+        <ui-reader bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(content||{})}}}"></ui-reader>
       </div>
     </div>
     <div id="${styles.fotter}" s-ref="fotter"></div>
@@ -42,10 +42,6 @@ type AppComponent = Component<DataType> & {
     resize(currentHeight?: number): void;
   };
 };
-
-export interface AppUiInterface {
-  getReader(): ReaderUiInterface;
-}
 
 export default defineComponent<DataType>({
   components: {

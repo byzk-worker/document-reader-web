@@ -1,11 +1,14 @@
 import classNames from "classnames";
 import { defineComponent, Component } from "san";
-import { TabPagesConfig } from "../../../../types";
+import { AppBookmarkInfo, TabPagesConfig } from "../../../../types";
 import Bookmark from "./components/Bookmark";
-const template = `<h-bookmark class="{{classNames}}" style="{{styles}}" btnGroup="{{btnGroup}}" ></h-bookmark>`;
+const template = `<h-bookmark appShow="{{appShow}}" class="{{classNames}}" style="{{styles}}" btnGroup="{{btnGroup}}" appId="{{appId}}" bookmarks="{{bookmarkInfos.list}}" currentIndex="{{bookmarkInfos.index}}" ></h-bookmark>`;
 
 export interface TabPagesProps extends TabPagesConfig {
-  tabsInfo: {}[];
+  bookmarkInfos: {
+    index: number;
+    list: AppBookmarkInfo[];
+  };
 }
 
 export default defineComponent<TabPagesProps>({
@@ -35,7 +38,10 @@ export default defineComponent<TabPagesProps>({
       if (!autoHide) {
         return undefined;
       }
-      const tabsInfos = this.data.get("tabsInfo") || [];
+      const tabsInfos = (this.data.get("bookmarkInfos") || {
+        index: -1,
+        list: [],
+      }).list;
 
       if (
         tabsInfos.length === 0 ||

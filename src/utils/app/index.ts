@@ -1,3 +1,4 @@
+import { DataStore, defaultDataStore } from "../../dataStore";
 import { AppInterface } from "../../types";
 import { createId } from "../id";
 
@@ -15,4 +16,12 @@ export function unRegistryApp(id: string): void {
 
 export function getApp(id: string): AppInterface {
   return _appMap[id];
+}
+
+export function getAppDataStore(id: string): DataStore {
+  const app = getApp(id)
+  if (!app) {
+    return defaultDataStore
+  }
+  return (app as any).getDataStore()
 }

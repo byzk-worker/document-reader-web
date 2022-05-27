@@ -8,5 +8,5 @@ export function createId() {
     win._idNo = 0;
   }
   win._idNo += 1;
-  return `${new Date().getTime()}${win._idNo}`;
+  return `${new Date().getTime()}.${win._idNo}`;
 }

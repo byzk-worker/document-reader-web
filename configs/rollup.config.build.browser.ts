@@ -100,8 +100,10 @@ export default {
           compress: {
             drop_console: true,
             drop_debugger: true,
+            ie8: true,
           },
           output: {
+            ie8: true,
             comments: () => false,
           },
         }),

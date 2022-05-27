@@ -1,5 +1,7 @@
 import { Component } from "san";
 
+export type Diasble = boolean | ((app: AppInterface) => boolean) | string;
+
 /**
  * 标签页配置
  */
@@ -123,7 +125,7 @@ export interface AppUpdateOptions {
   /**
    * 内容区域
    */
-  content?: any;
+  content?: ContentConfig;
   /**
    * 侧边栏
    */
@@ -182,6 +184,7 @@ export interface ToolInfo {
   type: "default" | "separate";
   nodeInfo?: NodeInfo;
   needReader?: true;
+  disabled?: Diasble;
 }
 
 /**
@@ -197,6 +200,10 @@ export interface ToolbarConfig {
    */
   className?: string | string[];
   /**
+   * 是否需要已经打开阅读器
+   */
+  needLoadFileOK?: boolean;
+  /**
    * 文本
    */
   text?: string;
@@ -208,6 +215,10 @@ export interface ToolbarConfig {
    * 工具信息
    */
   tools?: ToolInfo[];
+  /**
+   * 是否禁用.
+   */
+  disabled?: Diasble;
   /**
    * 激活切换事件ID
    */
@@ -262,7 +273,7 @@ export interface AppInterface {
    * 第一次显示元素必须填写
    * @param ele 要显示在的元素
    */
-  show(ele?: HTMLElement): void;
+  show(): void;
   /**
    * 隐藏显示
    */
@@ -301,6 +312,38 @@ export interface AppInterface {
   getNowData(expr: "sidebars.left.toolbars"): ToolbarConfig[] | undefined;
 
   getReader(): ReaderInterface;
+
+  /**
+   * 当前页信息.
+   */
+  currentBookmark(): AppBookmarkInfoWithIndex | undefined;
+  /**
+   * 切换页
+   * @param pageId 页id
+   */
+  convertBookmark(pageIndex: number): void;
+  /**
+   * 通过id切换
+   * @param id id
+   */
+  convertBookmarkById(id: string): void;
+  /**
+   * 获取app总页签数页数
+   */
+  bookmarkNum(): number;
+  /**
+   * 页签信息
+   * @param index 索引
+   */
+  getBookmarkInfo(index: number): AppBookmarkInfoWithIndex | undefined;
+  getBookmarkInfoById(id: string): AppBookmarkInfoWithIndex | undefined;
+  /**
+   * 添加页
+   * @param name 名称
+   */
+  addBookmark(bookmarkInfo: AppBookmarkInfo): void;
+  removeBookmark(index: number): void;
+  removeBookmarkById(id: string): void;
 }
 
 export interface ReaderInterface {
@@ -308,22 +351,31 @@ export interface ReaderInterface {
    * 附加一个解析器
    * @param parser 解析器
    */
-  attach(parser: ReaderParserConstructor): void;
+  attach(parserInfo: ReaderParserInfo): void;
   /**
    * 获取支持的文件后缀
    * @returns 文件后缀列表
    */
   supportFileSuffix(): string[];
   /**
-   * 当前解析器
+   * 当前解析器信息
    */
-  currentParser(): ReaderParserInterface | undefined;
+  currentParser(): ParserWrapperInfo | undefined;
   /**
    * 加载文件
    * @param file 要加载的文件
    * @throws {Error} 加载失败返回异常
    */
   loadFile(file: FileInfo): Promise<void>;
+  /**
+   * 选择一个文件并打开
+   */
+  selectFile(): Promise<SelectFileResult | undefined>;
+}
+
+export interface SelectFileResult {
+  fileInfo: FileInfo;
+  loadFile(): Promise<void>;
 }
 
 export interface ReaderParserSupport {
@@ -345,16 +397,13 @@ export interface ReaderParserSupport {
 }
 
 export interface ReaderParserConstructor {
-  new (app: AppInterface): ReaderParserInterface;
-  /**
-   * 当前支持项
-   */
-  support(): ReaderParserSupport;
+  new (app: AppInterface): ReaderInterface;
 }
 
 export interface FileInfo {
   name: string;
-  path: string;
+  path?: string;
+  rawHtmlEle: HTMLInputElement;
 }
 
 export interface ReaderParserInterface {
@@ -362,12 +411,12 @@ export interface ReaderParserInterface {
    * 将阅读器内容附加到dom元素
    * @param domEle dom元素节点
    */
-  attachToEle?(domEle: HTMLDivElement): void;
+  renderToEle?(domEle: HTMLDivElement): void;
   /**
    * 将阅读器内容附加到san组件节点上
    * @param paremtComponent san组件节点
    */
-  attachToSanComponent?(paremtComponent: Component);
+  renderToSanComponent?(paremtComponent: Component);
   /**
    * 加载文件
    * @param file 要加载的文件
@@ -376,6 +425,51 @@ export interface ReaderParserInterface {
   loadFile(file: FileInfo): Promise<void>;
 }
 
+export abstract class ReaderParserAbstract implements ReaderParserInterface {
+  public static supportAll: ReaderParserSupport = {
+    nowBrowser: true,
+    fileSuffix: [],
+    isSupportFile: function (file: FileInfo): boolean {
+      return true;
+    },
+  };
+  public constructor(protected app: AppInterface) {}
+  renderToEle?(domEle: HTMLDivElement): void {
+    throw new Error("Method not implemented.");
+  }
+  renderToSanComponent?(paremtComponent: Component<{}>) {
+    throw new Error("Method not implemented.");
+  }
+  abstract loadFile(file: FileInfo): Promise<void>;
+}
+
+/**
+ * 阅读器解析信息
+ */
+export interface ReaderParserInfo {
+  /**
+   * 解析器构造方法
+   */
+  Parser: ReaderParserConstructor;
+  /**
+   * 支持的内容
+   * @param app 应用接口
+   * @param currentParserInterface 当前解析器的实例对象, 可能不存在，当首次调用时不存在
+   */
+  support(
+    app: AppInterface,
+    currentParserInterface?: ReaderInterface
+  ): ReaderParserSupport;
+}
+
+export const readerParserSupportDefault: ReaderParserSupport = {
+  nowBrowser: false,
+  fileSuffix: [],
+  isSupportFile: function (file: FileInfo): boolean {
+    return false;
+  },
+};
+
 /**
  * 应用构造器
  */
@@ -383,5 +477,43 @@ export interface AppConstructor {
   /**
    * 传入参数，返回接口
    */
-  new (options?: AppOptions): AppInterface;
+  new (attachEle: HTMLElement, options?: AppOptions): AppInterface;
 }
+
+export * as ieUtil from "./utils/ie";
+
+export interface AppBookmarkInfo {
+  id: string;
+  name: string;
+  parserWrapperInfo: ParserWrapperInfo;
+}
+
+export interface AppBookmarkInfoWithIndex extends AppBookmarkInfo {
+  index: number;
+}
+
+export interface ParserWrapperInfo {
+  fileInfo: FileInfo;
+  parserInterface: ReaderParserInterface;
+  parserInfo: ReaderParserInfo;
+}
+
+export interface ContentConfig {
+  /**
+   * 没有打开文件渲染的元素
+   * @param app app操作对象
+   * @param parent 父组件
+   * @returns html元素或者san组件
+   */
+  noOpenFileRender?(
+    app: AppInterface,
+    parent: Component
+  ): HTMLElement | Component;
+}
+
+export const ErrFileNotParsed = new Error("文件无法被解析, 请添加对应解析器");
+export const ErrNoSupportFileSuffix = new Error(
+  "没有可被解析的文件后缀，请尝试添加解析器"
+);
+export const ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
+export const ErrLackOfParser = new Error("缺失解析器信息");

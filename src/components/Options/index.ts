@@ -2,7 +2,7 @@ import { defineComponent, Component } from "san";
 import { template as templateParser } from "lodash";
 import html from "./index.html";
 import styles from "./index.module.less";
-import { datas, dom, id } from "../../utils";
+import { app, dom, id } from "../../utils";
 
 export interface OptionInfo {
   val: any;
@@ -94,9 +94,8 @@ export default defineComponent<DataType>({
             break;
           }
 
-          const baseEle = datas.dataStoreGet<HTMLElement>(
-            this.data.get("baseEleKey")
-          );
+          const datas = app.getAppDataStore(this.data.get("appId"));
+          const baseEle = datas.get<HTMLElement>(this.data.get("baseEleKey"));
           const rect = dom.getBoundingClientRect(baseEle);
           if (!isHaveX) {
             x = rect.x + offset.x;
@@ -129,11 +128,15 @@ export default defineComponent<DataType>({
   },
   setBaseEle(this: OptionsComponent, ele: HTMLElement | undefined) {
     const baseEleKey = this.data.get("baseEleKey");
-    datas.dataStoreSet(baseEleKey, ele || document.body);
+    app
+      .getAppDataStore(this.data.get("appId"))
+      .set(baseEleKey, ele || document.body);
   },
   getBaseEle(this: OptionsComponent): HTMLElement {
     const baseEleKey = this.data.get("baseEleKey");
-    let ele = datas.dataStoreGet<HTMLElement>(baseEleKey);
+    let ele = app
+      .getAppDataStore(this.data.get("appId"))
+      .get<HTMLElement>(baseEleKey);
     if (!ele) {
       ele = document.body;
       this.setBaseEle(ele);
@@ -141,7 +144,9 @@ export default defineComponent<DataType>({
     return ele;
   },
   disposed(this: OptionsComponent) {
-    datas.dataStoreRemove(this.data.get("baseEleKey"));
+    app
+      .getAppDataStore(this.data.get("appId"))
+      .remove(this.data.get("baseEleKey"));
     dom.eventUtil.removeHandler(
       document.body || document.getElementsByTagName("body")[0],
       "click",

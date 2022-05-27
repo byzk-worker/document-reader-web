@@ -1,19 +1,30 @@
 import { defineComponent, Component } from "san";
 
-import AppUi, { AppUiInterface } from "./ui/App";
+import AppUi from "./ui/App";
 import {
   AppInterface,
   AppOptions,
   AppUpdateOptions,
   FileInfo,
   ReaderInterface,
-  ReaderParserConstructor,
-  ReaderParserInterface,
   ToolbarConfig,
   WebFontConfig,
+  ReaderParserInfo,
+  readerParserSupportDefault,
+  ReaderParserConstructor,
+  ParserWrapperInfo,
+  AppBookmarkInfo,
+  AppBookmarkInfoWithIndex,
+  SelectFileResult,
+  ErrNoSupportFileSuffix,
+  ErrFeilSelectWait,
+  ErrFileNotParsed,
+  ErrLackOfParser,
 } from "./types";
-import { app, arrayuUique, datas, dom, id, id as idUtils } from "./utils";
+import { app, dom, id, ie } from "./utils";
 import { defaultData } from "./ui/defaults/default";
+import { DataStore } from "./dataStore";
+import TempReaderContent from "./ui/defaults/components/TempReaderContent";
 
 const fontfaceStyleId = new Date().getTime() + "";
 
@@ -52,10 +63,15 @@ const defaultOptions: AppUpdateOptions = {
     },
     right: false,
   },
+  content: {},
 };
 
 interface AppProps {
   appOptions: AppOptions;
+  bookmarkInfos: {
+    index: number;
+    list: AppBookmarkInfo[];
+  };
   appId: string;
   show: boolean;
 }
@@ -64,10 +80,10 @@ const App = defineComponent<AppProps>({
   components: {
     "ui-app": AppUi,
   },
-  template: `<ui-app s-ref="ref-app" s-show="show" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions}}}" appId="{{appId}}" ></<ui-app>`,
+  template: `<ui-app s-ref="ref-app" s-show="show" appShow="{{show}}" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions, bookmarkInfos}}}" appId="{{appId}}" ></<ui-app>`,
   initData: function () {
     return {
-      show: true,
+      show: false,
       appOptions: {},
     };
   },
@@ -87,41 +103,237 @@ const App = defineComponent<AppProps>({
 });
 
 class ReaderImpl implements ReaderInterface {
-  public constructor(private _uiAppInterface: AppUiInterface) {}
+  private _fileInput: HTMLInputElement;
+  private _fileInputLabel: HTMLLabelElement;
+  private _fileInputWait:
+    | {
+        resovle: any;
+        reject: any;
+      }
+    | undefined;
 
-  loadFile(file: FileInfo): Promise<void> {
-    debugger;
-    return this._uiAppInterface.getReader().loadFile(file);
+  public constructor(private _app: AppInterface) {
+    this._fileInputLabel = dom.createElement("label");
+    this._fileInputLabel.style.display = "none";
+    (document.body || document.getElementsByTagName("body")[0]).appendChild(
+      this._fileInputLabel
+    );
+    this._fileInputOnChange = this._fileInputOnChange.bind(this);
+    this._createFileInput();
+    this._windowOnFocus = this._windowOnFocus.bind(this);
   }
 
-  currentParser(): ReaderParserInterface {
-    return this._uiAppInterface.getReader().currentParser();
+  private _parserList: ReaderParserInfo[] = [];
+  private _supportFileSuffix: string[] = [];
+
+  private _createFileInput() {
+    if (this._fileInput) {
+      this._fileInput.remove();
+    }
+    this._fileInput = dom.createElement("input");
+    this._fileInput.style.display = "none";
+    this._fileInput.type = "file";
+    this._fileInput.id = id.createId();
+    dom.eventUtil.once(this._fileInput, "change", this._fileInputOnChange);
+    (document.body || document.getElementsByTagName("body")[0]).appendChild(
+      this._fileInput
+    );
+
+    (this._fileInputLabel as any).for = this._fileInput.id;
+  }
+
+  /**
+   * 是否已经存在指定的解析器
+   * @param parser 解析器
+   * @returns 是/否
+   */
+  private _isHaveParser(parser: ReaderParserConstructor): boolean {
+    for (let i = 0; i < this._parserList.length; i++) {
+      if (this._parserList[i].Parser === parser) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private _windowOnFocus() {
+    setTimeout(() => {
+      if (!this._fileInputWait) {
+        return;
+      }
+      const resovle = this._fileInputWait.resovle;
+      this._fileInputWait = undefined;
+      resovle(undefined);
+    }, 1000);
+  }
+
+  private _loadFileByFileInfo(this: {
+    reader: ReaderInterface;
+    fileInfo: FileInfo;
+  }) {
+    return this.reader.loadFile(this.fileInfo);
+  }
+
+  private async _fileInputOnChange() {
+    if (!this._fileInputWait) {
+      this._fileInput.value = "";
+      return;
+    }
+    const resovle = this._fileInputWait.resovle;
+    const reject = this._fileInputWait.reject;
+    this._fileInputWait = undefined;
+
+    try {
+      const file = (this._fileInput.files || [
+        { name: this._fileInput.value } as any,
+      ])[0] as File;
+
+      const fileInfo: FileInfo = {
+        rawHtmlEle: this._fileInput,
+        name: file.name,
+      };
+
+      if (file.type) {
+        fileInfo.path = dom.createBlobUrlByFile(file);
+      }
+
+      const result: SelectFileResult = {
+        fileInfo,
+        loadFile: this._loadFileByFileInfo.bind({
+          reader: this,
+          fileInfo,
+        }),
+      };
+
+      resovle(result);
+    } catch (e) {
+      reject(e);
+    }
+    this._createFileInput();
+  }
+
+  public async selectFile() {
+    // const fileSuffixList = this.supportFileSuffix();
+    const fileSuffixList = [".pdf"];
+    if (fileSuffixList.length === 0) {
+      throw ErrNoSupportFileSuffix;
+    }
+
+    if (this._fileInputWait) {
+      throw ErrFeilSelectWait;
+    }
+
+    const result = new Promise<SelectFileResult | undefined>(
+      (resovle, reject) => {
+        this._fileInputWait = {
+          resovle,
+          reject,
+        };
+      }
+    );
+
+    const accpet = fileSuffixList.join(",");
+    this._fileInput.accept = accpet;
+    if (ie.isIe()) {
+      this._fileInput.click();
+    } else {
+      this._fileInput.dispatchEvent(new MouseEvent("click"));
+    }
+
+    dom.eventUtil.once(window, "focus", this._windowOnFocus);
+    try {
+      return await result;
+    } finally {
+      this._fileInputWait = undefined;
+    }
+  }
+
+  async loadFile(file: FileInfo): Promise<void> {
+    if (this._app.getBookmarkInfoById(file.path)) {
+      this._app.convertBookmarkById(file.path);
+      return;
+    }
+
+    for (let i = 0; i < this._parserList.length; i++) {
+      const parserInfo = this._parserList[i];
+      if (!parserInfo.support(this._app).isSupportFile(file)) {
+        continue;
+      }
+
+      let parser = new parserInfo.Parser(this._app);
+      await parser.loadFile(file);
+      this._app.addBookmark({
+        id: file.path,
+        name: file.name,
+        parserWrapperInfo: {
+          fileInfo: file,
+          parserInfo,
+          parserInterface: parser,
+        },
+      });
+      return;
+    }
+    throw ErrFileNotParsed;
+  }
+
+  currentParser(): ParserWrapperInfo {
+    return this._app.currentBookmark()?.parserWrapperInfo;
   }
   supportFileSuffix(): string[] {
-    const parserList = this._uiAppInterface.getReader().getParserList();
-    const result: string[] = [];
-    for (let i = 0; i < parserList.length; i++) {
-      const fileSuffixList = parserList[i].support().fileSuffix;
-      result.push(...fileSuffixList);
-    }
-    return arrayuUique(result);
+    return this._supportFileSuffix;
   }
 
-  attach(parser: ReaderParserConstructor): void {
-    this._uiAppInterface.getReader().attachParser(parser);
+  attach(parserInfo: ReaderParserInfo): void {
+    if (!parserInfo) {
+      return;
+    }
+
+    if (!parserInfo.Parser) {
+      throw ErrLackOfParser;
+    }
+
+    parserInfo.support =
+      parserInfo.support || (() => readerParserSupportDefault);
+    const support = parserInfo.support(this._app);
+    if (this._isHaveParser(parserInfo.Parser) || !support.nowBrowser) {
+      return;
+    }
+
+    const fileSuffix = support.fileSuffix;
+    for (let i = 0; i < fileSuffix.length; i++) {
+      let suffix = fileSuffix[i];
+      if (!suffix.startsWith(".")) {
+        suffix = "." + suffix;
+      }
+      if (!this._supportFileSuffix.includes(suffix)) {
+        this._supportFileSuffix.push(suffix);
+      }
+    }
+    this._parserList.push(parserInfo);
   }
+}
+
+interface AppBookmarkIndexMap {
+  [key: string]: number;
 }
 
 export class AppImpl implements AppInterface {
   private _appComponent: Component | undefined;
-  private _attachEle: HTMLElement | undefined;
   private _isShow: boolean = false;
   private _fontConfig: WebFontConfig;
   private _appId: string | undefined;
-  private _uiAppInterface: AppUiInterface | undefined;
-  private _readerInterface: ReaderInterface | undefined;
+  private _readerInterface: ReaderInterface = new ReaderImpl(this);
+  private _bookmarkList: AppBookmarkInfoWithIndex[] = [];
+  private _currentBookmarkIndex: number = -1;
+  private _bookmarkMap: AppBookmarkIndexMap = {};
+  private _datastore: DataStore = new DataStore();
 
-  public constructor(private _initOptions?: AppOptions) {
+  //#region 私有方法
+
+  public constructor(
+    private _attachEle: HTMLElement,
+    private _initOptions?: AppOptions
+  ) {
     this._fontConfig =
       (this._initOptions && this._initOptions.fontConfig) || defaultFontConfig!;
     if (this._initOptions && this._initOptions.fontConfig) {
@@ -130,7 +342,9 @@ export class AppImpl implements AppInterface {
     if (!document.getElementById(fontfaceStyleId)) {
       this._createFontFaceStyle();
     }
+    this._initApp();
   }
+
   private _pathJoin = (...p: string[]) => {
     for (let i = 0; i < p.length; i++) {
       const v = p[i];
@@ -192,7 +406,11 @@ export class AppImpl implements AppInterface {
     this._appId = app.registryApp(this);
     this._appComponent = new App({
       data: {
-        appOptions: {},
+        appOptions: {} as any,
+        bookmarkInfos: {
+          index: -1,
+          list: [],
+        },
         appId: this._appId,
       },
     });
@@ -201,11 +419,10 @@ export class AppImpl implements AppInterface {
     };
     this.update(defaultOptions);
     this.update(this._initOptions!);
-    this._appComponent.attach(this._attachEle!);
-    this._uiAppInterface = (this._appComponent.ref(
-      "ref-app"
-    ) as any) as AppUiInterface;
-    this._readerInterface = new ReaderImpl(this._uiAppInterface);
+    this._appComponent.attach(this._attachEle);
+    // this._uiAppInterface = (this._appComponent.ref(
+    //   "ref-app"
+    // ) as any) as AppUiInterface;
   };
 
   /**
@@ -221,10 +438,11 @@ export class AppImpl implements AppInterface {
   private _handleToobarConfigs = (toolbarConfigs: ToolbarConfig[]) => {
     for (let i = 0; i < toolbarConfigs.length; i++) {
       const toolbar = toolbarConfigs[i];
+      toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
 
       if (toolbar.activeChange) {
         const activeChangeFnId = id.createId();
-        datas.dataStoreSet(activeChangeFnId, toolbar.activeChange);
+        this._datastore.set(activeChangeFnId, toolbar.activeChange);
         toolbar._activeChangeFnId = activeChangeFnId;
       }
 
@@ -234,6 +452,10 @@ export class AppImpl implements AppInterface {
 
       for (let j = 0; j < toolbar.tools.length; j++) {
         const toolInfo = toolbar.tools[j];
+        toolInfo.disabled = dom.handleDisabled(
+          toolInfo.disabled,
+          this._datastore
+        );
         if (!toolInfo.nodeInfo) {
           continue;
         }
@@ -241,6 +463,112 @@ export class AppImpl implements AppInterface {
       }
     }
   };
+
+  //#endregion
+
+  public getDataStore(): DataStore {
+    return this._datastore;
+  }
+
+  public removeBookmark(index: number): void {
+    const bookmarkLength = this._bookmarkList.length - 1;
+    if (index > bookmarkLength || index < 0) {
+      return;
+    }
+
+    let currentIndex = this._currentBookmarkIndex;
+    const currentBookmark = this.getBookmarkInfo(currentIndex);
+    let isConvert = false;
+    if (currentIndex === index) {
+      currentIndex += 1;
+      if (bookmarkLength < currentIndex) {
+        currentIndex = bookmarkLength - 1;
+      }
+      isConvert = true;
+    }
+
+    this._bookmarkList.splice(index, 1);
+    this._bookmarkMap = {};
+    for (let i = 0; i < this._bookmarkList.length; i++) {
+      const bookmarkInfo = this._bookmarkList[i];
+      bookmarkInfo.index = i;
+      this._bookmarkMap[bookmarkInfo.id] = i;
+    }
+
+    this._appComponent.data.removeAt("bookmarkInfos.list", index);
+    if (isConvert) {
+      this.convertBookmark(currentIndex);
+    } else {
+      this.convertBookmarkById(currentBookmark.id);
+    }
+  }
+
+  public removeBookmarkById(id: string): void {
+    const bookmarkIndex = this._bookmarkMap[id];
+    if (typeof bookmarkIndex === "undefined") {
+      return;
+    }
+    this.removeBookmark(bookmarkIndex);
+  }
+
+  public convertBookmarkById(id: string): void {
+    const bookmarkIndex = this._bookmarkMap[id];
+    if (typeof bookmarkIndex === "undefined") {
+      return;
+    }
+
+    this.convertBookmark(bookmarkIndex);
+  }
+
+  public getBookmarkInfoById(id: string): AppBookmarkInfoWithIndex {
+    const bookmarkIndex = this._bookmarkMap[id];
+    if (typeof bookmarkIndex === "undefined") {
+      return;
+    }
+
+    return this.getBookmarkInfo(bookmarkIndex);
+  }
+
+  public bookmarkNum(): number {
+    return this._bookmarkList.length;
+  }
+
+  public getBookmarkInfo(index: number): AppBookmarkInfoWithIndex | undefined {
+    return this._bookmarkList[index];
+  }
+
+  public addBookmark(bookmarkInfo: AppBookmarkInfo): void {
+    const current = this._bookmarkMap[bookmarkInfo.id];
+    if (typeof current !== "undefined") {
+      for (let i = 0; i < this._bookmarkList.length; i++) {
+        const bookmarkInfo = this._bookmarkList[i];
+        if (bookmarkInfo.id === bookmarkInfo.id) {
+          this.convertBookmark(i);
+          return;
+        }
+      }
+      return;
+    }
+    const bookmark: AppBookmarkInfoWithIndex = {
+      ...bookmarkInfo,
+      index: -1,
+    };
+    this._bookmarkList.push(bookmark);
+    bookmark.index = this._bookmarkList.length - 1;
+    this._bookmarkMap[bookmarkInfo.id] = bookmark.index;
+    this._appComponent.data.push("bookmarkInfos.list", bookmark);
+    this.convertBookmark(bookmark.index);
+  }
+  public currentBookmark(): AppBookmarkInfoWithIndex | undefined {
+    if (this._currentBookmarkIndex === -1) {
+      return undefined;
+    }
+    return this._bookmarkList[this._currentBookmarkIndex];
+  }
+  public convertBookmark(index: number): void {
+    this._currentBookmarkIndex = index;
+    this._appComponent.data.set("bookmarkInfos.index", index);
+  }
 
   public getReader(): ReaderInterface {
     return this._readerInterface;
@@ -287,7 +615,7 @@ export class AppImpl implements AppInterface {
    * @param options 要更新的参数
    */
   public update = (options: AppUpdateOptions) => {
-    if (!this._appComponent) {
+    if (!options || !this._appComponent) {
       return;
     }
 
@@ -304,20 +632,14 @@ export class AppImpl implements AppInterface {
 
     if (options.header && options.header.toolbars) {
       this._handleToobarConfigs(options.header.toolbars);
-      // for (let i = 0; i < options.header.toolbars.length; i++) {
-      //   const toolbar = options.header.toolbars[i];
-      //   if (!toolbar.tools || toolbar.tools.length === 0) {
-      //     continue;
-      //   }
+    }
 
-      //   for (let j = 0; j < toolbar.tools.length; j++) {
-      //     const toolInfo = toolbar.tools[j];
-      //     if (!toolInfo.nodeInfo) {
-      //       continue;
-      //     }
-      //     toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
-      //   }
-      // }
+    if (options.content) {
+      if (options.content.noOpenFileRender) {
+        const renderId = id.createId();
+        this._datastore.set(renderId, options.content.noOpenFileRender);
+        options.content.noOpenFileRender = renderId as any;
+      }
     }
 
     if (options.sidebars) {
@@ -337,19 +659,8 @@ export class AppImpl implements AppInterface {
    * 显示到某个元素上
    * @param ele 要显示到的元素
    */
-  public show = (ele?: HTMLElement) => {
-    if (ele && ele != this._attachEle) {
-      this.destroy();
-      this._attachEle = ele;
-    }
-    if (!this._attachEle) {
-      console.warn("没有可以用来附加的DOM元素");
-      return;
-    }
+  public show = () => {
     this._isShow = true;
-    if (!this._appComponent) {
-      this._initApp();
-    }
     this._updateShow();
   };
 

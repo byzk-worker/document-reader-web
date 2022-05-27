@@ -3,6 +3,8 @@ import { HeaderConfig } from "./header";
 import { SlidebarLeftConfig } from "./slidebar";
 import { NodeInfo, ToolbarConfig } from "./common";
 import { ReaderInterface } from "./reader";
+import { FileInfo, ReaderParserInfo, ReaderParserInterface } from "./parser";
+import { ContentConfig } from "./content";
 
 /**
  * Web字体库配置
@@ -39,9 +41,9 @@ export declare interface WebFontConfig {
  */
 export declare interface AppConstructor {
   /**
-   * 传入参数，返回接口
+   * App构造参数
    */
-  new (options?: AppOptions): AppInterface;
+  new (attachEle: HTMLElement, options?: AppOptions): AppInterface;
 }
 
 /**
@@ -85,7 +87,7 @@ export declare interface AppUpdateOptions {
   /**
    * 内容区域
    */
-  content?: any;
+  content?: ContentConfig;
   /**
    * 侧边栏
    */
@@ -158,5 +160,96 @@ export declare interface AppInterface {
   getNowData(expr: "header.toolbars"): ToolbarConfig[] | undefined;
   getNowData(expr: "sidebars.left.toolbars"): ToolbarConfig[] | undefined;
 
+  /**
+   * 获取当前App中的阅读器信息
+   */
   getReader(): ReaderInterface;
+
+  /**
+   * 获取app当前页签信息
+   */
+  currentBookmark(): AppBookmarkInfoWithIndex | undefined;
+
+  /**
+   * 切换app指定索引页签为当前页签
+   * @param pageIndex 要切换到的索引
+   */
+  convertBookmark(pageIndex: number): void;
+  /**
+   * 切换app指定索引页签为当前页签
+   * @param id 页签id
+   */
+  convertBookmarkById(id: string): void;
+  /**
+   * 当前APP中的页签数量
+   */
+  bookmarkNum(): number;
+  /**
+   * 根据页签索引获取页签信息
+   * @param index 要获取的页签索引
+   */
+  getBookmarkInfo(index: number): AppBookmarkInfoWithIndex | undefined;
+  /**
+   * 根据页签ID获取页签信息
+   * @param id 要获取的页签ID
+   */
+  getBookmarkInfoById(id: string): AppBookmarkInfoWithIndex | undefined;
+  /**
+   * 添加一个页签信息到当前APP
+   * @param bookmarkInfo 页签信息
+   */
+  addBookmark(bookmarkInfo: AppBookmarkInfo): void;
+  /**
+   * 删除app页签通过页签索引
+   * @param index 要删除的索引
+   */
+  removeBookmark(index: number): void;
+  /**
+   * 删除app页签通过页签ID
+   * @param id 要删除的id
+   */
+  removeBookmarkById(id: string): void;
+}
+
+/**
+ * 应用页签信息
+ */
+export interface AppBookmarkInfo {
+  /**
+   * id
+   */
+  id: string;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 解析器包装信息{@ParserWrapperInfo}
+   */
+  parserWrapperInfo: ParserWrapperInfo;
+}
+
+/**
+ * App页签信息带有索引
+ */
+export interface AppBookmarkInfoWithIndex extends AppBookmarkInfo {
+  index: number;
+}
+
+/**
+ * 解析器包装信息
+ */
+export interface ParserWrapperInfo {
+  /**
+   * 文件信息
+   */
+  fileInfo: FileInfo;
+  /**
+   * 解析器接口
+   */
+  parserInterface: ReaderParserInterface;
+  /**
+   * 解析器信息
+   */
+  parserInfo: ReaderParserInfo;
 }
