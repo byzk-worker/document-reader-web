@@ -11,11 +11,11 @@ interface InputNumberProps {
   defaultValue?: number;
   minValue?: number;
   maxValue?: number;
-  onChange?(value: number): void;
 }
 export type InputNumberComponent = Component<InputNumberProps> & {
   add(num?: number): void;
   sub(num?: number): void;
+  eventHandleLoading?: boolean;
 };
 export default defineComponent<InputNumberProps>({
   template: templateParser(html)(styles),
@@ -27,7 +27,6 @@ export default defineComponent<InputNumberProps>({
   },
   events: {
     valueKeyDown(this: InputNumberComponent, event: KeyboardEvent) {
-
       if (
         (event.keyCode < 48 || event.keyCode > 57) &&
         !allowKeys.includes(event.keyCode)
@@ -61,6 +60,7 @@ export default defineComponent<InputNumberProps>({
         val = maxValue;
       }
       this.data.set("value", val + "");
+      this.fire("change", val);
     },
     valueBlur(this: InputNumberComponent, event: KeyboardEvent) {
       const ele = event.target as HTMLInputElement;
@@ -70,43 +70,50 @@ export default defineComponent<InputNumberProps>({
       }
 
       this.data.set("value", this.data.get("defaultValue") + "");
-      const onChange = this.data.get("onChange");
-      if (onChange) {
-        onChange(parseInt(this.data.get("value")));
-      }
     },
   },
   add(this: InputNumberComponent, num = 1) {
-    const srcVal = parseInt(this.data.get("value") as any);
-    let val = (srcVal || 1) + num;
-    const maxVal = this.data.get("maxValue");
-    if (typeof maxVal !== "undefined" && val > maxVal) {
-      val = maxVal;
-    }
-    if (srcVal === val) {
+    if (this.eventHandleLoading) {
       return;
     }
-    this.data.set("value", val + "");
-    const onChange = this.data.get("onChange");
-    if (onChange) {
-      onChange(val);
+    this.eventHandleLoading = true;
+    try {
+      const srcVal = parseInt(this.data.get("value") as any);
+      let val = (srcVal || 1) + num;
+      const maxVal = parseInt(this.data.get("maxValue") + "");
+      if (typeof maxVal !== "undefined" && val > maxVal) {
+        val = maxVal;
+      }
+      if (srcVal === val) {
+        return;
+      }
+      this.data.set("value", val + "");
+      this.fire("change", val);
+    } finally {
+      this.eventHandleLoading = false;
     }
   },
   sub(this: InputNumberComponent, num = 1) {
-    const srcVal = parseInt(this.data.get("value") as any);
-    let val = (srcVal || 1) - num;
-    const minValue = this.data.get("minValue");
-    if (typeof minValue !== "undefined" && val < minValue) {
-      val = minValue;
-    }
-
-    if (srcVal === val) {
+    if (this.eventHandleLoading) {
       return;
     }
-    this.data.set("value", val + "");
-    const onChange = this.data.get("onChange");
-    if (onChange) {
-      onChange(val);
+    this.eventHandleLoading = true;
+    try {
+      const srcVal = parseInt(this.data.get("value") as any);
+      let val = (srcVal || 1) - num;
+      const minValue = parseInt(this.data.get("minValue") + "");
+      if (typeof minValue !== "undefined" && val < minValue) {
+        val = minValue;
+      }
+
+      if (srcVal === val) {
+        return;
+      }
+      console.log("value => ", val);
+      this.data.set("value", val + "");
+      this.fire("change", val);
+    } finally {
+      this.eventHandleLoading = false;
     }
   },
 });

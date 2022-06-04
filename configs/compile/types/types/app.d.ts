@@ -3,7 +3,12 @@ import { HeaderConfig } from "./header";
 import { SlidebarLeftConfig } from "./slidebar";
 import { NodeInfo, ToolbarConfig } from "./common";
 import { ReaderInterface } from "./reader";
-import { FileInfo, ReaderParserInfo, ReaderParserInterface } from "./parser";
+import {
+  FileInfo,
+  ReaderParserConstructor,
+  ReaderParserInterface,
+  ReaderParserSupport,
+} from "./parser";
 import { ContentConfig } from "./content";
 
 /**
@@ -209,6 +214,32 @@ export declare interface AppInterface {
    * @param id 要删除的id
    */
   removeBookmarkById(id: string): void;
+
+  /**
+   * 添加监听器
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener(
+    eventName: "bookmarkChange",
+    callback: (
+      app: AppInterface,
+      currentBookmark: AppBookmarkInfoWithIndex
+    ) => void
+  );
+
+  /**
+   * 移除监听器
+   * @param eventName 事件名称
+   * @param callback 回调函数
+   */
+  removeListener(
+    eventName: "bookmarkChange",
+    callback: (
+      app: AppInterface,
+      currentBookmark: AppBookmarkInfoWithIndex
+    ) => void
+  );
 }
 
 /**
@@ -251,5 +282,14 @@ export interface ParserWrapperInfo {
   /**
    * 解析器信息
    */
-  parserInfo: ReaderParserInfo;
+  parserInfo: {
+    /**
+     * 解析器支持项
+     */
+    support: ReaderParserSupport;
+    /**
+     * 解析器构造器
+     */
+    Parser: ReaderParserConstructor;
+  };
 }

@@ -19,11 +19,11 @@ export interface OptionsProps {
     x?: number;
     y?: number;
   };
-  optionClick?: (
-    event: MouseEvent,
-    val: string,
-    optionInfo: OptionInfo
-  ) => void;
+  // optionClick?: (
+  //   event: MouseEvent,
+  //   val: string,
+  //   optionInfo: OptionInfo
+  // ) => void;
 }
 interface OptionsStates {
   show: boolean;
@@ -118,12 +118,13 @@ export default defineComponent<DataType>({
       this.data.set("show", false);
     },
     optionClick(this: OptionsComponent, event: MouseEvent, option: OptionInfo) {
-      const optionsClickFn = this.data.get("optionClick");
-      if (optionsClickFn) {
-        optionsClickFn(event, option.val, option);
-        return;
-      }
+      // const optionsClickFn = this.data.get("optionClick");
+      // if (optionsClickFn) {
+      //   optionsClickFn(event, option.val, option);
+      //   return;
+      // }
       this.data.set("activeVal", option.val);
+      this.fire("optionClick", option);
     },
   },
   setBaseEle(this: OptionsComponent, ele: HTMLElement | undefined) {

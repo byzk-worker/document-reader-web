@@ -20,11 +20,15 @@ import {
   ErrFeilSelectWait,
   ErrFileNotParsed,
   ErrLackOfParser,
+  NodeInfo,
+  NodeInfoThis,
+  ReaderParserInterface,
 } from "./types";
 import { app, dom, id, ie } from "./utils";
 import { defaultData } from "./ui/defaults/default";
 import { DataStore } from "./dataStore";
-import TempReaderContent from "./ui/defaults/components/TempReaderContent";
+
+const appEventBookmarkChange = "bookmarkChange";
 
 const fontfaceStyleId = new Date().getTime() + "";
 
@@ -103,6 +107,7 @@ const App = defineComponent<AppProps>({
 });
 
 class ReaderImpl implements ReaderInterface {
+  private _eventList = new DataStore();
   private _fileInput: HTMLInputElement;
   private _fileInputLabel: HTMLLabelElement;
   private _fileInputWait:
@@ -212,6 +217,64 @@ class ReaderImpl implements ReaderInterface {
     this._createFileInput();
   }
 
+  private _parserInterfaceBindEvent(parser: ReaderParserInterface) {
+    const eventMap = this._eventList.all();
+    debugger;
+    for (let key in eventMap) {
+      const eventCallList = eventMap[key] as any[];
+      for (let j = 0; j < eventCallList.length; j++) {
+        parser.addListener(key as any, eventCallList[j]);
+      }
+    }
+  }
+
+  public addListener(eventName: string, callback: any): any {
+    let eventList = this._eventList.get(eventName) as any[];
+    if (!eventList) {
+      eventList = [];
+      this._eventList.set(eventName, eventList);
+    }
+    eventList.push(callback);
+    const bookmarkList = this._app.bookmarkList();
+    if (bookmarkList.length === 0) {
+      return;
+    }
+
+    for (let i = 0; i < bookmarkList.length; i++) {
+      bookmarkList[i].parserWrapperInfo.parserInterface.addListener(
+        eventName as any,
+        callback
+      );
+    }
+  }
+
+  public removeListener(eventName: string, callback: any): any {
+    let eventList = this._eventList.get(eventName) as any[];
+    if (!eventList) {
+      eventList = [];
+      this._eventList.set(eventName, eventList);
+    }
+
+    for (let i = eventList.length - 1; i >= 0; i--) {
+      const event = eventList[i];
+      if (callback === event) {
+        eventList.splice(i, 1);
+      }
+    }
+
+    const bookmarkList = this._app.bookmarkList();
+    if (bookmarkList.length === 0) {
+      return;
+    }
+
+    for (let i = 0; i < bookmarkList.length; i++) {
+      bookmarkList[i].parserWrapperInfo.parserInterface.removeListener(
+        eventName as any,
+        callback
+      );
+    }
+  }
+
   public async selectFile() {
     // const fileSuffixList = this.supportFileSuffix();
     const fileSuffixList = [".pdf"];
@@ -262,12 +325,16 @@ class ReaderImpl implements ReaderInterface {
 
       let parser = new parserInfo.Parser(this._app);
       await parser.loadFile(file);
+      this._parserInterfaceBindEvent(parser);
       this._app.addBookmark({
         id: file.path,
         name: file.name,
         parserWrapperInfo: {
           fileInfo: file,
-          parserInfo,
+          parserInfo: {
+            support: parserInfo.support(this._app, parser),
+            Parser: parserInfo.Parser,
+          },
           parserInterface: parser,
         },
       });
@@ -325,6 +392,7 @@ export class AppImpl implements AppInterface {
   private _readerInterface: ReaderInterface = new ReaderImpl(this);
   private _bookmarkList: AppBookmarkInfoWithIndex[] = [];
   private _currentBookmarkIndex: number = -1;
+  private _currentBookmarkId: string = "";
   private _bookmarkMap: AppBookmarkIndexMap = {};
   private _datastore: DataStore = new DataStore();
 
@@ -415,7 +483,7 @@ export class AppImpl implements AppInterface {
       },
     });
     (this._appComponent as any).eventMapping = (id: any, event: any) => {
-      dom.nodeEventCall(id, this, event);
+      dom.nodeEventCall(this, id, this, event);
     };
     this.update(defaultOptions);
     this.update(this._initOptions!);
@@ -435,7 +503,47 @@ export class AppImpl implements AppInterface {
     this._appComponent.data.set("show", this._isShow);
   };
 
-  private _handleToobarConfigs = (toolbarConfigs: ToolbarConfig[]) => {
+  private _handleNodeInfoThisSelectorData(
+    app: AppInterface,
+    nodeInfoThis: NodeInfoThis,
+    nodeInfoList: NodeInfoThis[],
+    currentIndex: number
+  ) {
+    nodeInfoThis.selector = {
+      prev() {
+        const prevIndex = currentIndex - 1;
+        if (prevIndex < 0) {
+          return undefined;
+        }
+        return nodeInfoList[prevIndex];
+      },
+      next() {
+        const nextIndex = currentIndex + 1;
+        if (nextIndex > nodeInfoList.length - 1) {
+          return undefined;
+        }
+        return nodeInfoList[nextIndex];
+      },
+      index() {
+        return currentIndex;
+      },
+      list() {
+        return nodeInfoList;
+      },
+      listSize() {
+        return nodeInfoList.length;
+      },
+      get(index) {
+        return nodeInfoList[index];
+      },
+    };
+  }
+
+  private _handleToobarConfigs = (
+    toolbarConfigs: ToolbarConfig[],
+    expr: string
+  ) => {
+    const app = this;
     for (let i = 0; i < toolbarConfigs.length; i++) {
       const toolbar = toolbarConfigs[i];
       toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
@@ -450,6 +558,9 @@ export class AppImpl implements AppInterface {
         continue;
       }
 
+      const nodeInfoList = toolbar.tools.map(
+        (tool) => tool.nodeInfo as NodeInfoThis
+      );
       for (let j = 0; j < toolbar.tools.length; j++) {
         const toolInfo = toolbar.tools[j];
         toolInfo.disabled = dom.handleDisabled(
@@ -459,12 +570,94 @@ export class AppImpl implements AppInterface {
         if (!toolInfo.nodeInfo) {
           continue;
         }
-        toolInfo.nodeInfo = dom.handleNodeInfo(toolInfo.nodeInfo);
+        const nodeInfoThis = toolInfo.nodeInfo as NodeInfoThis;
+        const self = this;
+        nodeInfoThis.update = function (nodeInfo?: NodeInfo) {
+          // const toolbars = app.getNowData(expr as any) as ToolbarConfig[];
+          // toolbars[i].tools[j].nodeInfo = nodeInfo;
+          // debugger;
+          // app.updateByExpr(expr as any, toolbars);
+          // const srcNodeInfo = self._appComponent.data.get(
+          //   expr + `[${i}].tools[${j}].nodeInfo`
+          // ) as NodeInfo;
+          nodeInfo = nodeInfo || this;
+          nodeInfoList[j] = {
+            ...nodeInfo,
+            update: nodeInfoThis.update.bind(nodeInfo),
+            selector: nodeInfoThis.selector,
+          };
+          nodeInfo = dom.handleNodeInfo(self, nodeInfo);
+          self._appComponent.data.set(
+            "appOptions." + expr + `[${i}].tools[${j}].nodeInfo`,
+            nodeInfo
+          );
+        }.bind(nodeInfoThis);
+        this._handleNodeInfoThisSelectorData(
+          app,
+          nodeInfoThis,
+          nodeInfoList,
+          j
+        );
+        toolInfo.nodeInfo = dom.handleNodeInfo(this, toolInfo.nodeInfo);
       }
     }
   };
 
+  private _eventName(name: string): string {
+    return `__event_` + name;
+  }
+
+  private _eventList(name: string): any[] {
+    name = this._eventName(name);
+    let eventList = this._datastore[name];
+    if (!eventList) {
+      eventList = [];
+      this._datastore[name] = eventList;
+    }
+    return eventList;
+  }
+
+  private _callAppEvent(eventName: string, ...args: any) {
+    const eventList = this._eventList(eventName);
+    for (let i = 0; i < eventList.length; i++) {
+      const callbackFn = eventList[i];
+      if (typeof callbackFn === "function") {
+        callbackFn(...args);
+      }
+    }
+  }
+
   //#endregion
+
+  bookmarkList() {
+    return this._bookmarkList || [];
+  }
+
+  addListener(eventName: string, callback: any) {
+    switch (eventName) {
+      case appEventBookmarkChange:
+        break;
+      default:
+        return;
+    }
+
+    this._eventList(eventName).push(callback);
+  }
+
+  removeListener(eventName: string, callback: any) {
+    switch (eventName) {
+      case appEventBookmarkChange:
+        break;
+      default:
+        return;
+    }
+    const eventList = this._eventList(eventName);
+    for (let i = eventList.length; i >= 0; i--) {
+      if (eventList[i] === callback) {
+        eventList.splice(i, 1);
+      }
+    }
+  }
 
   public getDataStore(): DataStore {
     return this._datastore;
@@ -481,7 +674,7 @@ export class AppImpl implements AppInterface {
     let isConvert = false;
     if (currentIndex === index) {
       currentIndex += 1;
-      if (bookmarkLength < currentIndex) {
+      if (bookmarkLength <= currentIndex) {
         currentIndex = bookmarkLength - 1;
       }
       isConvert = true;
@@ -556,7 +749,10 @@ export class AppImpl implements AppInterface {
     this._bookmarkList.push(bookmark);
     bookmark.index = this._bookmarkList.length - 1;
     this._bookmarkMap[bookmarkInfo.id] = bookmark.index;
-    this._appComponent.data.push("bookmarkInfos.list", bookmark);
+    this._appComponent.data.push("bookmarkInfos.list", {
+      name: bookmark.name,
+      id: bookmark.id,
+    });
     this.convertBookmark(bookmark.index);
   }
   public currentBookmark(): AppBookmarkInfoWithIndex | undefined {
@@ -567,7 +763,14 @@ export class AppImpl implements AppInterface {
   }
   public convertBookmark(index: number): void {
     this._currentBookmarkIndex = index;
+    let currentBookmarkId = "";
+    if (index >= 0) {
+      this._currentBookmarkId = this._bookmarkList[index].id;
+      currentBookmarkId = this._currentBookmarkId;
+    }
     this._appComponent.data.set("bookmarkInfos.index", index);
+    this._appComponent.data.set("bookmarkInfos.id", currentBookmarkId);
+    this._callAppEvent(appEventBookmarkChange, this, this._bookmarkList[index]);
   }
 
   public getReader(): ReaderInterface {
@@ -618,7 +821,7 @@ export class AppImpl implements AppInterface {
     if (!options || !this._appComponent) {
       return;
     }
-
+    const app = this;
     if (
       options.tabPages &&
       options.tabPages.btnGroup &&
@@ -626,12 +829,27 @@ export class AppImpl implements AppInterface {
     ) {
       const btns = options.tabPages.btnGroup.btns;
       for (let i = 0; i < btns.length; i++) {
-        btns[i] = dom.handleNodeInfo(btns[i]);
+        const nodeInfoThis = btns[i] as NodeInfoThis;
+        nodeInfoThis.update = function (this: NodeInfo, nodeInfo?: NodeInfo) {
+          // const btns = app.getNowData("tabPages.btnGroup.btns");
+          // btns[i] = nodeInfo;
+          nodeInfo = nodeInfo || this;
+          btns[i] = nodeInfo;
+          nodeInfo = dom.handleNodeInfo(app, nodeInfo);
+          app.updateByExpr(`tabPages.btnGroup.btns[${i}]`, nodeInfo);
+        }.bind(btns[i]);
+        this._handleNodeInfoThisSelectorData(
+          app,
+          nodeInfoThis,
+          btns as NodeInfoThis[],
+          i
+        );
+        btns[i] = dom.handleNodeInfo(this, btns[i]);
       }
     }
 
     if (options.header && options.header.toolbars) {
-      this._handleToobarConfigs(options.header.toolbars);
+      this._handleToobarConfigs(options.header.toolbars, "header.toolbars");
     }
 
     if (options.content) {
@@ -644,7 +862,10 @@ export class AppImpl implements AppInterface {
 
     if (options.sidebars) {
       if (options.sidebars.left) {
-        this._handleToobarConfigs(options.sidebars.left.toolbars);
+        this._handleToobarConfigs(
+          options.sidebars.left.toolbars,
+          "sidebars.left.toolbars"
+        );
       }
     }
 

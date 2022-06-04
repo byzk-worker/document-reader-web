@@ -12,6 +12,10 @@ export class DataStore {
   public remove(key: any): void {
     delete this._dataStore[key];
   }
+
+  public all(): any {
+    return this._dataStore;
+  }
 }
 
 export const defaultDataStore = new DataStore();

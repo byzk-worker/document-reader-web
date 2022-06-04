@@ -3,12 +3,15 @@ import { template as templateParser } from "lodash";
 import html from "./index.html";
 import styles from "./index.module.less";
 import Options, { OptionInfo, OptionsInterface } from "../Options";
+import InputNumber from "../InputNumber";
 
 // <c-options s-ref="optionsRef" mod="options" show="{= showOptions =}" activeVal={{activeVal}} options="{{options}}"></c-options>
 
 interface SelectProps {
   options: OptionInfo[];
   activeVal?: any;
+  suffix?: string;
+  "on-change"?: (val: any) => void;
 }
 interface SelectStates {
   showOptions: boolean;
@@ -21,6 +24,9 @@ type SelectComponent = Component<DataType> & {
 };
 export default defineComponent<DataType>({
   template: templateParser(html)({ styles }),
+  components: {
+    "input-number": InputNumber,
+  },
   attached(this: SelectComponent) {
     // const optionsInterface = (this.ref(
     //   "optionsRef"
@@ -29,7 +35,7 @@ export default defineComponent<DataType>({
     if (!this.OptionsComponent) {
       this.OptionsComponent = new Options({
         owner: this,
-        source: `<c-options s-ref="optionsRef" offset={{{y:2}}} mod="options" show="{= showOptions =}" activeVal="{= activeVal =}" options="{{options}}"></c-options>`,
+        source: `<c-options on-optionClick="events.optionsClick($event)" s-ref="optionsRef" offset={{{y:2}}} mod="options" show="{= showOptions =}" activeVal="{= activeVal =}" options="{{options}}"></c-options>`,
       }) as any;
       this.OptionsComponent.attach(document.body);
     }
@@ -40,6 +46,7 @@ export default defineComponent<DataType>({
       showOptions: false,
       activeVal: 1,
       options: [],
+      suffix: "&#xe71d;",
     };
   },
   computed: {
@@ -58,20 +65,12 @@ export default defineComponent<DataType>({
   events: {
     selectClick(this: SelectComponent, event: MouseEvent) {
       this.data.set("showOptions", true);
-      // const ele = event.target as HTMLDivElement;
-      //   console.log(ele.clientTop);
-      //   console.log(ele.offsetTop);
-      //   console.log(ele.scrollTop);
-      //   console.log(ele.style.top);
-      //   console.log("=====================");
-      // console.log("clientLeft=", ele.clientLeft);
-      // console.log("offsetLeft=", ele.offsetLeft);
-      // console.log("scrollLeft=", ele.scrollLeft);
-      // console.log("clientWidth", ele.clientWidth);
-      // console.log("offsetWidth", ele.offsetWidth);
-      // console.log("scrollWidth", ele.scrollWidth);
-      // console.log(ele.getBoundingClientRect());
-      // console.log(dom.getBoundingClientRect(ele));
+    },
+    optionsClick(this: SelectComponent, val: { val: any; text: string }) {
+      this.fire("change", val.val);
+    },
+    inputChange(this: SelectComponent, val: any) {
+      this.fire("change", val);
     },
   },
 });

@@ -1,12 +1,128 @@
-import { AppInterface, NodeInfo, ToolbarConfig, ToolInfo } from "../../types";
+import {
+  AppInterface,
+  NodeInfo,
+  NodeInfoThis,
+  ToolbarConfig,
+  ToolInfo,
+} from "../../types";
 import { dom, id } from "../../utils";
-import { Component } from "san";
+import { Component, debug } from "san";
 import styles from "./index.module.less";
 import ToolJump from "./components/ToolJump";
 import ToolScale from "./components/ToolScale";
 import TempReaderContent from "./components/TempReaderContent";
+import {
+  actualSizeAttached,
+  selectOrMoveAttached,
+  showSupportFull,
+  showSupportScale,
+  suitablePageAttached,
+} from "./common";
 
 const fullBtnId = id.createId();
+
+function narrowDisabledHandler(
+  this: NodeInfo & {
+    update: (nodeInfo: NodeInfo) => void;
+  },
+  app: AppInterface
+) {
+  debugger;
+  let isDisabled = false;
+  try {
+    const scale = parseInt(
+      app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
+        ""
+    );
+    const scalMinVal = scaleVals[0];
+    if (scale <= scalMinVal) {
+      isDisabled = true;
+    }
+  } catch (e) {
+    isDisabled = false;
+  }
+  if (isDisabled && !this.className.includes("  " + styles.disabled)) {
+    this.className += " " + styles.disabled;
+    this.update(this);
+  } else if (!isDisabled && this.className.includes(" " + styles.disabled)) {
+    this.className = this.className.split(" ")[0];
+    this.update(this);
+  }
+}
+
+let _narrowDisabledHandler = narrowDisabledHandler;
+
+function enlargeDisabledHandle(
+  this: NodeInfo & {
+    update: (nodeInfo: NodeInfo) => void;
+  },
+  app: AppInterface
+) {
+  let isDisabled = false;
+  try {
+    const appInterface = app.currentBookmark().parserWrapperInfo
+      .parserInterface;
+    const scale = parseInt(appInterface.getScale() * 100 + "");
+    const scaleMaxVal = scaleVals[scaleVals.length - 1];
+    if (scale >= scaleMaxVal) {
+      isDisabled = true;
+    }
+  } catch (e) {
+    isDisabled = false;
+  }
+  if (isDisabled && !this.className.includes("  " + styles.disabled)) {
+    this.className += " " + styles.disabled;
+    this.update(this);
+  } else if (!isDisabled && this.className.includes(" " + styles.disabled)) {
+    this.className = this.className.split(" ")[0];
+    this.update(this);
+  }
+}
+
+let _enlargeDisabledHandle = enlargeDisabledHandle;
+
+function narrowOrEnlargeScaleChange(this: NodeInfoThis, scale: number) {
+  scale = parseInt(scale * 100 + "");
+  const isNarrow = this.title === "缩小";
+  const val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
+  const isDisabled = isNarrow ? scale <= val : scale >= val;
+  if (isDisabled) {
+    if (!this.className.includes(" " + styles.disabled)) {
+      this.className += " " + styles.disabled;
+      this.update(this);
+    }
+  } else if (this.className.includes(" " + styles.disabled)) {
+    this.className = this.className.split(" ")[0];
+    this.update(this);
+  }
+}
+let _narrowScaleChange = narrowOrEnlargeScaleChange;
+let _EnlargeScaleChange = narrowOrEnlargeScaleChange;
+
+const scaleOptions = [
+  {
+    val: 20,
+    text: "20%",
+  },
+  {
+    val: 50,
+    text: "50%",
+  },
+  {
+    val: 100,
+    text: "100%",
+  },
+  {
+    val: 200,
+    text: "200%",
+  },
+  {
+    val: 400,
+    text: "400%",
+  },
+];
+
+const scaleVals = scaleOptions.map((v) => v.val);
 
 const headerTabsBtns = {
   open: {
@@ -56,11 +172,19 @@ const headerTabsBtns = {
     needReader: true,
     nodeInfo: {
       width: 80,
-      render(app, nodeInfo, parent): HTMLElement | Component {
-        return new ToolJump({
-          owner: parent,
-          source: "<tool-jump></-jump>",
-        });
+      render(this: { _toolJump: Component }, app, nodeInfo, parent): void {
+        if (this._toolJump) {
+          this._toolJump.dispose();
+        }
+
+        this._toolJump = new ToolJump();
+        (this._toolJump as any).app = app;
+        this._toolJump.attach(parent);
+      },
+      isShow(app) {
+        const supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.pages;
+        return supportPages && supportPages.jump;
       },
     },
   } as ToolInfo,
@@ -71,6 +195,23 @@ const headerTabsBtns = {
       text: "选择",
       title: "选择",
       html: "&#xe65f;",
+      attached: selectOrMoveAttached,
+      click(app) {
+        const current = app.currentBookmark();
+        if (!current || !current.id) {
+          return;
+        }
+        current.parserWrapperInfo.parserInterface.setMode("select");
+        const moveNodeInfo = this.selector.next();
+        if (!this.active) {
+          this.active = true;
+          this.update();
+        }
+        if (moveNodeInfo.active) {
+          moveNodeInfo.active = false;
+          moveNodeInfo.update(moveNodeInfo);
+        }
+      },
     },
   } as ToolInfo,
   move: {
@@ -80,6 +221,23 @@ const headerTabsBtns = {
       text: "移动",
       title: "移动",
       html: "&#xe660;",
+      // attached: selectOrMoveAttached,
+      click(app) {
+        const current = app.currentBookmark();
+        if (!current || !current.id) {
+          return;
+        }
+        current.parserWrapperInfo.parserInterface.setMode("move");
+        const selectNodeInfo = this.selector.prev();
+        if (!this.active) {
+          this.active = true;
+          this.update();
+        }
+        if (selectNodeInfo.active) {
+          selectNodeInfo.active = false;
+          selectNodeInfo.update(selectNodeInfo);
+        }
+      },
     },
   } as ToolInfo,
   ActualSize: {
@@ -89,6 +247,11 @@ const headerTabsBtns = {
       text: "实际大小",
       title: "实际大小",
       html: "&#xe661;",
+      isShow: showSupportScale,
+      attached: actualSizeAttached,
+      click(app) {
+        app.currentBookmark().parserWrapperInfo.parserInterface.setScale(1);
+      },
     },
   } as ToolInfo,
   SuitableWidth: {
@@ -98,6 +261,12 @@ const headerTabsBtns = {
       text: "适合宽度",
       title: "适合宽度",
       html: "&#xe662;",
+      isShow: showSupportFull("width"),
+      click(app) {
+        app
+          .currentBookmark()
+          .parserWrapperInfo.parserInterface.setFull("width");
+      },
     },
   } as ToolInfo,
   SuitablePage: {
@@ -107,6 +276,10 @@ const headerTabsBtns = {
       text: "适合页面",
       title: "适合页面",
       html: "&#xe663;",
+      attached: suitablePageAttached,
+      click(app) {
+        app.currentBookmark().parserWrapperInfo.parserInterface.setScale(0.8);
+      },
     },
   } as ToolInfo,
   narrow: {
@@ -118,13 +291,58 @@ const headerTabsBtns = {
       title: "缩小",
       width: 24,
       className: styles.toolIconBtn,
-      // render(app, nodeInfo, parent): Component {
-      //   return new ToolEnlargeComponent({
-      //     owner: parent,
-      //     source: "<tool-enlarge></tool-enlarge>"
-      //   })
+      isShow: showSupportScale,
+      attached(app) {
+        app.removeListener("bookmarkChange", _narrowDisabledHandler);
+        _narrowDisabledHandler = narrowDisabledHandler.bind(this);
+        app.addListener("bookmarkChange", _narrowDisabledHandler);
+        app.getReader().removeListener("scaleChange", _narrowScaleChange);
+        _narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
+        app.getReader().addListener("scaleChange", _narrowScaleChange);
+      },
+      click(app) {
+        try {
+          const nextNodeInfo = this.selector.next();
+          if (nextNodeInfo.className.includes(" " + styles.disabled)) {
+            nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
+            nextNodeInfo.update(nextNodeInfo);
+          }
+          if (this.className.includes(" " + styles.disabled)) {
+            return;
+          }
 
-      // }
+          const parserInterface = app.currentBookmark().parserWrapperInfo
+            .parserInterface;
+          const nowScale = parseInt(parserInterface.getScale() * 100 + "");
+          let index = scaleVals.indexOf(nowScale);
+          if (index === -1) {
+            for (let i = 1; i < scaleVals.length; i++) {
+              const val = scaleVals[i];
+              if (nowScale > val) {
+                index = i - 1;
+                break;
+              }
+            }
+          } else {
+            index -= 1;
+          }
+
+          if (index <= 0) {
+            if (this.className.includes(" " + styles.disabled)) {
+              return;
+            }
+            this.className += " " + styles.disabled;
+            this.update(this);
+            if (index === -1) {
+              return;
+            }
+          } else if (this.className.includes(" " + styles.disabled)) {
+            this.className = this.className.split(" ")[0];
+            this.update(this);
+          }
+          parserInterface.setScale(scaleVals[index] / 100);
+        } catch (e) {}
+      },
     },
   } as ToolInfo,
   scale: {
@@ -133,12 +351,20 @@ const headerTabsBtns = {
     nodeInfo: {
       title: "缩放比率",
       width: 82,
-      render(app, nodeInfo, parent): Component {
-        return new ToolScale({
-          owner: parent,
-          source: "<tool-select style='width:80px;'></tool-select>",
+      render(this: { _toolscale?: Component }, app, nodeInfo, parent): void {
+        if (this._toolscale) {
+          this._toolscale.dispose();
+        }
+        this._toolscale = new ToolScale({
+          data: {
+            activeVal: 100,
+            options: scaleOptions,
+          },
         });
+        (this._toolscale as any).app = app;
+        this._toolscale.attach(parent as any);
       },
+      isShow: showSupportScale,
     },
   } as ToolInfo,
   enlarge: {
@@ -149,6 +375,60 @@ const headerTabsBtns = {
       title: "放大",
       width: 24,
       className: styles.toolIconBtn,
+      isShow: showSupportScale,
+      attached(app) {
+        app.removeListener("bookmarkChange", _enlargeDisabledHandle);
+        _enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
+        app.addListener("bookmarkChange", _enlargeDisabledHandle);
+        app.getReader().removeListener("scaleChange", _EnlargeScaleChange);
+        _EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
+        app.getReader().addListener("scaleChange", _EnlargeScaleChange);
+      },
+      click(app) {
+        const prevNodeInfo = this.selector.prev();
+        if (prevNodeInfo.className.includes(" " + styles.disabled)) {
+          prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
+          prevNodeInfo.update(prevNodeInfo);
+        }
+        if (this.className.includes(" " + styles.disabled)) {
+          return;
+        }
+
+        try {
+          const parserInterface = app.currentBookmark().parserWrapperInfo
+            .parserInterface;
+          const nowScale = parseInt(parserInterface.getScale() * 100 + "");
+          let index = scaleVals.indexOf(nowScale);
+          if (index === -1) {
+            for (let i = 0; i < scaleVals.length; i++) {
+              const val = scaleVals[i];
+              if (val > nowScale) {
+                index = i;
+                break;
+              }
+            }
+          } else {
+            index += 1;
+          }
+
+          if (index >= scaleVals.length - 1 || index === -1) {
+            if (this.className.includes(" " + styles.disabled)) {
+              return;
+            }
+
+            this.className += " " + styles.disabled;
+            this.update(this);
+            if (index >= scaleVals.length) {
+              return;
+            }
+          } else if (this.className.includes(" " + styles.disabled)) {
+            this.className = this.className.split(" ")[0];
+            this.update(this);
+          }
+
+          parserInterface.setScale(scaleVals[index] / 100);
+        } catch (e) {}
+      },
     },
   } as ToolInfo,
   find: {
@@ -167,6 +447,12 @@ const headerTabsBtns = {
       html: "&#xe665;",
       title: "全屏",
       text: "全屏",
+      isShow: showSupportFull("content"),
+      click(app) {
+        app
+          .currentBookmark()
+          .parserWrapperInfo.parserInterface.setFull("content");
+      },
     },
   } as ToolInfo,
   preferenc: {

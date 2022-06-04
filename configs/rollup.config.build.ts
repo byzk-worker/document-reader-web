@@ -59,7 +59,7 @@ export default {
       sourcemap: false,
     },
   ],
-  external: ["classnames", "san", "lodash", "pdfjs-dist"],
+  external: ["classnames", "san", "lodash", "pdfjs-dist", "async-lock"],
   plugins: [
     // postcss({
     //   cssModule: true,

@@ -4,7 +4,7 @@ import BookmarkTab from "../BookmarkTab";
 import TabBtn from "../TabBtn";
 import { TabBtnGroupConfig } from "../../../../../../types";
 import { TabPagesProps } from "../..";
-import { dom } from "../../../../../../utils";
+import { app, dom } from "../../../../../../utils";
 
 import { template as templateParser } from "lodash";
 import html from "./index.html";
@@ -42,8 +42,13 @@ export default defineComponent({
     resize(this: Component<TabPagesProps> & { watchTabGroup(): void }) {
       this.watchTabGroup();
     },
-    add(this: Component) {
-      this.dispatch("TABS::ADD", {});
+    async add(this: Component) {
+      const appInterface = app.getApp(this.data.get("appId"));
+      const result = await appInterface.getReader().selectFile();
+      if (!result) {
+        return;
+      }
+      await result.loadFile();
     },
   },
   updated(this: Component<TabPagesProps> & { watchTabGroup(): void }) {
@@ -60,7 +65,7 @@ export default defineComponent({
     }
 
     const tabs = this.data.get("bookmarks") || [];
-    const tabWrapperWidth = tabs.length * (166 + 20);
+    const tabWrapperWidth = tabs.length * 172 + 20;
     tabWrapperEle.style.width = tabWrapperWidth + "px";
 
     const width = tabGroupEle.clientWidth;

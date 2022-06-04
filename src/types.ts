@@ -1,4 +1,5 @@
 import { Component } from "san";
+import { DataStore } from "./dataStore";
 
 export type Diasble = boolean | ((app: AppInterface) => boolean) | string;
 
@@ -65,6 +66,7 @@ export interface NodeInfo {
    * 宽度, 单位px，默认为 30px
    */
   width?: number;
+  active?: boolean;
   /**
    * 事件ID.
    */
@@ -79,12 +81,19 @@ export interface NodeInfo {
   render?(
     app: AppInterface,
     nodeIno: NodeInfo,
-    parent: Component
-  ): HTMLElement | Component;
+    target: HTMLElement
+  ): void | Promise<void>;
+  _renderId?: string;
+  /**
+   * 加载完成
+   * @param app 应用接口
+   */
+  attached?(this: NodeInfoThis, app: AppInterface): void;
+  _attachedId?: string;
   /**
    * 单击事件
    */
-  click?(app: AppInterface, event: MouseEvent): void;
+  click?(this: NodeInfoThis, app: AppInterface, event: MouseEvent): void;
   /**
    * 事件绑定
    * @param bind 事件绑定器
@@ -92,9 +101,28 @@ export interface NodeInfo {
   eventBind?<EventT>(
     bind: (
       eventName: string,
-      callback: (app: AppInterface, event: EventT) => void
+      callback: (
+        this: NodeInfoThis,
+        app: AppInterface,
+        nodeInfo: NodeInfo,
+        event: EventT
+      ) => void
     ) => void
   ): void;
+}
+
+export interface NodeInfoThis extends NodeInfo {
+  selector: NodeInfoSelector;
+  update: (nodeInfo?: NodeInfo) => void;
+}
+
+export interface NodeInfoSelector {
+  prev(): NodeInfoThis | undefined;
+  next(): NodeInfoThis | undefined;
+  index(): number;
+  listSize(): number;
+  get(index: number): NodeInfoThis | undefined;
+  list(): NodeInfoThis[];
 }
 
 export interface AppUpdateOptions {
@@ -265,6 +293,7 @@ export interface SlidebarLeftConfig {
  * 应用接口
  */
 export interface AppInterface {
+  getDataStore(): DataStore;
   /**
    * 获取根节点元素
    */
@@ -327,6 +356,7 @@ export interface AppInterface {
    * @param id id
    */
   convertBookmarkById(id: string): void;
+  bookmarkList(): AppBookmarkInfoWithIndex[] | [];
   /**
    * 获取app总页签数页数
    */
@@ -344,6 +374,32 @@ export interface AppInterface {
   addBookmark(bookmarkInfo: AppBookmarkInfo): void;
   removeBookmark(index: number): void;
   removeBookmarkById(id: string): void;
+
+  /**
+   * 添加监听器
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener(
+    eventName: "bookmarkChange",
+    callback: (
+      app: AppInterface,
+      currentBookmark: AppBookmarkInfoWithIndex
+    ) => void
+  );
+
+  /**
+   * 移除监听器
+   * @param eventName 事件名称
+   * @param callback 回调函数
+   */
+  removeListener(
+    eventName: "bookmarkChange",
+    callback: (
+      app: AppInterface,
+      currentBookmark: AppBookmarkInfoWithIndex
+    ) => void
+  );
 }
 
 export interface ReaderInterface {
@@ -371,6 +427,30 @@ export interface ReaderInterface {
    * 选择一个文件并打开
    */
   selectFile(): Promise<SelectFileResult | undefined>;
+  /**
+   * 添加当前页码变更事件
+   * @param eventName 监听名称
+   * @param callback 回调
+   */
+  addListener(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  /**
+   * 添加缩放改变事件
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener(eventName: "scaleChange", callback: (scale: number) => void);
+  /**
+   * 移除监听
+   * @param eventName 名称
+   * @param callback 回调
+   */
+  removeListener(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  /**
+   * 移除缩放事件监听
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  removeListener(eventName: "scaleChange", callback: (pageNo: number) => void);
 }
 
 export interface SelectFileResult {
@@ -390,14 +470,81 @@ export interface ReaderParserSupport {
    */
   fileSuffix: string[];
   /**
+   * 是否支持缩放
+   */
+  scale: boolean;
+  /**
    * 是否支持此文件的加载
    * @param file 要加载的文件
    */
   isSupportFile(file: FileInfo): boolean;
+  /**
+   * 是否支持全屏
+   */
+  full:
+    | false
+    | {
+        /**
+         * 内容区域全屏
+         */
+        content: boolean;
+        /**
+         * 宽度撑满内容区,高度自适应
+         */
+        width: boolean;
+      };
+  /**
+   * 是否支持页数控制
+   */
+  pages:
+    | false
+    | {
+        /**
+         * 是否支持跳转页数
+         */
+        jump: boolean;
+        /**
+         * 是否支持模式选择
+         * move: 移动
+         * select: 选择
+         */
+        moduleSwitch: boolean;
+        /**
+         * 是否支持查找
+         */
+        find: boolean;
+        /**
+         * 是否支持自适应大小
+         */
+        adaptiveView: boolean;
+        /**
+         * 是否支持页面显示
+         */
+        showPageNo: boolean;
+      };
+  /**
+   * 是否支持事件监听
+   */
+  listener:
+    | false
+    | {
+        /**
+         * 当前页码变换监听
+         */
+        pageNoChange: boolean;
+        /**
+         * 缩放改变监听
+         */
+        scaleChange: boolean;
+        /**
+         * 模式选择切换
+         */
+        moduleSwitchChange: boolean;
+      };
 }
 
 export interface ReaderParserConstructor {
-  new (app: AppInterface): ReaderInterface;
+  new (app: AppInterface): ReaderParserInterface;
 }
 
 export interface FileInfo {
@@ -411,36 +558,265 @@ export interface ReaderParserInterface {
    * 将阅读器内容附加到dom元素
    * @param domEle dom元素节点
    */
-  renderToEle?(domEle: HTMLDivElement): void;
-  /**
-   * 将阅读器内容附加到san组件节点上
-   * @param paremtComponent san组件节点
-   */
-  renderToSanComponent?(paremtComponent: Component);
+  render(domEle: HTMLDivElement): Promise<void> | void;
   /**
    * 加载文件
    * @param file 要加载的文件
    * @throws {Error} 加载失败返回异常
    */
   loadFile(file: FileInfo): Promise<void>;
+  /**
+   * 获取缩放
+   */
+  getScale?(): number;
+  /**
+   * 设置缩放
+   */
+  setScale?(scale?: number): void;
+  /**
+   * 获取当前模式
+   * @returns 模式
+   */
+  getMode?(): "select" | "move";
+  /**
+   * 设置内容当前模式
+   * @param mode 模式选择
+   */
+  setMode?(mode: "move" | "select"): void;
+  /**
+   * 设置全屏
+   * @param mode 模式，content: 内容区域真正全屏， width: 宽度撑满内容区，高度等比例缩放
+   */
+  setFull?(
+    mode: "content" | "width",
+    options?: {
+      /**
+       * 提示信息
+       */
+      prompt?: string | HTMLElement;
+      /**
+       * 超时关闭, 默认3000(ms), 小于0不关闭
+       */
+      timeout?: number;
+    }
+  ): void;
+  /**
+   * 内容区是否为全屏
+   */
+  contentIsFull?(): boolean;
+  /**
+   * 内容区退出全屏
+   */
+  contentExitFull?(): void;
+  /**
+   * 自适应页面
+   */
+  adaptiveView?(): void;
+  /**
+   * 获取总页数
+   */
+  getNumPages(): number;
+  /**
+   * 跳转到指定页数
+   * @param page 要跳转到的页数
+   */
+  jumpTo?(page: number): void;
+  /**
+   * 添加当前页码变更事件
+   * @param eventName 监听名称
+   * @param callback 回调
+   */
+  addListener?(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  /**
+   * 添加缩放改变事件
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener?(eventName: "scaleChange", callback: (scale: number) => void);
+  /**
+   * 添加模式选择事件
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener?(
+    eventName: "moduleSwitchChange",
+    callback: (mode: "move" | "select") => void
+  );
+  /**
+   * 移除监听
+   * @param eventName 名称
+   * @param callback 回调
+   */
+  removeListener?(
+    eventName: "pageNoChange",
+    callback: (pageNo: number) => void
+  );
+  /**
+   * 移除缩放事件监听
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  removeListener?(eventName: "scaleChange", callback: (pageNo: number) => void);
+  /**
+   * 移除模式选择切换事件
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  removeListener?(
+    eventName: "moduleSwitchChange",
+    callback: (mode: "move" | "select") => void
+  );
+  /**
+   * 显示页码
+   * 需要pages.showPageNo为true生效
+   */
+  showPageNo?(): void;
+  /**
+   * 隐藏页码
+   */
+  hidePageNo?(): void;
 }
 
+const _parserEventList = ["pageNoChange", "scaleChange", "moduleSwitchChange"];
 export abstract class ReaderParserAbstract implements ReaderParserInterface {
+  protected scale = window.devicePixelRatio || 1;
+  private _dataStore: any = {};
   public static supportAll: ReaderParserSupport = {
     nowBrowser: true,
     fileSuffix: [],
     isSupportFile: function (file: FileInfo): boolean {
       return true;
     },
+    scale: true,
+    full: {
+      width: true,
+      content: true,
+    },
+    pages: {
+      jump: true,
+      moduleSwitch: true,
+      find: true,
+      adaptiveView: true,
+      showPageNo: true,
+    },
+    listener: {
+      pageNoChange: true,
+      scaleChange: true,
+      moduleSwitchChange: true,
+    },
   };
   public constructor(protected app: AppInterface) {}
-  renderToEle?(domEle: HTMLDivElement): void {
-    throw new Error("Method not implemented.");
-  }
-  renderToSanComponent?(paremtComponent: Component<{}>) {
-    throw new Error("Method not implemented.");
+  abstract getNumPages(): number;
+  public getScale(): number {
+    return this.scale;
   }
   abstract loadFile(file: FileInfo): Promise<void>;
+  abstract render(domEle: HTMLDivElement): void;
+  setScale(scale?: number): number {
+    return (this.scale = scale);
+  }
+  adaptiveView(): void {}
+  jumpTo(page: number): void {}
+
+  private _getEventList(eventName: string): any[] {
+    eventName = "__event_" + eventName;
+    this._dataStore[eventName] = this._dataStore[eventName] || [];
+    return this._dataStore[eventName];
+  }
+  addListener(eventName: string, callback: any) {
+    if (typeof callback !== "function") {
+      return;
+    }
+    if (!_parserEventList.includes(eventName)) {
+      return;
+    }
+    const eventList = this._getEventList(eventName);
+    for (let i = 0; i < eventList.length; i++) {
+      if (eventList[i] === callback) {
+        return;
+      }
+    }
+    eventList.push(callback);
+    if (eventList.length === 1) {
+      this._listenerBindNotice(eventName, "add");
+    }
+  }
+  removeListener(eventName: string, callback: any) {
+    if (typeof callback !== "function") {
+      return;
+    }
+    if (!_parserEventList.includes(eventName)) {
+      return;
+    }
+    const eventList = this._getEventList(eventName);
+    for (let i = eventList.length; i >= 0; i--) {
+      if (eventList[i] === callback) {
+        eventList.splice(i, 1);
+        break;
+      }
+    }
+    if (eventList.length === 0) {
+      this._eventNoticBind(eventName, "del");
+    }
+  }
+
+  private _eventNoticBind(eventName: string, mod: "add" | "del") {
+    const eventBindKeyName = "_event_bind_" + eventName;
+    if (this._dataStore[eventBindKeyName]) {
+      return;
+    }
+
+    if (this._listenerBindNotice(eventName, mod)) {
+      this._dataStore[eventBindKeyName] = true;
+    }
+  }
+
+  protected fire(eventName: string, ...args) {
+    const eventList = this._getEventList(eventName);
+    for (let i = 0; i < eventList.length; i++) {
+      eventList[i](...args);
+    }
+  }
+
+  protected eventExist(event: string): boolean {
+    return this._getEventList(event).length !== 0;
+  }
+
+  /**
+   * 事件绑定通知
+   * @param eventName 事件名称
+   * @param mod 事件模式: add: 添加  del: 删除( 事件回调全部移除之后会调用 )
+   * @returns 是/否已经处理通知, true: 此事件名称不会再次进行通知, false: 此事件后续会进行通知
+   */
+  protected _listenerBindNotice(
+    eventName: string,
+    mod: "add" | "del"
+  ): boolean {
+    return false;
+  }
+  showPageNo(): void {}
+  hidePageNo(): void {}
+  setMode(mode: "move" | "select"): void {}
+  getMode(): "select" | "move" {
+    return "select";
+  }
+  setFull(
+    mode: "content" | "width",
+    options?: {
+      /**
+       * 提示信息
+       */
+      prompt?: string | HTMLElement;
+      /**
+       * 超时关闭, 默认3000(ms), 小于0不关闭
+       */
+      timeout?: number;
+    }
+  ): void {}
+  contentExitFull(): void {}
+  contentIsFull(): boolean {
+    return false;
+  }
 }
 
 /**
@@ -458,7 +834,7 @@ export interface ReaderParserInfo {
    */
   support(
     app: AppInterface,
-    currentParserInterface?: ReaderInterface
+    currentParserInterface?: ReaderParserInterface
   ): ReaderParserSupport;
 }
 
@@ -468,6 +844,10 @@ export const readerParserSupportDefault: ReaderParserSupport = {
   isSupportFile: function (file: FileInfo): boolean {
     return false;
   },
+  scale: false,
+  full: false,
+  pages: false,
+  listener: false,
 };
 
 /**
@@ -495,7 +875,10 @@ export interface AppBookmarkInfoWithIndex extends AppBookmarkInfo {
 export interface ParserWrapperInfo {
   fileInfo: FileInfo;
   parserInterface: ReaderParserInterface;
-  parserInfo: ReaderParserInfo;
+  parserInfo: {
+    support: ReaderParserSupport;
+    Parser: ReaderParserConstructor;
+  };
 }
 
 export interface ContentConfig {

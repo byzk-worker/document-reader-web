@@ -24,9 +24,9 @@
         <div s-ref="toolsPanel" class="<%= styles.tabPanel %>"
             style="{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;">
             <fragment s-for="toolInfo, index in handlePanelTools">
-                <div class="<%= styles.wrapper %>" s-if="fns.showTool(toolInfo)">
+                <div class="<%= styles.wrapper %>" s-show="fns.showTool(toolInfo, bookmarkInfos.index)">
                     <div s-ref="ref-tool-{{index}}" s-if="!!toolInfo.nodeInfo && toolInfo.type === 'default'"
-                        class="<%= styles.tool %>" title="{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}"
+                        class="<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}" title="{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}"
                         style="{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}">
                         {{events.handleRender(toolInfo, index)}}
                         <ui-toolbtn s-if="!toolInfo.nodeInfo.renderId" s-bind="{{{...toolInfo.nodeInfo}}}"></ui-toolbtn>
@@ -36,7 +36,6 @@
                     </div>
                 </div>
             </fragment>
-
         </div>
         <div on-click="events.prevAndNextToolClick(true)" class="<%= styles.nextTool %>"
             s-show="fns.showControlBreakWrapper(showControlBreak, true)"></div>

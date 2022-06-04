@@ -15,7 +15,7 @@ const template = `
 <div id="${styles.app}" on-contextmenu="events.contextmenu($event)">
     <div id="${styles.header}" s-ref="header">
         <ui-tabs appShow="{{appShow}}" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos="{{bookmarkInfos}}" appId="{{appId}}" ></ui-tabs>
-        <ui-header appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" ></ui-header>
+        <ui-header appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" bookmarkInfos="{{bookmarkInfos}}" ></ui-header>
     </div>
     <div id="${styles.content}" style="height: {{contentHeight}}px">
       <div s-if="{{!sidebars || sidebars.left !== false}}" id="${styles.sidebarLeft}">

@@ -1,5 +1,6 @@
 import { defineComponent } from 'san';
 import { template as template$6 } from 'lodash';
+import AsyncLock from 'async-lock';
 import classNames from 'classnames';
 
 /******************************************************************************
@@ -64,6 +65,16 @@ function __generator(thisArg, body) {
         } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
+}
+
+function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 }
 
 function ieVersion() {
@@ -133,6 +144,49 @@ function createId() {
     return "".concat(new Date().getTime(), ".").concat(win._idNo);
 }
 
+var DataStore = /** @class */ (function () {
+    function DataStore() {
+        this._dataStore = {};
+    }
+    DataStore.prototype.get = function (key) {
+        return this._dataStore[key];
+    };
+    DataStore.prototype.set = function (key, val) {
+        this._dataStore[key] = val;
+    };
+    DataStore.prototype.remove = function (key) {
+        delete this._dataStore[key];
+    };
+    DataStore.prototype.all = function () {
+        return this._dataStore;
+    };
+    return DataStore;
+}());
+var defaultDataStore = new DataStore();
+
+var _appMap = {};
+function registryApp(app) {
+    var appId = createId();
+    _appMap[appId] = app;
+    return appId;
+}
+function unRegistryApp(id) {
+    delete _appMap[id];
+}
+function getAppBySanComponent(component) {
+    return getApp(component.data.get("appId"));
+}
+function getApp(id) {
+    return _appMap[id];
+}
+function getAppDataStore(id) {
+    var app = getApp(id);
+    if (!app) {
+        return defaultDataStore;
+    }
+    return app.getDataStore();
+}
+
 /**
  * 派发DOM事件消息
  * @param ele 要派发事件的Dom元素
@@ -161,21 +215,21 @@ function dispatchDomEvent(ele, eventIdList, component) {
             return state_1.value;
     }
 }
-var _nodeEventMap = {};
-var _nodeRenderMap = {};
+// let _nodeEventMap: NodeEventMap = {};
+// let _nodeRenderMap: { [key: string]: NodeInfo } = {};
 /**
  * 绑定事件
  * @param eventName 事件名称
  * @param callback 回调函数
  * @returns 事件id
  */
-function nodeEvenBindEvent(eventName, callback) {
+function nodeEvenBindEvent(dataStore, eventName, callback) {
     var id = createId() + "_" + eventName;
-    _nodeEventMap[id] = {
+    dataStore.set(id, {
         id: id,
         name: eventName,
         callback: callback
-    };
+    });
     return id;
 }
 /**
@@ -183,8 +237,8 @@ function nodeEvenBindEvent(eventName, callback) {
  * @param eventId 事件id
  * @returns 事件信息
  */
-function nodeEventInfoGet(eventId) {
-    return _nodeEventMap[eventId];
+function nodeEventInfoGet(app, eventId) {
+    return app.getDataStore().get(eventId);
 }
 function handleDisabled(disabledInfo, datas) {
     var disabledType = typeof disabledInfo;
@@ -200,12 +254,13 @@ function handleDisabled(disabledInfo, datas) {
  * @param nodeInfo 节点信息
  * @returns 处理之后的节点信息
  */
-function handleNodeInfo(nodeInfo) {
+function handleNodeInfo(app, nodeInfo) {
     var srcEventIdList = nodeInfo.evenIdList || [];
     var eventIdList = [];
     var tempEventMap = {};
+    var dataStore = app.getDataStore();
     if (nodeInfo.click) {
-        var id = nodeEvenBindEvent("click", nodeInfo.click);
+        var id = nodeEvenBindEvent(dataStore, "click", nodeInfo.click.bind(nodeInfo));
         eventIdList.push(id);
         tempEventMap["click"] = {
             id: id
@@ -215,16 +270,24 @@ function handleNodeInfo(nodeInfo) {
         nodeInfo.eventBind(function (eventName, callback) {
             var srcEvent = tempEventMap[eventName];
             if (srcEvent) {
-                nodeEventDestroy(srcEvent.id);
+                nodeEventDestroy(dataStore, srcEvent.id);
             }
-            var id = nodeEvenBindEvent(eventName, callback);
+            var id = nodeEvenBindEvent(dataStore, eventName, callback.bind(nodeInfo));
             eventIdList.push(id);
             tempEventMap[eventName] = { id: id };
         });
     }
+    if (nodeInfo.attached) {
+        if (nodeInfo._attachedId) {
+            dataStore.remove(nodeInfo._attachedId);
+        }
+        nodeInfo._attachedId = createId();
+        dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
+        nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+    }
     for (var i = 0; i < srcEventIdList.length; i++) {
         var srcId = srcEventIdList[i];
-        var srcNodeInfo = _nodeEventMap[srcId];
+        var srcNodeInfo = dataStore.get(srcId);
         if (!srcNodeInfo) {
             continue;
         }
@@ -232,50 +295,66 @@ function handleNodeInfo(nodeInfo) {
             nodeEventDestroy(srcNodeInfo.id);
         }
     }
-    var renderId = nodeInfo.id;
+    var renderId = nodeInfo._renderId;
     if (nodeInfo.render) {
         if (renderId) {
-            delete _nodeRenderMap[renderId];
+            dataStore.remove(renderId);
+            // delete _nodeRenderMap[renderId];
         }
+        nodeInfo.render = nodeInfo.render.bind(nodeInfo);
         renderId = createId();
-        _nodeRenderMap[renderId] = nodeInfo;
+        dataStore.set(renderId, nodeInfo);
+        nodeInfo._renderId = renderId;
+        // _nodeRenderMap[renderId] = nodeInfo;
     }
     nodeInfo = __assign(__assign({}, nodeInfo), { renderId: renderId, evenIdList: eventIdList });
     return JSON.parse(JSON.stringify(nodeInfo));
 }
-function nodeRender(renderId, app, parent, renderToDom) {
-    if (!renderId) {
-        throw new Error("未获取到renderId");
-    }
-    var nodeInfo = _nodeRenderMap[renderId];
-    if (!nodeInfo || !nodeInfo.render) {
-        throw new Error("获取节点render方法失败");
-    }
-    var ele = nodeInfo.render(app, nodeInfo, parent);
-    if (renderToDom) {
-        if (typeof ele.attach !== "function") {
-            renderToDom.innerHTML = "";
-            renderToDom.appendChild(ele);
-        }
-        else {
-            ele.attach(renderToDom);
-        }
-    }
-    return ele;
+function nodeRender(component, renderId, app, parent, renderToDom) {
+    return __awaiter(this, void 0, void 0, function () {
+        var dataStore, nodeInfo, res;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!renderId) {
+                        throw new Error("未获取到renderId");
+                    }
+                    dataStore = getApp(component.data.get("appId")).getDataStore();
+                    nodeInfo = dataStore.get(renderId);
+                    if (!nodeInfo || !nodeInfo.render) {
+                        throw new Error("获取节点render方法失败");
+                    }
+                    res = nodeInfo.render(app, nodeInfo, renderToDom);
+                    if (!(res instanceof Promise)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, res];
+                case 1:
+                    _a.sent();
+                    _a.label = 2;
+                case 2:
+                    if (nodeInfo.attached) {
+                        nodeEventCall(app, nodeInfo.attached, app);
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 /**
  * 节点事件调用
  * @param eventId 事件ID
  * @param args 参数
  */
-function nodeEventCall(eventId) {
+function nodeEventCall(app, eventId) {
     var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        args[_i - 1] = arguments[_i];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        args[_i - 2] = arguments[_i];
     }
-    var nodeEventInfo = _nodeEventMap[eventId];
+    var nodeEventInfo = app.getDataStore().get(eventId);
     if (!nodeEventInfo) {
         return;
+    }
+    if (typeof nodeEventInfo === "function") {
+        return nodeEventInfo.apply(void 0, args);
     }
     nodeEventInfo.callback.apply(nodeEventInfo, args);
 }
@@ -283,41 +362,38 @@ function nodeEventCall(eventId) {
  * 节点元素事件注销
  * @param eventId 事件id
  */
-function nodeEventDestroy() {
+function nodeEventDestroy(dataStore) {
     var eventIds = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        eventIds[_i] = arguments[_i];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        eventIds[_i - 1] = arguments[_i];
     }
     var eventIdLen = eventIds.length;
     if (eventIdLen === 0) {
         return;
     }
     for (var i = 0; i < eventIdLen; i++) {
-        delete _nodeEventMap[eventIds[i]];
+        dataStore.remove(eventIds[i]);
+        // delete _nodeEventMap[eventIds[i]];
     }
 }
-/**
- * 节点事件销毁全部
- */
-function nodeEventDestroyAll() {
-    _nodeEventMap = {};
-}
-function nodeRenderDestroy() {
-    var renderId = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        renderId[_i] = arguments[_i];
-    }
-    var renderIdLen = renderId.length;
-    if (renderIdLen === 0) {
-        return;
-    }
-    for (var i = 0; i < renderIdLen; i++) {
-        delete _nodeRenderMap[renderId[i]];
-    }
-}
-function nodeRenderDestroyAll() {
-    _nodeRenderMap = {};
-}
+// /**
+//  * 节点事件销毁全部
+//  */
+// export function nodeEventDestroyAll(): void {
+//   _nodeEventMap = {};
+// }
+// export function nodeRenderDestroy(...renderId: string[]) {
+//   const renderIdLen = renderId.length;
+//   if (renderIdLen === 0) {
+//     return;
+//   }
+//   for (let i = 0; i < renderIdLen; i++) {
+//     delete _nodeRenderMap[renderId[i]];
+//   }
+// }
+// export function nodeRenderDestroyAll(): void {
+//   _nodeRenderMap = {};
+// }
 
 function createBlobUrlByFile(file) {
     if (window.createObjectURL) {
@@ -558,52 +634,12 @@ var dom = /*#__PURE__*/Object.freeze({
     handleNodeInfo: handleNodeInfo,
     nodeRender: nodeRender,
     nodeEventCall: nodeEventCall,
-    nodeEventDestroy: nodeEventDestroy,
-    nodeEventDestroyAll: nodeEventDestroyAll,
-    nodeRenderDestroy: nodeRenderDestroy,
-    nodeRenderDestroyAll: nodeRenderDestroyAll
+    nodeEventDestroy: nodeEventDestroy
 });
-
-var DataStore = /** @class */ (function () {
-    function DataStore() {
-        this._dataStore = {};
-    }
-    DataStore.prototype.get = function (key) {
-        return this._dataStore[key];
-    };
-    DataStore.prototype.set = function (key, val) {
-        this._dataStore[key] = val;
-    };
-    DataStore.prototype.remove = function (key) {
-        delete this._dataStore[key];
-    };
-    return DataStore;
-}());
-var defaultDataStore = new DataStore();
-
-var _appMap = {};
-function registryApp(app) {
-    var appId = createId();
-    _appMap[appId] = app;
-    return appId;
-}
-function unRegistryApp(id) {
-    delete _appMap[id];
-}
-function getApp(id) {
-    return _appMap[id];
-}
-function getAppDataStore(id) {
-    var app = getApp(id);
-    if (!app) {
-        return defaultDataStore;
-    }
-    return app.getDataStore();
-}
 
 var styles$c = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
 
-var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-if=\"fns.showTool(toolInfo)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %>\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-show=\"fns.showTool(toolInfo, bookmarkInfos.index)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 var headerToolMarginRight = 16;
 var headerToolPanelHeight = 50;
@@ -728,7 +764,12 @@ var Header = defineComponent({
                 return false;
             }
             if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b.isShow) {
-                return toolInfo.nodeInfo.isShow(appInterface);
+                try {
+                    return toolInfo.nodeInfo.isShow(appInterface);
+                }
+                catch (e) {
+                    return false;
+                }
             }
             return true;
         },
@@ -807,8 +848,12 @@ var Header = defineComponent({
                 return undefined;
             }
             if (toolInfo.nodeInfo.renderId) {
-                nodeRender(toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
+                nodeRender(this, toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
                 return undefined;
+            }
+            else if (toolInfo.nodeInfo._attachedId) {
+                var appInterface = getApp(this.data.get("appId"));
+                nodeEventCall(appInterface, toolInfo.nodeInfo._attachedId, appInterface);
             }
             if (!toolInfo.nodeInfo.evenIdList ||
                 toolInfo.nodeInfo.evenIdList.length === 0) {
@@ -845,13 +890,13 @@ var Header = defineComponent({
     }
 });
 
-var html$9 = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n</div>";
+var html$9 = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
 
-var styles$b = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H"};
+var styles$b = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
 
-var styles$a = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV"};
+var styles$a = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
 
-var html$8 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+var html$8 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
 var html$7 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
@@ -895,6 +940,7 @@ var InputNumber = defineComponent({
                 val = maxValue;
             }
             this.data.set("value", val + "");
+            this.fire("change", val);
         },
         valueBlur: function (event) {
             var ele = event.target;
@@ -903,44 +949,53 @@ var InputNumber = defineComponent({
                 return;
             }
             this.data.set("value", this.data.get("defaultValue") + "");
-            var onChange = this.data.get("onChange");
-            if (onChange) {
-                onChange(parseInt(this.data.get("value")));
-            }
         }
     },
     add: function (num) {
         if (num === void 0) { num = 1; }
-        var srcVal = parseInt(this.data.get("value"));
-        var val = (srcVal || 1) + num;
-        var maxVal = this.data.get("maxValue");
-        if (typeof maxVal !== "undefined" && val > maxVal) {
-            val = maxVal;
-        }
-        if (srcVal === val) {
+        if (this.eventHandleLoading) {
             return;
         }
-        this.data.set("value", val + "");
-        var onChange = this.data.get("onChange");
-        if (onChange) {
-            onChange(val);
+        this.eventHandleLoading = true;
+        try {
+            var srcVal = parseInt(this.data.get("value"));
+            var val = (srcVal || 1) + num;
+            var maxVal = parseInt(this.data.get("maxValue") + "");
+            if (typeof maxVal !== "undefined" && val > maxVal) {
+                val = maxVal;
+            }
+            if (srcVal === val) {
+                return;
+            }
+            this.data.set("value", val + "");
+            this.fire("change", val);
+        }
+        finally {
+            this.eventHandleLoading = false;
         }
     },
     sub: function (num) {
         if (num === void 0) { num = 1; }
-        var srcVal = parseInt(this.data.get("value"));
-        var val = (srcVal || 1) - num;
-        var minValue = this.data.get("minValue");
-        if (typeof minValue !== "undefined" && val < minValue) {
-            val = minValue;
-        }
-        if (srcVal === val) {
+        if (this.eventHandleLoading) {
             return;
         }
-        this.data.set("value", val + "");
-        var onChange = this.data.get("onChange");
-        if (onChange) {
-            onChange(val);
+        this.eventHandleLoading = true;
+        try {
+            var srcVal = parseInt(this.data.get("value"));
+            var val = (srcVal || 1) - num;
+            var minValue = parseInt(this.data.get("minValue") + "");
+            if (typeof minValue !== "undefined" && val < minValue) {
+                val = minValue;
+            }
+            if (srcVal === val) {
+                return;
+            }
+            console.log("value => ", val);
+            this.data.set("value", val + "");
+            this.fire("change", val);
+        }
+        finally {
+            this.eventHandleLoading = false;
         }
     }
 });
@@ -956,15 +1011,59 @@ var ToolJump = defineComponent({
             value: 1
         };
     },
+    attached: function () {
+        this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
+        this.events.pageNoChange = this.events.pageNoChange.bind(this);
+        this.app.addListener("bookmarkChange", this.events.bookmarkChange);
+    },
+    disposed: function () {
+        this.app.removeListener("bookmarkChange", this.events.bookmarkChange);
+    },
     computed: {
         prevDisableClass: function () {
             var val = this.data.get("value");
             if (val == 1) {
                 return styles$a.disabled;
             }
+        },
+        nextDisableClass: function () {
+            var val = this.data.get("value");
+            var maxVal = this.data.get("maxValue");
+            if (val >= maxVal) {
+                return styles$a.disabled;
+            }
         }
     },
     events: {
+        pageNoChange: function (pageNo) {
+            this.data.set("value", pageNo);
+        },
+        bookmarkChange: function () {
+            var currentBookmark = this.app.currentBookmark();
+            if (!currentBookmark ||
+                !currentBookmark.id ||
+                !currentBookmark.parserWrapperInfo ||
+                !currentBookmark.parserWrapperInfo.parserInterface) {
+                this.data.set("maxValue", 1);
+                return;
+            }
+            currentBookmark.parserWrapperInfo.parserInterface.addListener("pageNoChange", this.events.pageNoChange);
+            this.data.set("maxValue", currentBookmark.parserWrapperInfo.parserInterface.getNumPages());
+        },
+        valueChange: function (val) {
+            if (val < 1) {
+                return;
+            }
+            if (val > this.data.get("maxValue")) {
+                return;
+            }
+            try {
+                this.app
+                    .currentBookmark()
+                    .parserWrapperInfo.parserInterface.jumpTo(val);
+            }
+            catch (e) { }
+        },
         prevOrNextClick: function (isNext) {
             var inputNumber = this.ref("input-number");
             if (isNext) {
@@ -977,11 +1076,11 @@ var ToolJump = defineComponent({
     }
 });
 
-var html$6 = "<div class=\"<%= styles.toolScale %>\">\n    <c-select activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-select>\n</div>";
+var html$6 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
 
-var html$5 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span>{{activeText}}</span>\n    </div>\n    <span class=\"iconfont\">&#xe71d;</span>\n</div>";
+var html$5 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
-var styles$8 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","active":"index-module_active__zruap"};
+var styles$8 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
 
 var html$4 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
@@ -1049,12 +1148,13 @@ var Options = defineComponent({
             this.data.set("show", false);
         },
         optionClick: function (event, option) {
-            var optionsClickFn = this.data.get("optionClick");
-            if (optionsClickFn) {
-                optionsClickFn(event, option.val, option);
-                return;
-            }
+            // const optionsClickFn = this.data.get("optionClick");
+            // if (optionsClickFn) {
+            //   optionsClickFn(event, option.val, option);
+            //   return;
+            // }
             this.data.set("activeVal", option.val);
+            this.fire("optionClick", option);
         }
     },
     setBaseEle: function (ele) {
@@ -1082,6 +1182,9 @@ var Options = defineComponent({
 
 var Select = defineComponent({
     template: template$6(html$5)({ styles: styles$8 }),
+    components: {
+        "input-number": InputNumber
+    },
     attached: function () {
         // const optionsInterface = (this.ref(
         //   "optionsRef"
@@ -1090,7 +1193,7 @@ var Select = defineComponent({
         if (!this.OptionsComponent) {
             this.OptionsComponent = new Options({
                 owner: this,
-                source: "<c-options s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
+                source: "<c-options on-optionClick=\"events.optionsClick($event)\" s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
             });
             this.OptionsComponent.attach(document.body);
         }
@@ -1100,7 +1203,8 @@ var Select = defineComponent({
         return {
             showOptions: false,
             activeVal: 1,
-            options: []
+            options: [],
+            suffix: "&#xe71d;"
         };
     },
     computed: {
@@ -1119,20 +1223,12 @@ var Select = defineComponent({
     events: {
         selectClick: function (event) {
             this.data.set("showOptions", true);
-            // const ele = event.target as HTMLDivElement;
-            //   console.log(ele.clientTop);
-            //   console.log(ele.offsetTop);
-            //   console.log(ele.scrollTop);
-            //   console.log(ele.style.top);
-            //   console.log("=====================");
-            // console.log("clientLeft=", ele.clientLeft);
-            // console.log("offsetLeft=", ele.offsetLeft);
-            // console.log("scrollLeft=", ele.scrollLeft);
-            // console.log("clientWidth", ele.clientWidth);
-            // console.log("offsetWidth", ele.offsetWidth);
-            // console.log("scrollWidth", ele.scrollWidth);
-            // console.log(ele.getBoundingClientRect());
-            // console.log(dom.getBoundingClientRect(ele));
+        },
+        optionsClick: function (val) {
+            this.fire("change", val.val);
+        },
+        inputChange: function (val) {
+            this.fire("change", val);
         }
     }
 });
@@ -1142,32 +1238,56 @@ var ToolScale = defineComponent({
         "c-select": Select
     },
     template: template$6(html$6)({ styles: styles$a }),
+    attached: function () {
+        this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
+        this.events.scalChange = this.events.scalChange.bind(this);
+        this.app.addListener("bookmarkChange", this.events.bookmarkChange);
+    },
+    disposed: function () {
+        this.app.removeListener("bookmarkChange", this.events.bookmarkChange);
+    },
     initData: function () {
-        return {
-            activeVal: 100,
-            options: [
-                {
-                    val: 20,
-                    text: "20%"
-                },
-                {
-                    val: 50,
-                    text: "50%"
-                },
-                {
-                    val: 100,
-                    text: "100%"
-                },
-                {
-                    val: 200,
-                    text: "200%"
-                },
-                {
-                    val: 400,
-                    text: "400%"
-                },
-            ]
-        };
+        return {};
+    },
+    events: {
+        scalChange: function (scale) {
+            var activeVal = this.data.get("activeVal");
+            scale = parseInt(scale * 100 + "");
+            if (activeVal === scale) {
+                return;
+            }
+            // const options = this.data.get("options");
+            // let optionsVals: number[] = [];
+            // for (let i = 0; i < options.length; i++) {
+            //   optionsVals.push(options[i].val);
+            // }
+            // if (optionsVals.includes(scale)) {
+            //   this.data.set("activeVal", scale);
+            //   return;
+            // }
+            // optionsVals = optionsVals.sort((a, b) => (a > b ? a : b));
+            // for (let i = 0; i < optionsVals.length; i++) {
+            //   if (scale < optionsVals[i]) {
+            //     this.data.set("activeVal", scale);
+            //     return;
+            //   }
+            // }
+            this.data.set("activeVal", scale);
+        },
+        bookmarkChange: function (app, currentBookmark) {
+            if (currentBookmark.index === -1) {
+                return;
+            }
+            currentBookmark.parserWrapperInfo.parserInterface.addListener("scaleChange", this.events.scalChange);
+            var scale = currentBookmark.parserWrapperInfo.parserInterface.getScale();
+            this.data.set("activeVal", parseInt(scale * 100 + ""));
+        },
+        valChange: function (val) {
+            debugger;
+            this.app
+                .currentBookmark()
+                .parserWrapperInfo.parserInterface.setScale(val / 100);
+        }
     }
 });
 
@@ -1198,7 +1318,191 @@ var TempReaderContent = defineComponent({
     }
 });
 
+function showSupportScale(app) {
+    return app.currentBookmark().parserWrapperInfo.parserInfo.support.scale;
+}
+function showSupportFull(mod) {
+    if (mod === "content") {
+        return function (app) {
+            var full = app.currentBookmark().parserWrapperInfo.parserInfo.support
+                .full;
+            return full && full.content;
+        };
+    }
+    if (mod === "width") {
+        return function (app) {
+            var full = app.currentBookmark().parserWrapperInfo.parserInfo.support
+                .full;
+            return full && full.width;
+        };
+    }
+    return function () {
+        return false;
+    };
+}
+function _bindListener(eventListenerInterface, name, callback, self) {
+    eventListenerInterface.removeListener(name, callback);
+    callback = callback.bind(self);
+    eventListenerInterface.addListener(name, callback);
+    return callback;
+}
+var scaleBookmarkChange = function (app, current) {
+    if (!current || !current.id) {
+        return;
+    }
+    if (current.parserWrapperInfo.parserInterface.getScale() === this.scale &&
+        !this.active) {
+        this.active = true;
+        this.update(this);
+    }
+    else if (this.active) {
+        this.active = false;
+        this.update(this);
+    }
+};
+var scaleChange = function (scale) {
+    if (scale === this.scale && !this.active) {
+        this.active = true;
+        this.update(this);
+    }
+    else if (this.active) {
+        this.active = false;
+        this.update(this);
+    }
+};
+function actualSizeAttached(app) {
+    this.scale = 1;
+    scaleBookmarkChange = _bindListener(app, "bookmarkChange", scaleBookmarkChange, this);
+    scaleChange = _bindListener(app.getReader(), "scaleChange", scaleChange, this);
+}
+var suitableScaleBookmarkChange = scaleBookmarkChange;
+var suitableScaleChange = scaleChange;
+function suitablePageAttached(app) {
+    this.scale = 0.8;
+    suitableScaleBookmarkChange = _bindListener(app, "bookmarkChange", suitableScaleBookmarkChange, this);
+    suitableScaleChange = _bindListener(app.getReader(), "scaleChange", suitableScaleChange, this);
+}
+var selectOrMoveBookmarkChange = function (app, current) {
+    var mod = current.parserWrapperInfo.parserInterface.getMode();
+    var selectNode = this;
+    var moveNode = this.selector.next();
+    var disabledNodeInfo;
+    var activeNodeInfo;
+    switch (mod) {
+        case "move":
+            disabledNodeInfo = selectNode;
+            activeNodeInfo = moveNode;
+            break;
+        case "select":
+            disabledNodeInfo = moveNode;
+            activeNodeInfo = selectNode;
+            break;
+        default:
+            return;
+    }
+    if (!activeNodeInfo.active) {
+        activeNodeInfo.active = true;
+        activeNodeInfo.update(activeNodeInfo);
+    }
+    if (disabledNodeInfo.active) {
+        disabledNodeInfo.active = false;
+        disabledNodeInfo.update(disabledNodeInfo);
+    }
+};
+function selectOrMoveAttached(app) {
+    selectOrMoveBookmarkChange = _bindListener(app, "bookmarkChange", selectOrMoveBookmarkChange, this);
+}
+
 var fullBtnId = createId();
+function narrowDisabledHandler(app) {
+    debugger;
+    var isDisabled = false;
+    try {
+        var scale = parseInt(app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
+            "");
+        var scalMinVal = scaleVals[0];
+        if (scale <= scalMinVal) {
+            isDisabled = true;
+        }
+    }
+    catch (e) {
+        isDisabled = false;
+    }
+    if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
+        this.className += " " + styles$a.disabled;
+        this.update(this);
+    }
+    else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
+        this.className = this.className.split(" ")[0];
+        this.update(this);
+    }
+}
+var _narrowDisabledHandler = narrowDisabledHandler;
+function enlargeDisabledHandle(app) {
+    var isDisabled = false;
+    try {
+        var appInterface = app.currentBookmark().parserWrapperInfo
+            .parserInterface;
+        var scale = parseInt(appInterface.getScale() * 100 + "");
+        var scaleMaxVal = scaleVals[scaleVals.length - 1];
+        if (scale >= scaleMaxVal) {
+            isDisabled = true;
+        }
+    }
+    catch (e) {
+        isDisabled = false;
+    }
+    if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
+        this.className += " " + styles$a.disabled;
+        this.update(this);
+    }
+    else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
+        this.className = this.className.split(" ")[0];
+        this.update(this);
+    }
+}
+var _enlargeDisabledHandle = enlargeDisabledHandle;
+function narrowOrEnlargeScaleChange(scale) {
+    scale = parseInt(scale * 100 + "");
+    var isNarrow = this.title === "缩小";
+    var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
+    var isDisabled = isNarrow ? scale <= val : scale >= val;
+    if (isDisabled) {
+        if (!this.className.includes(" " + styles$a.disabled)) {
+            this.className += " " + styles$a.disabled;
+            this.update(this);
+        }
+    }
+    else if (this.className.includes(" " + styles$a.disabled)) {
+        this.className = this.className.split(" ")[0];
+        this.update(this);
+    }
+}
+var _narrowScaleChange = narrowOrEnlargeScaleChange;
+var _EnlargeScaleChange = narrowOrEnlargeScaleChange;
+var scaleOptions = [
+    {
+        val: 20,
+        text: "20%"
+    },
+    {
+        val: 50,
+        text: "50%"
+    },
+    {
+        val: 100,
+        text: "100%"
+    },
+    {
+        val: 200,
+        text: "200%"
+    },
+    {
+        val: 400,
+        text: "400%"
+    },
+];
+var scaleVals = scaleOptions.map(function (v) { return v.val; });
 var headerTabsBtns = {
     open: {
         type: "default",
@@ -1260,10 +1564,17 @@ var headerTabsBtns = {
         nodeInfo: {
             width: 80,
             render: function (app, nodeInfo, parent) {
-                return new ToolJump({
-                    owner: parent,
-                    source: "<tool-jump></-jump>"
-                });
+                if (this._toolJump) {
+                    this._toolJump.dispose();
+                }
+                this._toolJump = new ToolJump();
+                this._toolJump.app = app;
+                this._toolJump.attach(parent);
+            },
+            isShow: function (app) {
+                var supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.pages;
+                return supportPages && supportPages.jump;
             }
         }
     },
@@ -1273,7 +1584,24 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "选择",
             title: "选择",
-            html: "&#xe65f;"
+            html: "&#xe65f;",
+            attached: selectOrMoveAttached,
+            click: function (app) {
+                var current = app.currentBookmark();
+                if (!current || !current.id) {
+                    return;
+                }
+                current.parserWrapperInfo.parserInterface.setMode("select");
+                var moveNodeInfo = this.selector.next();
+                if (!this.active) {
+                    this.active = true;
+                    this.update();
+                }
+                if (moveNodeInfo.active) {
+                    moveNodeInfo.active = false;
+                    moveNodeInfo.update(moveNodeInfo);
+                }
+            }
         }
     },
     move: {
@@ -1282,7 +1610,24 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "移动",
             title: "移动",
-            html: "&#xe660;"
+            html: "&#xe660;",
+            // attached: selectOrMoveAttached,
+            click: function (app) {
+                var current = app.currentBookmark();
+                if (!current || !current.id) {
+                    return;
+                }
+                current.parserWrapperInfo.parserInterface.setMode("move");
+                var selectNodeInfo = this.selector.prev();
+                if (!this.active) {
+                    this.active = true;
+                    this.update();
+                }
+                if (selectNodeInfo.active) {
+                    selectNodeInfo.active = false;
+                    selectNodeInfo.update(selectNodeInfo);
+                }
+            }
         }
     },
     ActualSize: {
@@ -1291,7 +1636,12 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "实际大小",
             title: "实际大小",
-            html: "&#xe661;"
+            html: "&#xe661;",
+            isShow: showSupportScale,
+            attached: actualSizeAttached,
+            click: function (app) {
+                app.currentBookmark().parserWrapperInfo.parserInterface.setScale(1);
+            }
         }
     },
     SuitableWidth: {
@@ -1300,7 +1650,13 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "适合宽度",
             title: "适合宽度",
-            html: "&#xe662;"
+            html: "&#xe662;",
+            isShow: showSupportFull("width"),
+            click: function (app) {
+                app
+                    .currentBookmark()
+                    .parserWrapperInfo.parserInterface.setFull("width");
+            }
         }
     },
     SuitablePage: {
@@ -1309,7 +1665,11 @@ var headerTabsBtns = {
         nodeInfo: {
             text: "适合页面",
             title: "适合页面",
-            html: "&#xe663;"
+            html: "&#xe663;",
+            attached: suitablePageAttached,
+            click: function (app) {
+                app.currentBookmark().parserWrapperInfo.parserInterface.setScale(0.8);
+            }
         }
     },
     narrow: {
@@ -1320,7 +1680,60 @@ var headerTabsBtns = {
             needReader: true,
             title: "缩小",
             width: 24,
-            className: styles$a.toolIconBtn
+            className: styles$a.toolIconBtn,
+            isShow: showSupportScale,
+            attached: function (app) {
+                app.removeListener("bookmarkChange", _narrowDisabledHandler);
+                _narrowDisabledHandler = narrowDisabledHandler.bind(this);
+                app.addListener("bookmarkChange", _narrowDisabledHandler);
+                app.getReader().removeListener("scaleChange", _narrowScaleChange);
+                _narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                app.getReader().addListener("scaleChange", _narrowScaleChange);
+            },
+            click: function (app) {
+                try {
+                    var nextNodeInfo = this.selector.next();
+                    if (nextNodeInfo.className.includes(" " + styles$a.disabled)) {
+                        nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
+                        nextNodeInfo.update(nextNodeInfo);
+                    }
+                    if (this.className.includes(" " + styles$a.disabled)) {
+                        return;
+                    }
+                    var parserInterface = app.currentBookmark().parserWrapperInfo
+                        .parserInterface;
+                    var nowScale = parseInt(parserInterface.getScale() * 100 + "");
+                    var index = scaleVals.indexOf(nowScale);
+                    if (index === -1) {
+                        for (var i = 1; i < scaleVals.length; i++) {
+                            var val = scaleVals[i];
+                            if (nowScale > val) {
+                                index = i - 1;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        index -= 1;
+                    }
+                    if (index <= 0) {
+                        if (this.className.includes(" " + styles$a.disabled)) {
+                            return;
+                        }
+                        this.className += " " + styles$a.disabled;
+                        this.update(this);
+                        if (index === -1) {
+                            return;
+                        }
+                    }
+                    else if (this.className.includes(" " + styles$a.disabled)) {
+                        this.className = this.className.split(" ")[0];
+                        this.update(this);
+                    }
+                    parserInterface.setScale(scaleVals[index] / 100);
+                }
+                catch (e) { }
+            }
         }
     },
     scale: {
@@ -1330,11 +1743,19 @@ var headerTabsBtns = {
             title: "缩放比率",
             width: 82,
             render: function (app, nodeInfo, parent) {
-                return new ToolScale({
-                    owner: parent,
-                    source: "<tool-select style='width:80px;'></tool-select>"
+                if (this._toolscale) {
+                    this._toolscale.dispose();
+                }
+                this._toolscale = new ToolScale({
+                    data: {
+                        activeVal: 100,
+                        options: scaleOptions
+                    }
                 });
-            }
+                this._toolscale.app = app;
+                this._toolscale.attach(parent);
+            },
+            isShow: showSupportScale
         }
     },
     enlarge: {
@@ -1344,7 +1765,60 @@ var headerTabsBtns = {
             html: "&#xe65a;",
             title: "放大",
             width: 24,
-            className: styles$a.toolIconBtn
+            className: styles$a.toolIconBtn,
+            isShow: showSupportScale,
+            attached: function (app) {
+                app.removeListener("bookmarkChange", _enlargeDisabledHandle);
+                _enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
+                app.addListener("bookmarkChange", _enlargeDisabledHandle);
+                app.getReader().removeListener("scaleChange", _EnlargeScaleChange);
+                _EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                app.getReader().addListener("scaleChange", _EnlargeScaleChange);
+            },
+            click: function (app) {
+                var prevNodeInfo = this.selector.prev();
+                if (prevNodeInfo.className.includes(" " + styles$a.disabled)) {
+                    prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
+                    prevNodeInfo.update(prevNodeInfo);
+                }
+                if (this.className.includes(" " + styles$a.disabled)) {
+                    return;
+                }
+                try {
+                    var parserInterface = app.currentBookmark().parserWrapperInfo
+                        .parserInterface;
+                    var nowScale = parseInt(parserInterface.getScale() * 100 + "");
+                    var index = scaleVals.indexOf(nowScale);
+                    if (index === -1) {
+                        for (var i = 0; i < scaleVals.length; i++) {
+                            var val = scaleVals[i];
+                            if (val > nowScale) {
+                                index = i;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        index += 1;
+                    }
+                    if (index >= scaleVals.length - 1 || index === -1) {
+                        if (this.className.includes(" " + styles$a.disabled)) {
+                            return;
+                        }
+                        this.className += " " + styles$a.disabled;
+                        this.update(this);
+                        if (index >= scaleVals.length) {
+                            return;
+                        }
+                    }
+                    else if (this.className.includes(" " + styles$a.disabled)) {
+                        this.className = this.className.split(" ")[0];
+                        this.update(this);
+                    }
+                    parserInterface.setScale(scaleVals[index] / 100);
+                }
+                catch (e) { }
+            }
         }
     },
     find: {
@@ -1362,7 +1836,13 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe665;",
             title: "全屏",
-            text: "全屏"
+            text: "全屏",
+            isShow: showSupportFull("content"),
+            click: function (app) {
+                app
+                    .currentBookmark()
+                    .parserWrapperInfo.parserInterface.setFull("content");
+            }
         }
     },
     preferenc: {
@@ -1494,13 +1974,30 @@ function slidebarLeftToolbarDisabled(app) {
         !currentBookmark.parserWrapperInfo.parserInterface);
 }
 
+new AsyncLock();
 var Reader = defineComponent({
     template: template$6(html$9)({ styles: styles$b }),
+    initData: function () {
+        return {
+            bookmarkLoadErrors: { __length: 0 }
+        };
+    },
     attached: function () {
         this.loadTempContent();
     },
     disposed: function () {
         this.destoryTempContent();
+    },
+    computed: {
+        errMsg: function () {
+            var currentBookmarkId = this.data.get("bookmarkInfos.id");
+            var bookmarkLoadErrors = this.data.get("bookmarkLoadErrors") || {};
+            var errInfo = bookmarkLoadErrors[currentBookmarkId];
+            if (errInfo && errInfo.haveErr) {
+                return errInfo.desc || "未知异常";
+            }
+            return "";
+        }
     },
     loadTempContent: function () {
         var tempContentEle = this.ref("tempContent");
@@ -1536,6 +2033,126 @@ var Reader = defineComponent({
         if (this._tempContentHtmlEle) {
             this._tempContentHtmlEle.remove();
         }
+    },
+    renderReaders: function (bookmarId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var nowBookmarkLoadErrors, key, rootEle, appInterface, bookmark, parserInterface, readerEle, res, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        nowBookmarkLoadErrors = JSON.parse(JSON.stringify(this.data.get("bookmarkLoadErrors") || {}));
+                        this.readerEleList = this.readerEleList || {};
+                        if (!bookmarId) {
+                            if (nowBookmarkLoadErrors["__length"]) {
+                                this.data.set("bookmarkLoadErrors", { _length: 0 });
+                            }
+                            for (key in this.readerEleList) {
+                                this.readerEleList[key].remove();
+                                delete this.readerEleList[key];
+                            }
+                            return [2 /*return*/];
+                        }
+                        if (this.lastReaderId && this.readerEleList[this.lastReaderId]) {
+                            this.readerEleList[this.lastReaderId].style.display = "none";
+                        }
+                        this.lastReaderId = bookmarId;
+                        if (this.readerEleList[bookmarId]) {
+                            this.readerEleList[bookmarId].removeAttribute("style");
+                            return [2 /*return*/];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        rootEle = this.el;
+                        appInterface = getAppBySanComponent(this);
+                        bookmark = appInterface.getBookmarkInfoById(bookmarId);
+                        if (!bookmark ||
+                            !bookmark.parserWrapperInfo ||
+                            !bookmark.parserWrapperInfo.parserInterface) {
+                            throw new Error("页签中缺失解析器器信息");
+                        }
+                        parserInterface = bookmark.parserWrapperInfo.parserInterface;
+                        if (!parserInterface.render) {
+                            throw new Error("解析器未实现渲染方法");
+                        }
+                        readerEle = createElement("div");
+                        readerEle.className = styles$b.readerContent;
+                        this.readerEleList[bookmark.id] = readerEle;
+                        rootEle.appendChild(readerEle);
+                        res = parserInterface.render(readerEle);
+                        if (!(res instanceof Promise)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, res];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3: return [3 /*break*/, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        nowBookmarkLoadErrors[bookmarId] = {
+                            haveErr: true,
+                            desc: e_1.message
+                        };
+                        nowBookmarkLoadErrors["__length"] += 1;
+                        this.data.set("bookmarkLoadErrors", nowBookmarkLoadErrors);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    },
+    handleContent: function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var nowBookmarkLoadErrors, appInterface, bookmark, err, readerContentEle, parserInterface, backContent, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        nowBookmarkLoadErrors = JSON.parse(JSON.stringify(this.data.get("bookmarkLoadErrors") || {}));
+                        appInterface = getApp(this.data.get("appId"));
+                        bookmark = appInterface.getBookmarkInfoById(id);
+                        if (nowBookmarkLoadErrors[bookmark.id]) {
+                            return [2 /*return*/];
+                        }
+                        err = {
+                            desc: "",
+                            haveErr: false
+                        };
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 6, 7, 8]);
+                        readerContentEle = this.ref("ref-readerContent-" + id);
+                        if (!readerContentEle) {
+                            throw new Error("缺失被渲染元素");
+                        }
+                        if (!bookmark ||
+                            !bookmark.parserWrapperInfo ||
+                            !bookmark.parserWrapperInfo.parserInterface) {
+                            throw new Error("页签中缺失解析器器信息");
+                        }
+                        parserInterface = bookmark.parserWrapperInfo.parserInterface;
+                        if (!parserInterface.render) return [3 /*break*/, 4];
+                        readerContentEle.innerHTML = "";
+                        backContent = parserInterface.render(readerContentEle);
+                        if (!(backContent instanceof Promise)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, backContent];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3: return [3 /*break*/, 5];
+                    case 4: throw new Error("解析器未实现渲染方法");
+                    case 5: return [3 /*break*/, 8];
+                    case 6:
+                        e_2 = _a.sent();
+                        err.haveErr = true;
+                        err.desc = e_2.message;
+                        return [3 /*break*/, 8];
+                    case 7:
+                        nowBookmarkLoadErrors[bookmark.id] = err;
+                        this.data.set("bookmarkLoadErrors", nowBookmarkLoadErrors);
+                        return [7 /*endfinally*/];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
     }
 });
 
@@ -1683,8 +2300,9 @@ var TabBtn = defineComponent({
         dispatchDomEvent(btnEle, eventIdList, this);
     },
     detached: function () {
+        var dataStore = getApp(this.data.get("appId")).getDataStore();
         var eventIdList = this.data.get("evenIdList");
-        nodeEventDestroy.apply(dom, eventIdList);
+        nodeEventDestroy.apply(dom, __spreadArray([dataStore], eventIdList, false));
     }
 });
 
@@ -1713,7 +2331,25 @@ var Bookmark = defineComponent({
             this.watchTabGroup();
         },
         add: function () {
-            this.dispatch("TABS::ADD", {});
+            return __awaiter(this, void 0, void 0, function () {
+                var appInterface, result;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            appInterface = getApp(this.data.get("appId"));
+                            return [4 /*yield*/, appInterface.getReader().selectFile()];
+                        case 1:
+                            result = _a.sent();
+                            if (!result) {
+                                return [2 /*return*/];
+                            }
+                            return [4 /*yield*/, result.loadFile()];
+                        case 2:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     updated: function () {
@@ -1727,7 +2363,7 @@ var Bookmark = defineComponent({
             return;
         }
         var tabs = this.data.get("bookmarks") || [];
-        var tabWrapperWidth = tabs.length * (166 + 20);
+        var tabWrapperWidth = tabs.length * 172 + 20;
         tabWrapperEle.style.width = tabWrapperWidth + "px";
         var width = tabGroupEle.clientWidth;
         if (tabWrapperWidth > width) {
@@ -1803,7 +2439,7 @@ var TabPages = defineComponent({
 });
 
 var isFirst = true;
-var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
@@ -1871,21 +2507,126 @@ var AppUi = defineComponent({
     }
 });
 
+var _parserEventList = ["pageNoChange", "scaleChange", "moduleSwitchChange"];
 var ReaderParserAbstract = /** @class */ (function () {
     function ReaderParserAbstract(app) {
         this.app = app;
+        this.scale = window.devicePixelRatio || 1;
+        this._dataStore = {};
     }
-    ReaderParserAbstract.prototype.renderToEle = function (domEle) {
-        throw new Error("Method not implemented.");
+    ReaderParserAbstract.prototype.getScale = function () {
+        return this.scale;
     };
-    ReaderParserAbstract.prototype.renderToSanComponent = function (paremtComponent) {
-        throw new Error("Method not implemented.");
+    ReaderParserAbstract.prototype.setScale = function (scale) {
+        return (this.scale = scale);
+    };
+    ReaderParserAbstract.prototype.adaptiveView = function () { };
+    ReaderParserAbstract.prototype.jumpTo = function (page) { };
+    ReaderParserAbstract.prototype._getEventList = function (eventName) {
+        eventName = "__event_" + eventName;
+        this._dataStore[eventName] = this._dataStore[eventName] || [];
+        return this._dataStore[eventName];
+    };
+    ReaderParserAbstract.prototype.addListener = function (eventName, callback) {
+        if (typeof callback !== "function") {
+            return;
+        }
+        if (!_parserEventList.includes(eventName)) {
+            return;
+        }
+        var eventList = this._getEventList(eventName);
+        for (var i = 0; i < eventList.length; i++) {
+            if (eventList[i] === callback) {
+                return;
+            }
+        }
+        eventList.push(callback);
+        if (eventList.length === 1) {
+            this._listenerBindNotice(eventName, "add");
+        }
+    };
+    ReaderParserAbstract.prototype.removeListener = function (eventName, callback) {
+        if (typeof callback !== "function") {
+            return;
+        }
+        if (!_parserEventList.includes(eventName)) {
+            return;
+        }
+        var eventList = this._getEventList(eventName);
+        for (var i = eventList.length; i >= 0; i--) {
+            if (eventList[i] === callback) {
+                eventList.splice(i, 1);
+                break;
+            }
+        }
+        if (eventList.length === 0) {
+            this._eventNoticBind(eventName, "del");
+        }
+    };
+    ReaderParserAbstract.prototype._eventNoticBind = function (eventName, mod) {
+        var eventBindKeyName = "_event_bind_" + eventName;
+        if (this._dataStore[eventBindKeyName]) {
+            return;
+        }
+        if (this._listenerBindNotice(eventName, mod)) {
+            this._dataStore[eventBindKeyName] = true;
+        }
+    };
+    ReaderParserAbstract.prototype.fire = function (eventName) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var eventList = this._getEventList(eventName);
+        for (var i = 0; i < eventList.length; i++) {
+            eventList[i].apply(eventList, args);
+        }
+    };
+    ReaderParserAbstract.prototype.eventExist = function (event) {
+        return this._getEventList(event).length !== 0;
+    };
+    /**
+     * 事件绑定通知
+     * @param eventName 事件名称
+     * @param mod 事件模式: add: 添加  del: 删除( 事件回调全部移除之后会调用 )
+     * @returns 是/否已经处理通知, true: 此事件名称不会再次进行通知, false: 此事件后续会进行通知
+     */
+    ReaderParserAbstract.prototype._listenerBindNotice = function (eventName, mod) {
+        return false;
+    };
+    ReaderParserAbstract.prototype.showPageNo = function () { };
+    ReaderParserAbstract.prototype.hidePageNo = function () { };
+    ReaderParserAbstract.prototype.setMode = function (mode) { };
+    ReaderParserAbstract.prototype.getMode = function () {
+        return "select";
+    };
+    ReaderParserAbstract.prototype.setFull = function (mode, options) { };
+    ReaderParserAbstract.prototype.contentExitFull = function () { };
+    ReaderParserAbstract.prototype.contentIsFull = function () {
+        return false;
     };
     ReaderParserAbstract.supportAll = {
         nowBrowser: true,
         fileSuffix: [],
         isSupportFile: function (file) {
             return true;
+        },
+        scale: true,
+        full: {
+            width: true,
+            content: true
+        },
+        pages: {
+            jump: true,
+            moduleSwitch: true,
+            find: true,
+            adaptiveView: true,
+            showPageNo: true
+        },
+        listener: {
+            pageNoChange: true,
+            scaleChange: true,
+            moduleSwitchChange: true
         }
     };
     return ReaderParserAbstract;
@@ -1895,13 +2636,18 @@ var readerParserSupportDefault = {
     fileSuffix: [],
     isSupportFile: function (file) {
         return false;
-    }
+    },
+    scale: false,
+    full: false,
+    pages: false,
+    listener: false
 };
 var ErrFileNotParsed = new Error("文件无法被解析, 请添加对应解析器");
 var ErrNoSupportFileSuffix = new Error("没有可被解析的文件后缀，请尝试添加解析器");
 var ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
 var ErrLackOfParser = new Error("缺失解析器信息");
 
+var appEventBookmarkChange = "bookmarkChange";
 var fontfaceStyleId = new Date().getTime() + "";
 var defaultFontConfig = {
     dir: "./",
@@ -1967,6 +2713,7 @@ var App$1 = defineComponent({
 var ReaderImpl = /** @class */ (function () {
     function ReaderImpl(_app) {
         this._app = _app;
+        this._eventList = new DataStore();
         this._parserList = [];
         this._supportFileSuffix = [];
         this._fileInputLabel = createElement("label");
@@ -2054,6 +2801,51 @@ var ReaderImpl = /** @class */ (function () {
             });
         });
     };
+    ReaderImpl.prototype._parserInterfaceBindEvent = function (parser) {
+        var eventMap = this._eventList.all();
+        debugger;
+        for (var key in eventMap) {
+            var eventCallList = eventMap[key];
+            for (var j = 0; j < eventCallList.length; j++) {
+                parser.addListener(key, eventCallList[j]);
+            }
+        }
+    };
+    ReaderImpl.prototype.addListener = function (eventName, callback) {
+        var eventList = this._eventList.get(eventName);
+        if (!eventList) {
+            eventList = [];
+            this._eventList.set(eventName, eventList);
+        }
+        eventList.push(callback);
+        var bookmarkList = this._app.bookmarkList();
+        if (bookmarkList.length === 0) {
+            return;
+        }
+        for (var i = 0; i < bookmarkList.length; i++) {
+            bookmarkList[i].parserWrapperInfo.parserInterface.addListener(eventName, callback);
+        }
+    };
+    ReaderImpl.prototype.removeListener = function (eventName, callback) {
+        var eventList = this._eventList.get(eventName);
+        if (!eventList) {
+            eventList = [];
+            this._eventList.set(eventName, eventList);
+        }
+        for (var i = eventList.length - 1; i >= 0; i--) {
+            var event_1 = eventList[i];
+            if (callback === event_1) {
+                eventList.splice(i, 1);
+            }
+        }
+        var bookmarkList = this._app.bookmarkList();
+        if (bookmarkList.length === 0) {
+            return;
+        }
+        for (var i = 0; i < bookmarkList.length; i++) {
+            bookmarkList[i].parserWrapperInfo.parserInterface.removeListener(eventName, callback);
+        }
+    };
     ReaderImpl.prototype.selectFile = function () {
         return __awaiter(this, void 0, void 0, function () {
             var fileSuffixList, result, accpet;
@@ -2118,12 +2910,16 @@ var ReaderImpl = /** @class */ (function () {
                         return [4 /*yield*/, parser.loadFile(file)];
                     case 2:
                         _a.sent();
+                        this._parserInterfaceBindEvent(parser);
                         this._app.addBookmark({
                             id: file.path,
                             name: file.name,
                             parserWrapperInfo: {
                                 fileInfo: file,
-                                parserInfo: parserInfo,
+                                parserInfo: {
+                                    support: parserInfo.support(this._app, parser),
+                                    Parser: parserInfo.Parser
+                                },
                                 parserInterface: parser
                             }
                         });
@@ -2180,6 +2976,7 @@ var AppImpl = /** @class */ (function () {
         this._readerInterface = new ReaderImpl(this);
         this._bookmarkList = [];
         this._currentBookmarkIndex = -1;
+        this._currentBookmarkId = "";
         this._bookmarkMap = {};
         this._datastore = new DataStore();
         this._pathJoin = function () {
@@ -2242,7 +3039,7 @@ var AppImpl = /** @class */ (function () {
                 }
             });
             _this._appComponent.eventMapping = function (id, event) {
-                nodeEventCall(id, _this, event);
+                nodeEventCall(_this, id, _this, event);
             };
             _this.update(defaultOptions);
             _this.update(_this._initOptions);
@@ -2260,8 +3057,9 @@ var AppImpl = /** @class */ (function () {
             }
             _this._appComponent.data.set("show", _this._isShow);
         };
-        this._handleToobarConfigs = function (toolbarConfigs) {
-            for (var i = 0; i < toolbarConfigs.length; i++) {
+        this._handleToobarConfigs = function (toolbarConfigs, expr) {
+            var app = _this;
+            var _loop_1 = function (i) {
                 var toolbar_1 = toolbarConfigs[i];
                 toolbar_1.disabled = handleDisabled(toolbar_1.disabled, _this._datastore);
                 if (toolbar_1.activeChange) {
@@ -2270,16 +3068,39 @@ var AppImpl = /** @class */ (function () {
                     toolbar_1._activeChangeFnId = activeChangeFnId;
                 }
                 if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
-                    continue;
+                    return "continue";
                 }
-                for (var j = 0; j < toolbar_1.tools.length; j++) {
+                var nodeInfoList = toolbar_1.tools.map(function (tool) { return tool.nodeInfo; });
+                var _loop_2 = function (j) {
                     var toolInfo = toolbar_1.tools[j];
                     toolInfo.disabled = handleDisabled(toolInfo.disabled, _this._datastore);
                     if (!toolInfo.nodeInfo) {
-                        continue;
+                        return "continue";
                     }
-                    toolInfo.nodeInfo = handleNodeInfo(toolInfo.nodeInfo);
+                    var nodeInfoThis = toolInfo.nodeInfo;
+                    var self_1 = _this;
+                    nodeInfoThis.update = function (nodeInfo) {
+                        // const toolbars = app.getNowData(expr as any) as ToolbarConfig[];
+                        // toolbars[i].tools[j].nodeInfo = nodeInfo;
+                        // debugger;
+                        // app.updateByExpr(expr as any, toolbars);
+                        // const srcNodeInfo = self._appComponent.data.get(
+                        //   expr + `[${i}].tools[${j}].nodeInfo`
+                        // ) as NodeInfo;
+                        nodeInfo = nodeInfo || this;
+                        nodeInfoList[j] = __assign(__assign({}, nodeInfo), { update: nodeInfoThis.update.bind(nodeInfo), selector: nodeInfoThis.selector });
+                        nodeInfo = handleNodeInfo(self_1, nodeInfo);
+                        self_1._appComponent.data.set("appOptions." + expr + "[".concat(i, "].tools[").concat(j, "].nodeInfo"), nodeInfo);
+                    }.bind(nodeInfoThis);
+                    _this._handleNodeInfoThisSelectorData(app, nodeInfoThis, nodeInfoList, j);
+                    toolInfo.nodeInfo = handleNodeInfo(_this, toolInfo.nodeInfo);
+                };
+                for (var j = 0; j < toolbar_1.tools.length; j++) {
+                    _loop_2(j);
                 }
+            };
+            for (var i = 0; i < toolbarConfigs.length; i++) {
+                _loop_1(i);
             }
         };
         this.getInitConfig = function () {
@@ -2319,16 +3140,30 @@ var AppImpl = /** @class */ (function () {
             if (!options || !_this._appComponent) {
                 return;
             }
+            var app = _this;
             if (options.tabPages &&
                 options.tabPages.btnGroup &&
                 options.tabPages.btnGroup.btns) {
-                var btns = options.tabPages.btnGroup.btns;
-                for (var i = 0; i < btns.length; i++) {
-                    btns[i] = handleNodeInfo(btns[i]);
+                var btns_1 = options.tabPages.btnGroup.btns;
+                var _loop_3 = function (i) {
+                    var nodeInfoThis = btns_1[i];
+                    nodeInfoThis.update = function (nodeInfo) {
+                        // const btns = app.getNowData("tabPages.btnGroup.btns");
+                        // btns[i] = nodeInfo;
+                        nodeInfo = nodeInfo || this;
+                        btns_1[i] = nodeInfo;
+                        nodeInfo = handleNodeInfo(app, nodeInfo);
+                        app.updateByExpr("tabPages.btnGroup.btns[".concat(i, "]"), nodeInfo);
+                    }.bind(btns_1[i]);
+                    _this._handleNodeInfoThisSelectorData(app, nodeInfoThis, btns_1, i);
+                    btns_1[i] = handleNodeInfo(_this, btns_1[i]);
+                };
+                for (var i = 0; i < btns_1.length; i++) {
+                    _loop_3(i);
                 }
             }
             if (options.header && options.header.toolbars) {
-                _this._handleToobarConfigs(options.header.toolbars);
+                _this._handleToobarConfigs(options.header.toolbars, "header.toolbars");
             }
             if (options.content) {
                 if (options.content.noOpenFileRender) {
@@ -2339,7 +3174,7 @@ var AppImpl = /** @class */ (function () {
             }
             if (options.sidebars) {
                 if (options.sidebars.left) {
-                    _this._handleToobarConfigs(options.sidebars.left.toolbars);
+                    _this._handleToobarConfigs(options.sidebars.left.toolbars, "sidebars.left.toolbars");
                 }
             }
             _this._appComponent.data.merge("appOptions", JSON.parse(JSON.stringify(options)), { force: true });
@@ -2372,7 +3207,88 @@ var AppImpl = /** @class */ (function () {
         }
         this._initApp();
     }
+    AppImpl.prototype._handleNodeInfoThisSelectorData = function (app, nodeInfoThis, nodeInfoList, currentIndex) {
+        nodeInfoThis.selector = {
+            prev: function () {
+                var prevIndex = currentIndex - 1;
+                if (prevIndex < 0) {
+                    return undefined;
+                }
+                return nodeInfoList[prevIndex];
+            },
+            next: function () {
+                var nextIndex = currentIndex + 1;
+                if (nextIndex > nodeInfoList.length - 1) {
+                    return undefined;
+                }
+                return nodeInfoList[nextIndex];
+            },
+            index: function () {
+                return currentIndex;
+            },
+            list: function () {
+                return nodeInfoList;
+            },
+            listSize: function () {
+                return nodeInfoList.length;
+            },
+            get: function (index) {
+                return nodeInfoList[index];
+            }
+        };
+    };
+    AppImpl.prototype._eventName = function (name) {
+        return "__event_" + name;
+    };
+    AppImpl.prototype._eventList = function (name) {
+        name = this._eventName(name);
+        var eventList = this._datastore[name];
+        if (!eventList) {
+            eventList = [];
+            this._datastore[name] = eventList;
+        }
+        return eventList;
+    };
+    AppImpl.prototype._callAppEvent = function (eventName) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var eventList = this._eventList(eventName);
+        for (var i = 0; i < eventList.length; i++) {
+            var callbackFn = eventList[i];
+            if (typeof callbackFn === "function") {
+                callbackFn.apply(void 0, args);
+            }
+        }
+    };
     //#endregion
+    AppImpl.prototype.bookmarkList = function () {
+        return this._bookmarkList || [];
+    };
+    AppImpl.prototype.addListener = function (eventName, callback) {
+        switch (eventName) {
+            case appEventBookmarkChange:
+                break;
+            default:
+                return;
+        }
+        this._eventList(eventName).push(callback);
+    };
+    AppImpl.prototype.removeListener = function (eventName, callback) {
+        switch (eventName) {
+            case appEventBookmarkChange:
+                break;
+            default:
+                return;
+        }
+        var eventList = this._eventList(eventName);
+        for (var i = eventList.length; i >= 0; i--) {
+            if (eventList[i] === callback) {
+                eventList.splice(i, 1);
+            }
+        }
+    };
     AppImpl.prototype.getDataStore = function () {
         return this._datastore;
     };
@@ -2386,7 +3302,7 @@ var AppImpl = /** @class */ (function () {
         var isConvert = false;
         if (currentIndex === index) {
             currentIndex += 1;
-            if (bookmarkLength < currentIndex) {
+            if (bookmarkLength <= currentIndex) {
                 currentIndex = bookmarkLength - 1;
             }
             isConvert = true;
@@ -2449,7 +3365,10 @@ var AppImpl = /** @class */ (function () {
         this._bookmarkList.push(bookmark);
         bookmark.index = this._bookmarkList.length - 1;
         this._bookmarkMap[bookmarkInfo.id] = bookmark.index;
-        this._appComponent.data.push("bookmarkInfos.list", bookmark);
+        this._appComponent.data.push("bookmarkInfos.list", {
+            name: bookmark.name,
+            id: bookmark.id
+        });
         this.convertBookmark(bookmark.index);
     };
     AppImpl.prototype.currentBookmark = function () {
@@ -2460,7 +3379,14 @@ var AppImpl = /** @class */ (function () {
     };
     AppImpl.prototype.convertBookmark = function (index) {
         this._currentBookmarkIndex = index;
+        var currentBookmarkId = "";
+        if (index >= 0) {
+            this._currentBookmarkId = this._bookmarkList[index].id;
+            currentBookmarkId = this._currentBookmarkId;
+        }
         this._appComponent.data.set("bookmarkInfos.index", index);
+        this._appComponent.data.set("bookmarkInfos.id", currentBookmarkId);
+        this._callAppEvent(appEventBookmarkChange, this, this._bookmarkList[index]);
     };
     AppImpl.prototype.getReader = function () {
         return this._readerInterface;
@@ -2484,6 +3410,13 @@ var AppImpl = /** @class */ (function () {
     return AppImpl;
 }());
 
+// (() => {
+//   //防止页面后退
+//   history.pushState(null, null, document.URL);
+//   dom.eventUtil.addHandler(window, "popstate", function () {
+//     history.pushState(null, null, document.URL);
+//   });
+// })();
 var App = AppImpl;
 
 export { App, ErrFeilSelectWait, ErrFileNotParsed, ErrLackOfParser, ErrNoSupportFileSuffix, ReaderParserAbstract, defaultContentTemp, defaultData, index as ieUtil, readerParserSupportDefault };

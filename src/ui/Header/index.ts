@@ -155,7 +155,11 @@ export default defineComponent<DataType>({
       }
 
       if (toolInfo.nodeInfo?.isShow) {
-        return toolInfo.nodeInfo.isShow(appInterface);
+        try {
+          return toolInfo.nodeInfo.isShow(appInterface);
+        } catch (e) {
+          return false;
+        }
       }
 
       return true;
@@ -246,12 +250,20 @@ export default defineComponent<DataType>({
 
       if (toolInfo.nodeInfo.renderId) {
         dom.nodeRender(
+          this,
           toolInfo.nodeInfo.renderId,
           app.getApp(this.data.get("appId")),
           this,
           toolEle
         );
         return undefined;
+      } else if (toolInfo.nodeInfo._attachedId) {
+        const appInterface = app.getApp(this.data.get("appId"));
+        dom.nodeEventCall(
+          appInterface,
+          toolInfo.nodeInfo._attachedId as any,
+          appInterface
+        );
       }
 
       if (

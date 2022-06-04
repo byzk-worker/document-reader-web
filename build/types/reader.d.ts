@@ -28,12 +28,36 @@ export declare interface ReaderInterface {
    * 选择一个系统文件
    */
   selectFile(): Promise<SelectFileResult | undefined>;
+  /**
+   * 添加当前页码变更事件
+   * @param eventName 监听名称
+   * @param callback 回调
+   */
+  addListener(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  /**
+   * 添加缩放改变事件
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  addListener(eventName: "scaleChange", callback: (scale: number) => void);
+  /**
+   * 移除监听
+   * @param eventName 名称
+   * @param callback 回调
+   */
+  removeListener(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  /**
+   * 移除缩放事件监听
+   * @param eventName 事件名称
+   * @param callback 回调
+   */
+  removeListener(eventName: "scaleChange", callback: (pageNo: number) => void);
 }
 
 /**
  * 文件选择结果
  */
- export interface SelectFileResult {
+export interface SelectFileResult {
   /**
    * 文件信息
    */
@@ -43,4 +67,3 @@ export declare interface ReaderInterface {
    */
   loadFile(): Promise<void>;
 }
-

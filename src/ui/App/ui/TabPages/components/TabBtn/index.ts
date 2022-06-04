@@ -1,5 +1,5 @@
 import { defineComponent, Component } from "san";
-import { dom } from "../../../../../../utils";
+import { app, dom } from "../../../../../../utils";
 import styles from "./index.module.less";
 import { NodeInfo } from "../../../../../../types";
 
@@ -36,7 +36,8 @@ export default defineComponent({
     dom.dispatchDomEvent(btnEle, eventIdList, this);
   },
   detached(this: Component<NodeInfo>) {
+    const dataStore = app.getApp(this.data.get("appId")).getDataStore();
     const eventIdList = this.data.get("evenIdList");
-    dom.nodeEventDestroy(...eventIdList);
+    dom.nodeEventDestroy(dataStore, ...eventIdList);
   },
 });

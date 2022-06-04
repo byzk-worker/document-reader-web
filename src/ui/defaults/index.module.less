@@ -29,11 +29,20 @@
   height: 100%;
   line-height: @headerToolPanelHeight;
   color: #444c5e;
+  transition: all 0.3s;
   &:hover {
     color: #2752e7;
   }
   > span {
     font-size: 24px;
+  }
+  &.disabled {
+    transition: all 0.3s;
+    color: #888;
+    cursor: not-allowed;
+    &:hover {
+      color: #888;
+    }
   }
 }
 
@@ -41,4 +50,8 @@
   width: 100%;
   height: 100%;
   padding-top: ((@headerToolPanelHeight - 30) / 2);
+}
+
+.active {
+  color: #2752e7;
 }

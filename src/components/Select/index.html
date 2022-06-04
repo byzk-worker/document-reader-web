@@ -1,6 +1,11 @@
 <div class="<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}" on-click="events.selectClick($event)">
     <div class="<%= styles.value %>">
-        <span>{{activeText}}</span>
+        <!-- <span>{{activeText}}</span> -->
+        <input-number on-change="events.inputChange($event)" style="width:50px;border: none;outline: none;"
+            minValue="{{1}}" maxValue="{{800}}" value="{= activeVal =}">
+        </input-number>
+        <!-- <span class="<%= styles.suffix %>">%</span> -->
     </div>
-    <span class="iconfont">&#xe71d;</span>
+    <!-- <span class="iconfont">&#xe71d;</span> -->
+    <span class="iconfont">{{suffix|raw}}</span>
 </div>

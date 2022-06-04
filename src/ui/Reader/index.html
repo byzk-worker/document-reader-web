@@ -1,3 +1,12 @@
 <div class="<%= styles.reader %>">
     <div class="<%= styles.tempContent %>" s-ref="tempContent" s-show="bookmarkInfos.index < 0"></div>
+    <!-- <fragment s-for="bookmark in bookmarkInfos.list">
+        <div key="{{bookmark.id}}" s-key="{{bookmark.id}}" renderData="{{handleContent(bookmark.id)}}" s-show="bookmarkInfos.id == bookmark.id" class="<%= styles.readerContent %>"
+            s-ref="ref-readerContent-{{bookmark.id}}">
+        </div>
+    </fragment> -->
+    <div style="display: none" key="{{renderReaders(bookmarkInfos.id)}}"></div>
+    <div s-if="errMsg" class="<%= styles.error %>">
+        <h3>{{errMsg}}</h3>
+    </div>
 </div>

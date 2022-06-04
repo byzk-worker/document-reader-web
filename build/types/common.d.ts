@@ -1,4 +1,3 @@
-import { Component } from "san";
 import { AppInterface } from "./app";
 
 /**
@@ -51,12 +50,19 @@ export declare interface NodeInfo {
   render?(
     app: AppInterface,
     nodeIno: NodeInfo,
-    parent: Component
-  ): HTMLElement | Component;
+    target: HTMLElement
+  ): void | Promise<void>;
+  _renderId?: string;
+  /**
+   * 加载完成
+   * @param app 应用接口
+   */
+  attached?(this: NodeInfoThis, app: AppInterface): void;
+  _attachedId?: string;
   /**
    * 单击事件
    */
-  click?(app: AppInterface, event: MouseEvent): void;
+  click?(this: NodeInfoThis, app: AppInterface, event: MouseEvent): void;
   /**
    * 事件绑定
    * @param bind 事件绑定器
@@ -64,9 +70,59 @@ export declare interface NodeInfo {
   eventBind?<EventT>(
     bind: (
       eventName: string,
-      callback: (app: AppInterface, event: EventT) => void
+      callback: (
+        this: NodeInfoThis,
+        app: AppInterface,
+        nodeInfo: NodeInfo,
+        event: EventT
+      ) => void
     ) => void
   ): void;
+}
+
+/**
+ * nodeInfo this指向的内容
+ */
+export interface NodeInfoThis extends NodeInfo {
+  /**
+   * nodeInfo列表选择器
+   */
+  selector: NodeInfoSelector;
+  /**
+   * 更新当前nodeInfo
+   */
+  update(nodeInfo?: NodeInfo): void;
+}
+
+/**
+ * nodeInfo选择器
+ */
+export interface NodeInfoSelector {
+  /**
+   * 上一个nodeInfo
+   */
+  prev(): NodeInfoThis | undefined;
+  /**
+   * 下一个nodeInfo
+   */
+  next(): NodeInfoThis | undefined;
+  /**
+   * nodeInfo当前索引
+   */
+  index(): number;
+  /**
+   * nodeInfo列表的长度
+   */
+  listSize(): number;
+  /**
+   * 要获取的nodeInfo的索引
+   * @param index 索引
+   */
+  get(index: number): NodeInfoThis | undefined;
+  /**
+   * nodeInfo列表
+   */
+  list(): NodeInfoThis[];
 }
 
 /**

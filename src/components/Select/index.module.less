@@ -24,19 +24,31 @@
     // padding: 0 6px;
     color: #333;
     text-align: left;
+    z-index: 2;
+    > .suffix {
+      position: absolute;
+      height: @selectHeight;
+      line-height: @selectHeight;
+      top: 0;
+      right: 16px;
+      z-index: 1;
+    }
   }
 
-  &:hover, &.active {
+  &:hover,
+  &.active {
     border: 1px solid #40a9ff;
   }
 
   > span {
     display: block;
     position: absolute;
-    top: (@selectHeight / 2 - 12px);
+    // top: (@selectHeight / 2 - 12px);
+    top: 0;
     right: 9px;
     font-size: 12px;
     width: 12px;
-    height: 12px;
+    height: @selectHeight;
+    line-height: @selectHeight;
   }
 }

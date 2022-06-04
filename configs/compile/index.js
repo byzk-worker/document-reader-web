@@ -87,7 +87,10 @@ const fileList = fs
   .map((v) => path.join(dTsFilesPath, v));
 
 execNodeModulesBin(
-  `typedoc --out ${docsDir} ${resolveFile("build", "index.d.ts")} ${fileList.join(" ")}`
+  `typedoc --out ${docsDir} ${resolveFile(
+    "build",
+    "index.d.ts"
+  )} ${fileList.join(" ")}`
 );
 
 console.log("正在拷贝字体文件...");
@@ -137,3 +140,4 @@ fs.writeFileSync(
 console.info("正在清除资源...");
 deleteFolder(path.join(distDir, "dist", "lib"));
 deleteFolder(path.join(distDir, "dist", "types"));
+console.log("打包完成时间: ", new Date().toString());

@@ -2,6 +2,7 @@ import { AppInterface, Diasble, NodeInfo } from "../../types";
 import { Component } from "san";
 import { createId } from "../id";
 import { DataStore } from "../../dataStore";
+import { getApp } from "../app";
 
 /**
  * 派发DOM事件消息
@@ -45,8 +46,8 @@ interface NodeEventMap {
   [key: string]: NodeEventInfo;
 }
 
-let _nodeEventMap: NodeEventMap = {};
-let _nodeRenderMap: { [key: string]: NodeInfo } = {};
+// let _nodeEventMap: NodeEventMap = {};
+// let _nodeRenderMap: { [key: string]: NodeInfo } = {};
 
 /**
  * 绑定事件
@@ -55,15 +56,16 @@ let _nodeRenderMap: { [key: string]: NodeInfo } = {};
  * @returns 事件id
  */
 function nodeEvenBindEvent(
+  dataStore: DataStore,
   eventName: string,
   callback: (...args: any) => void
 ) {
   const id = createId() + "_" + eventName;
-  _nodeEventMap[id] = {
+  dataStore.set(id, {
     id,
     name: eventName,
     callback,
-  };
+  });
   return id;
 }
 
@@ -72,8 +74,11 @@ function nodeEvenBindEvent(
  * @param eventId 事件id
  * @returns 事件信息
  */
-export function nodeEventInfoGet(eventId: string): NodeEventInfo | undefined {
-  return _nodeEventMap[eventId];
+export function nodeEventInfoGet(
+  app: AppInterface,
+  eventId: string
+): NodeEventInfo | undefined {
+  return app.getDataStore().get(eventId);
 }
 
 export function handleDisabled(
@@ -95,13 +100,21 @@ export function handleDisabled(
  * @param nodeInfo 节点信息
  * @returns 处理之后的节点信息
  */
-export function handleNodeInfo(nodeInfo: NodeInfo): NodeInfo {
+export function handleNodeInfo(
+  app: AppInterface,
+  nodeInfo: NodeInfo
+): NodeInfo {
   const srcEventIdList = nodeInfo.evenIdList || [];
   const eventIdList = [];
   const tempEventMap: NodeEventMap = {};
 
+  const dataStore = app.getDataStore();
   if (nodeInfo.click) {
-    const id = nodeEvenBindEvent("click", nodeInfo.click);
+    const id = nodeEvenBindEvent(
+      dataStore,
+      "click",
+      nodeInfo.click.bind(nodeInfo)
+    );
     eventIdList.push(id);
     tempEventMap["click"] = {
       id,
@@ -112,17 +125,30 @@ export function handleNodeInfo(nodeInfo: NodeInfo): NodeInfo {
     nodeInfo.eventBind((eventName, callback) => {
       const srcEvent = tempEventMap[eventName];
       if (srcEvent) {
-        nodeEventDestroy(srcEvent.id);
+        nodeEventDestroy(dataStore, srcEvent.id);
       }
-      const id = nodeEvenBindEvent(eventName, callback);
+      const id = nodeEvenBindEvent(
+        dataStore,
+        eventName,
+        callback.bind(nodeInfo)
+      );
       eventIdList.push(id);
       tempEventMap[eventName] = { id } as any;
     });
   }
 
+  if (nodeInfo.attached) {
+    if (nodeInfo._attachedId) {
+      dataStore.remove(nodeInfo._attachedId);
+    }
+    nodeInfo._attachedId = createId();
+    dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
+    nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+  }
+
   for (let i = 0; i < srcEventIdList.length; i++) {
     const srcId = srcEventIdList[i];
-    const srcNodeInfo = _nodeEventMap[srcId];
+    const srcNodeInfo = dataStore.get(srcId) as any;
     if (!srcNodeInfo) {
       continue;
     }
@@ -131,13 +157,17 @@ export function handleNodeInfo(nodeInfo: NodeInfo): NodeInfo {
     }
   }
 
-  let renderId: string | undefined = nodeInfo.id;
+  let renderId: string | undefined = (nodeInfo as any)._renderId;
   if (nodeInfo.render) {
     if (renderId) {
-      delete _nodeRenderMap[renderId];
+      dataStore.remove(renderId);
+      // delete _nodeRenderMap[renderId];
     }
+    nodeInfo.render = nodeInfo.render.bind(nodeInfo);
     renderId = createId();
-    _nodeRenderMap[renderId] = nodeInfo;
+    dataStore.set(renderId, nodeInfo);
+    nodeInfo._renderId = renderId;
+    // _nodeRenderMap[renderId] = nodeInfo;
   }
 
   nodeInfo = {
@@ -149,32 +179,42 @@ export function handleNodeInfo(nodeInfo: NodeInfo): NodeInfo {
   return JSON.parse(JSON.stringify(nodeInfo));
 }
 
-export function nodeRender(
+export async function nodeRender(
+  component: Component,
   renderId: string,
   app: AppInterface,
   parent: Component,
   renderToDom?: any
-): HTMLElement | Component {
+) {
   if (!renderId) {
     throw new Error("未获取到renderId");
   }
 
-  const nodeInfo = _nodeRenderMap[renderId];
+  const dataStore = getApp(component.data.get("appId")).getDataStore();
+  // const nodeInfo = _nodeRenderMap[renderId];
+  const nodeInfo = dataStore.get(renderId) as NodeInfo;
   if (!nodeInfo || !nodeInfo.render) {
     throw new Error("获取节点render方法失败");
   }
 
-  const ele = nodeInfo.render(app, nodeInfo, parent);
-  if (renderToDom) {
-    if (typeof (ele as any).attach !== "function") {
-      renderToDom.innerHTML = "";
-      renderToDom.appendChild(ele as any);
-    } else {
-      (ele as any).attach(renderToDom);
-    }
+  const res = nodeInfo.render(app, nodeInfo, renderToDom);
+  if (res instanceof Promise) {
+    await res;
   }
+  if (nodeInfo.attached) {
+    nodeEventCall(app, nodeInfo.attached as any, app);
+  }
+  // const ele = nodeInfo.render(app, nodeInfo, parent);
+  // if (renderToDom) {
+  // if (typeof (ele as any).attach !== "function") {
+  // renderToDom.innerHTML = "";
+  // renderToDom.appendChild(ele as any);
+  // } else {
+  // (ele as any).attach(renderToDom);
+  // }
+  // }
 
-  return ele;
+  // return ele;
 }
 
 /**
@@ -182,10 +222,17 @@ export function nodeRender(
  * @param eventId 事件ID
  * @param args 参数
  */
-export function nodeEventCall(eventId: string, ...args: any): void {
-  const nodeEventInfo = _nodeEventMap[eventId];
+export function nodeEventCall(
+  app: AppInterface,
+  eventId: string,
+  ...args: any
+): void {
+  const nodeEventInfo = app.getDataStore().get(eventId) as any;
   if (!nodeEventInfo) {
     return;
+  }
+  if (typeof nodeEventInfo === "function") {
+    return nodeEventInfo(...args);
   }
   nodeEventInfo.callback(...args);
 }
@@ -194,33 +241,37 @@ export function nodeEventCall(eventId: string, ...args: any): void {
  * 节点元素事件注销
  * @param eventId 事件id
  */
-export function nodeEventDestroy(...eventIds: string[]): void {
+export function nodeEventDestroy(
+  dataStore: DataStore,
+  ...eventIds: string[]
+): void {
   const eventIdLen = eventIds.length;
   if (eventIdLen === 0) {
     return;
   }
   for (let i = 0; i < eventIdLen; i++) {
-    delete _nodeEventMap[eventIds[i]];
+    dataStore.remove(eventIds[i]);
+    // delete _nodeEventMap[eventIds[i]];
   }
 }
 
-/**
- * 节点事件销毁全部
- */
-export function nodeEventDestroyAll(): void {
-  _nodeEventMap = {};
-}
+// /**
+//  * 节点事件销毁全部
+//  */
+// export function nodeEventDestroyAll(): void {
+//   _nodeEventMap = {};
+// }
 
-export function nodeRenderDestroy(...renderId: string[]) {
-  const renderIdLen = renderId.length;
-  if (renderIdLen === 0) {
-    return;
-  }
-  for (let i = 0; i < renderIdLen; i++) {
-    delete _nodeRenderMap[renderId[i]];
-  }
-}
+// export function nodeRenderDestroy(...renderId: string[]) {
+//   const renderIdLen = renderId.length;
+//   if (renderIdLen === 0) {
+//     return;
+//   }
+//   for (let i = 0; i < renderIdLen; i++) {
+//     delete _nodeRenderMap[renderId[i]];
+//   }
+// }
 
-export function nodeRenderDestroyAll(): void {
-  _nodeRenderMap = {};
-}
+// export function nodeRenderDestroyAll(): void {
+//   _nodeRenderMap = {};
+// }
