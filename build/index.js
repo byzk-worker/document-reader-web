@@ -249,6 +249,7 @@ function handleDisabled(disabledInfo, datas) {
     datas.set(disableFnId, disabledInfo);
     return disableFnId;
 }
+var nodeInfoCommonIds = ["attached", "isShow"];
 /**
  * 处理节点信息
  * @param nodeInfo 节点信息
@@ -277,14 +278,32 @@ function handleNodeInfo(app, nodeInfo) {
             tempEventMap[eventName] = { id: id };
         });
     }
-    if (nodeInfo.attached) {
-        if (nodeInfo._attachedId) {
-            dataStore.remove(nodeInfo._attachedId);
+    for (var i = 0; i < nodeInfoCommonIds.length; i++) {
+        var fnName = nodeInfoCommonIds[i];
+        if (!nodeInfo[fnName]) {
+            continue;
         }
-        nodeInfo._attachedId = createId();
-        dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
-        nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+        var fnId = "_" + fnName + "Id";
+        if (nodeInfo[fnId]) {
+            dataStore.remove(fnId);
+        }
+        nodeInfo[fnId] = createId();
+        nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
+        dataStore.set(nodeInfo[fnId], nodeInfo[fnName]);
     }
+    // if (nodeInfo.attached) {
+    //   if (nodeInfo._attachedId) {
+    //     dataStore.remove(nodeInfo._attachedId);
+    //   }
+    //   nodeInfo._attachedId = createId();
+    //   dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
+    //   nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+    // }
+    // if (nodeInfo.isShow) {
+    //   if (nodeInfo._isShowIc) {
+    //     dataStore.remove();
+    //   }
+    // }
     for (var i = 0; i < srcEventIdList.length; i++) {
         var srcId = srcEventIdList[i];
         var srcNodeInfo = dataStore.get(srcId);
@@ -356,7 +375,7 @@ function nodeEventCall(app, eventId) {
     if (typeof nodeEventInfo === "function") {
         return nodeEventInfo.apply(void 0, args);
     }
-    nodeEventInfo.callback.apply(nodeEventInfo, args);
+    return nodeEventInfo.callback.apply(nodeEventInfo, args);
 }
 /**
  * 节点元素事件注销
@@ -763,9 +782,11 @@ var Header = defineComponent({
             if (toolInfo.needReader && !((_a = appInterface.getReader()) === null || _a === void 0 ? void 0 : _a.currentParser())) {
                 return false;
             }
-            if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b.isShow) {
+            if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b._isShowId) {
                 try {
-                    return toolInfo.nodeInfo.isShow(appInterface);
+                    var appInterface_1 = getApp(this.data.get("appId"));
+                    return nodeEventCall(appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
+                    // return toolInfo.nodeInfo.isShow(appInterface);
                 }
                 catch (e) {
                     return false;
@@ -1383,6 +1404,18 @@ function suitablePageAttached(app) {
     suitableScaleChange = _bindListener(app.getReader(), "scaleChange", suitableScaleChange, this);
 }
 var selectOrMoveBookmarkChange = function (app, current) {
+    if (this.text === "移动") {
+        var pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
+        if (pageSupport &&
+            pageSupport.moduleSwitch &&
+            !pageSupport.moduleSwitch.select) {
+            if (!this.active) {
+                this.active = true;
+                this.update(this);
+            }
+        }
+        return;
+    }
     var mod = current.parserWrapperInfo.parserInterface.getMode();
     var selectNode = this;
     var moveNode = this.selector.next();
@@ -1409,8 +1442,15 @@ var selectOrMoveBookmarkChange = function (app, current) {
         disabledNodeInfo.update(disabledNodeInfo);
     }
 };
+var _selectOrMoveAttached = selectOrMoveBookmarkChange;
 function selectOrMoveAttached(app) {
-    selectOrMoveBookmarkChange = _bindListener(app, "bookmarkChange", selectOrMoveBookmarkChange, this);
+    var callback = _bindListener(app, "bookmarkChange", this.text === "选择" ? _selectOrMoveAttached : selectOrMoveBookmarkChange, this);
+    if (this.text === "选择") {
+        _selectOrMoveAttached = callback;
+    }
+    else {
+        selectOrMoveBookmarkChange = callback;
+    }
 }
 
 var fullBtnId = createId();
@@ -1506,6 +1546,7 @@ var scaleVals = scaleOptions.map(function (v) { return v.val; });
 var headerTabsBtns = {
     open: {
         type: "default",
+        disabled: true,
         nodeInfo: {
             text: "打开",
             html: "&#xe65e;",
@@ -1586,6 +1627,11 @@ var headerTabsBtns = {
             title: "选择",
             html: "&#xe65f;",
             attached: selectOrMoveAttached,
+            isShow: function (app) {
+                var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.pages;
+                return support && support.moduleSwitch && support.moduleSwitch.select;
+            },
             click: function (app) {
                 var current = app.currentBookmark();
                 if (!current || !current.id) {
@@ -1611,6 +1657,12 @@ var headerTabsBtns = {
             text: "移动",
             title: "移动",
             html: "&#xe660;",
+            isShow: function (app) {
+                var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.pages;
+                return support && support.moduleSwitch && support.moduleSwitch.move;
+            },
+            attached: selectOrMoveAttached,
             // attached: selectOrMoveAttached,
             click: function (app) {
                 var current = app.currentBookmark();
@@ -2156,7 +2208,7 @@ var Reader = defineComponent({
     }
 });
 
-var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
 
 var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
 
@@ -2439,7 +2491,7 @@ var TabPages = defineComponent({
 });
 
 var isFirst = true;
-var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
@@ -2618,7 +2670,10 @@ var ReaderParserAbstract = /** @class */ (function () {
         },
         pages: {
             jump: true,
-            moduleSwitch: true,
+            moduleSwitch: {
+                select: true,
+                move: true
+            },
             find: true,
             adaptiveView: true,
             showPageNo: true
@@ -3073,7 +3128,10 @@ var AppImpl = /** @class */ (function () {
                 var nodeInfoList = toolbar_1.tools.map(function (tool) { return tool.nodeInfo; });
                 var _loop_2 = function (j) {
                     var toolInfo = toolbar_1.tools[j];
-                    toolInfo.disabled = handleDisabled(toolInfo.disabled, _this._datastore);
+                    // toolInfo.disabled = dom.handleDisabled(
+                    //   toolInfo.disabled,
+                    //   this._datastore
+                    // );
                     if (!toolInfo.nodeInfo) {
                         return "continue";
                     }

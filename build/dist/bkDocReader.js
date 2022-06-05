@@ -23033,6 +23033,7 @@ var bkDocReader = (function (exports) {
         datas.set(disableFnId, disabledInfo);
         return disableFnId;
     }
+    var nodeInfoCommonIds = ["attached", "isShow"];
     /**
      * 处理节点信息
      * @param nodeInfo 节点信息
@@ -23061,14 +23062,32 @@ var bkDocReader = (function (exports) {
                 tempEventMap[eventName] = { id: id };
             });
         }
-        if (nodeInfo.attached) {
-            if (nodeInfo._attachedId) {
-                dataStore.remove(nodeInfo._attachedId);
+        for (var i = 0; i < nodeInfoCommonIds.length; i++) {
+            var fnName = nodeInfoCommonIds[i];
+            if (!nodeInfo[fnName]) {
+                continue;
             }
-            nodeInfo._attachedId = createId();
-            dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
-            nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+            var fnId = "_" + fnName + "Id";
+            if (nodeInfo[fnId]) {
+                dataStore.remove(fnId);
+            }
+            nodeInfo[fnId] = createId();
+            nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
+            dataStore.set(nodeInfo[fnId], nodeInfo[fnName]);
         }
+        // if (nodeInfo.attached) {
+        //   if (nodeInfo._attachedId) {
+        //     dataStore.remove(nodeInfo._attachedId);
+        //   }
+        //   nodeInfo._attachedId = createId();
+        //   dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
+        //   nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+        // }
+        // if (nodeInfo.isShow) {
+        //   if (nodeInfo._isShowIc) {
+        //     dataStore.remove();
+        //   }
+        // }
         for (var i = 0; i < srcEventIdList.length; i++) {
             var srcId = srcEventIdList[i];
             var srcNodeInfo = dataStore.get(srcId);
@@ -23140,7 +23159,7 @@ var bkDocReader = (function (exports) {
         if (typeof nodeEventInfo === "function") {
             return nodeEventInfo.apply(void 0, args);
         }
-        nodeEventInfo.callback.apply(nodeEventInfo, args);
+        return nodeEventInfo.callback.apply(nodeEventInfo, args);
     }
     /**
      * 节点元素事件注销
@@ -40777,9 +40796,11 @@ var bkDocReader = (function (exports) {
                 if (toolInfo.needReader && !((_a = appInterface.getReader()) === null || _a === void 0 ? void 0 : _a.currentParser())) {
                     return false;
                 }
-                if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b.isShow) {
+                if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b._isShowId) {
                     try {
-                        return toolInfo.nodeInfo.isShow(appInterface);
+                        var appInterface_1 = getApp(this.data.get("appId"));
+                        return nodeEventCall(appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
+                        // return toolInfo.nodeInfo.isShow(appInterface);
                     }
                     catch (e) {
                         return false;
@@ -41409,6 +41430,18 @@ var bkDocReader = (function (exports) {
         suitableScaleChange = _bindListener(app.getReader(), "scaleChange", suitableScaleChange, this);
     }
     var selectOrMoveBookmarkChange = function (app, current) {
+        if (this.text === "移动") {
+            var pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
+            if (pageSupport &&
+                pageSupport.moduleSwitch &&
+                !pageSupport.moduleSwitch.select) {
+                if (!this.active) {
+                    this.active = true;
+                    this.update(this);
+                }
+            }
+            return;
+        }
         var mod = current.parserWrapperInfo.parserInterface.getMode();
         var selectNode = this;
         var moveNode = this.selector.next();
@@ -41435,8 +41468,15 @@ var bkDocReader = (function (exports) {
             disabledNodeInfo.update(disabledNodeInfo);
         }
     };
+    var _selectOrMoveAttached = selectOrMoveBookmarkChange;
     function selectOrMoveAttached(app) {
-        selectOrMoveBookmarkChange = _bindListener(app, "bookmarkChange", selectOrMoveBookmarkChange, this);
+        var callback = _bindListener(app, "bookmarkChange", this.text === "选择" ? _selectOrMoveAttached : selectOrMoveBookmarkChange, this);
+        if (this.text === "选择") {
+            _selectOrMoveAttached = callback;
+        }
+        else {
+            selectOrMoveBookmarkChange = callback;
+        }
     }
 
     var fullBtnId = createId();
@@ -41532,6 +41572,7 @@ var bkDocReader = (function (exports) {
     var headerTabsBtns = {
         open: {
             type: "default",
+            disabled: true,
             nodeInfo: {
                 text: "打开",
                 html: "&#xe65e;",
@@ -41612,6 +41653,11 @@ var bkDocReader = (function (exports) {
                 title: "选择",
                 html: "&#xe65f;",
                 attached: selectOrMoveAttached,
+                isShow: function (app) {
+                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                        .support.pages;
+                    return support && support.moduleSwitch && support.moduleSwitch.select;
+                },
                 click: function (app) {
                     var current = app.currentBookmark();
                     if (!current || !current.id) {
@@ -41637,6 +41683,12 @@ var bkDocReader = (function (exports) {
                 text: "移动",
                 title: "移动",
                 html: "&#xe660;",
+                isShow: function (app) {
+                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                        .support.pages;
+                    return support && support.moduleSwitch && support.moduleSwitch.move;
+                },
+                attached: selectOrMoveAttached,
                 // attached: selectOrMoveAttached,
                 click: function (app) {
                     var current = app.currentBookmark();
@@ -42469,7 +42521,7 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
 
     var css_248z$7 = ".index-module_common_font__rsmEw{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__p5aoa{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_slidebarLeft__higRK{background:#eff1f3;height:100%;overflow:hidden;position:relative;transition:all .3;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA{float:left;height:100%;position:relative;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_comment__h9Ykh{border-bottom:2px solid #e6e6e6;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:25px;left:0;line-height:25px;margin-bottom:2px;position:absolute;text-align:center;top:0;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6{bottom:0;left:0;overflow-x:hidden;overflow-y:auto;position:absolute;top:44px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2{border:none;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:45px;margin-bottom:17px;padding-top:5px;text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_disabled__Ptq3y{cursor:not-allowed}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{height:20px;line-height:20px;margin-bottom:4px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{font-size:20px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc{background-color:#fff}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_icon__Zsx8e>span{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1{background-color:#fff;float:left;height:100%;overflow:hidden;position:relative;transition:all .3s;width:160px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_fold__Hp4cY{width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV{cursor:pointer;height:100%;position:absolute;right:0;text-align:center;top:0;width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>span{color:#fff;color:#333;display:block;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;position:absolute;text-align:center;top:50%;width:100%}";
     var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
@@ -42824,7 +42876,7 @@ var bkDocReader = (function (exports) {
     });
 
     var isFirst = true;
-    var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+    var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
     var AppUi = dist.exports.defineComponent({
         components: {
             "ui-tabs": TabPages,
@@ -43003,7 +43055,10 @@ var bkDocReader = (function (exports) {
             },
             pages: {
                 jump: true,
-                moduleSwitch: true,
+                moduleSwitch: {
+                    select: true,
+                    move: true
+                },
                 find: true,
                 adaptiveView: true,
                 showPageNo: true
@@ -43458,7 +43513,10 @@ var bkDocReader = (function (exports) {
                     var nodeInfoList = toolbar_1.tools.map(function (tool) { return tool.nodeInfo; });
                     var _loop_2 = function (j) {
                         var toolInfo = toolbar_1.tools[j];
-                        toolInfo.disabled = handleDisabled(toolInfo.disabled, _this._datastore);
+                        // toolInfo.disabled = dom.handleDisabled(
+                        //   toolInfo.disabled,
+                        //   this._datastore
+                        // );
                         if (!toolInfo.nodeInfo) {
                             return "continue";
                         }

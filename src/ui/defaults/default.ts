@@ -127,6 +127,7 @@ const scaleVals = scaleOptions.map((v) => v.val);
 const headerTabsBtns = {
   open: {
     type: "default",
+    disabled: true,
     nodeInfo: {
       text: "打开",
       html: "&#xe65e;",
@@ -196,6 +197,11 @@ const headerTabsBtns = {
       title: "选择",
       html: "&#xe65f;",
       attached: selectOrMoveAttached,
+      isShow(app) {
+        const support = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.pages;
+        return support && support.moduleSwitch && support.moduleSwitch.select;
+      },
       click(app) {
         const current = app.currentBookmark();
         if (!current || !current.id) {
@@ -221,6 +227,12 @@ const headerTabsBtns = {
       text: "移动",
       title: "移动",
       html: "&#xe660;",
+      isShow(app) {
+        const support = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.pages;
+        return support && support.moduleSwitch && support.moduleSwitch.move;
+      },
+      attached: selectOrMoveAttached,
       // attached: selectOrMoveAttached,
       click(app) {
         const current = app.currentBookmark();

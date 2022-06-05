@@ -126,6 +126,20 @@ let selectOrMoveBookmarkChange = function (
   app: AppInterface,
   current: AppBookmarkInfoWithIndex
 ) {
+  if (this.text === "移动") {
+    const pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
+    if (
+      pageSupport &&
+      pageSupport.moduleSwitch &&
+      !pageSupport.moduleSwitch.select
+    ) {
+      if (!this.active) {
+        this.active = true;
+        this.update(this);
+      }
+    }
+    return;
+  }
   const mod = current.parserWrapperInfo.parserInterface.getMode();
   let selectNode = this;
   let moveNode = this.selector.next();
@@ -154,11 +168,18 @@ let selectOrMoveBookmarkChange = function (
     disabledNodeInfo.update(disabledNodeInfo);
   }
 };
+
+let _selectOrMoveAttached = selectOrMoveBookmarkChange;
 export function selectOrMoveAttached(this: NodeInfoThis, app: AppInterface) {
-  selectOrMoveBookmarkChange = _bindListener(
+  const callback = _bindListener(
     app,
     "bookmarkChange",
-    selectOrMoveBookmarkChange,
+    this.text === "选择" ? _selectOrMoveAttached : selectOrMoveBookmarkChange,
     this
   );
+  if (this.text === "选择") {
+    _selectOrMoveAttached = callback;
+  } else {
+    selectOrMoveBookmarkChange = callback;
+  }
 }

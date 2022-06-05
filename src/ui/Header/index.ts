@@ -154,9 +154,15 @@ export default defineComponent<DataType>({
         return false;
       }
 
-      if (toolInfo.nodeInfo?.isShow) {
+      if (toolInfo.nodeInfo?._isShowId) {
         try {
-          return toolInfo.nodeInfo.isShow(appInterface);
+          const appInterface = app.getApp(this.data.get("appId"));
+          return dom.nodeEventCall(
+            appInterface,
+            toolInfo.nodeInfo._isShowId as any,
+            appInterface
+          );
+          // return toolInfo.nodeInfo.isShow(appInterface);
         } catch (e) {
           return false;
         }

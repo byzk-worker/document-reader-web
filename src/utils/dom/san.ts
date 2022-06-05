@@ -95,6 +95,8 @@ export function handleDisabled(
   return disableFnId;
 }
 
+const nodeInfoCommonIds = ["attached", "isShow"];
+
 /**
  * 处理节点信息
  * @param nodeInfo 节点信息
@@ -137,14 +139,35 @@ export function handleNodeInfo(
     });
   }
 
-  if (nodeInfo.attached) {
-    if (nodeInfo._attachedId) {
-      dataStore.remove(nodeInfo._attachedId);
+  for (let i = 0; i < nodeInfoCommonIds.length; i++) {
+    const fnName = nodeInfoCommonIds[i];
+    if (!nodeInfo[fnName]) {
+      continue;
     }
-    nodeInfo._attachedId = createId();
-    dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
-    nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+
+    const fnId = "_" + fnName + "Id";
+    if (nodeInfo[fnId]) {
+      dataStore.remove(fnId);
+    }
+    nodeInfo[fnId] = createId();
+    nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo)
+    dataStore.set(nodeInfo[fnId], nodeInfo[fnName])
   }
+
+  // if (nodeInfo.attached) {
+  //   if (nodeInfo._attachedId) {
+  //     dataStore.remove(nodeInfo._attachedId);
+  //   }
+  //   nodeInfo._attachedId = createId();
+  //   dataStore.set(nodeInfo._attachedId, nodeInfo.attached.bind(nodeInfo));
+  //   nodeInfo.attached = nodeInfo.attached.bind(nodeInfo);
+  // }
+
+  // if (nodeInfo.isShow) {
+  //   if (nodeInfo._isShowIc) {
+  //     dataStore.remove();
+  //   }
+  // }
 
   for (let i = 0; i < srcEventIdList.length; i++) {
     const srcId = srcEventIdList[i];
@@ -234,7 +257,7 @@ export function nodeEventCall(
   if (typeof nodeEventInfo === "function") {
     return nodeEventInfo(...args);
   }
-  nodeEventInfo.callback(...args);
+  return nodeEventInfo.callback(...args);
 }
 
 /**

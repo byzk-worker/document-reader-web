@@ -73,7 +73,10 @@ export declare interface ReaderParserSupport {
          * move: 移动
          * select: 选择
          */
-        moduleSwitch: boolean;
+        moduleSwitch: {
+          select: boolean;
+          move: boolean;
+        };
         /**
          * 是否支持查找
          */

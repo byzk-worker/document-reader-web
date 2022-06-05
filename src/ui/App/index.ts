@@ -19,10 +19,10 @@ const template = `
     </div>
     <div id="${styles.content}" style="height: {{contentHeight}}px">
       <div s-if="{{!sidebars || sidebars.left !== false}}" id="${styles.sidebarLeft}">
-        <ui-slide-left appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
+        <ui-slide-left bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
       </div>
       <div  s-if="{{!sidebars || sidebars.right !== false}}" id="${styles.sidebarRight}">
-        <ui-slide-right appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
+        <ui-slide-right bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
       </div>
       <div id="${styles.reader}">
         <ui-reader bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(content||{})}}}"></ui-reader>

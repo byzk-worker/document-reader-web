@@ -42,6 +42,7 @@ export interface NodeInfo {
    * 是否显示, 默认显示
    */
   isShow?(app: AppInterface): void;
+  _isShowId?: string;
   /**
    * 按钮Id
    */
@@ -212,7 +213,7 @@ export interface ToolInfo {
   type: "default" | "separate";
   nodeInfo?: NodeInfo;
   needReader?: true;
-  disabled?: Diasble;
+  // disabled?: Diasble;
 }
 
 /**
@@ -508,7 +509,12 @@ export interface ReaderParserSupport {
          * move: 移动
          * select: 选择
          */
-        moduleSwitch: boolean;
+        moduleSwitch:
+          | false
+          | {
+              select: boolean;
+              move: boolean;
+            };
         /**
          * 是否支持查找
          */
@@ -694,7 +700,10 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
     },
     pages: {
       jump: true,
-      moduleSwitch: true,
+      moduleSwitch: {
+        select: true,
+        move: true,
+      },
       find: true,
       adaptiveView: true,
       showPageNo: true,

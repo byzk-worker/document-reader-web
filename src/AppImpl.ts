@@ -563,10 +563,10 @@ export class AppImpl implements AppInterface {
       );
       for (let j = 0; j < toolbar.tools.length; j++) {
         const toolInfo = toolbar.tools[j];
-        toolInfo.disabled = dom.handleDisabled(
-          toolInfo.disabled,
-          this._datastore
-        );
+        // toolInfo.disabled = dom.handleDisabled(
+        //   toolInfo.disabled,
+        //   this._datastore
+        // );
         if (!toolInfo.nodeInfo) {
           continue;
         }

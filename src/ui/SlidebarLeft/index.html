@@ -6,8 +6,8 @@
         <div class="<%= styles.tabs %>">
             <fragment s-for="toolbar, index in toolbars">
                 <div s-if="fns.showTab(toolbar)"
-                    class="<%= styles.tab %> {{fns.disabled(toolbar.disabled)}} {{activeKey === index ? '<%= styles.active %>':''}}"
-                    title="{{toolbar.text}}" on-click="events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled))">
+                    class="<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}"
+                    title="{{toolbar.text}}" on-click="events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))">
                     <div class="<%= styles.icon %>">
                         <span class="iconfont">{{toolbar.iconHtml|raw}}</span>
                     </div>
