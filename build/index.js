@@ -2177,7 +2177,7 @@ var headerTabsBtns = {
             },
             click: function (app, event) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var currentBookmark, sealList, res, dragRes;
+                    var currentBookmark, sealList, res, dragRes, e_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -2185,24 +2185,32 @@ var headerTabsBtns = {
                                 if (!currentBookmark || !currentBookmark.id) {
                                     return [2 /*return*/];
                                 }
-                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                                _a.label = 1;
                             case 1:
+                                _a.trys.push([1, 5, , 6]);
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                            case 2:
                                 sealList = _a.sent();
                                 if (!sealList) {
                                     return [2 /*return*/];
                                 }
                                 return [4 /*yield*/, sealSelectInterface.selectSeal(sealList)];
-                            case 2:
+                            case 3:
                                 res = _a.sent();
                                 if (res.cancel) {
                                     return [2 /*return*/];
                                 }
                                 return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo)];
-                            case 3:
+                            case 4:
                                 dragRes = _a.sent();
-                                debugger;
                                 console.log(dragRes);
-                                return [2 /*return*/];
+                                return [3 /*break*/, 6];
+                            case 5:
+                                e_1 = _a.sent();
+                                debugger;
+                                app.message.error(e_1.message || e_1);
+                                return [3 /*break*/, 6];
+                            case 6: return [2 /*return*/];
                         }
                     });
                 });

@@ -547,19 +547,23 @@ const headerTabsBtns = {
         if (!currentBookmark || !currentBookmark.id) {
           return;
         }
-        const sealList = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
-        if (!sealList) {
-          return;
+        try {
+          const sealList = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
+          if (!sealList) {
+            return;
+          }
+          const res = await sealSelectInterface.selectSeal(sealList);
+          if (res.cancel) {
+            return;
+          }
+          const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
+            res.sealInfo
+          );
+          console.log(dragRes);
+        } catch (e) {
+          debugger;
+          app.message.error(e.message || e);
         }
-        const res = await sealSelectInterface.selectSeal(sealList);
-        if (res.cancel) {
-          return;
-        }
-        const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
-          res.sealInfo
-        );
-        debugger;
-        console.log(dragRes);
       },
     },
   } as ToolInfo,
