@@ -7,7 +7,8 @@
             <fragment s-for="toolbar, index in toolbars">
                 <div s-if="fns.showTab(toolbar)"
                     class="<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}"
-                    title="{{toolbar.text}}" on-click="events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))">
+                    title="{{toolbar.text}}"
+                    on-click="events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))">
                     <div class="<%= styles.icon %>">
                         <span class="iconfont">{{toolbar.iconHtml|raw}}</span>
                     </div>
@@ -16,12 +17,36 @@
                     </div>
                 </div>
             </fragment>
-
         </div>
     </div>
-    <div s-show="{{activeKey >= 0}}" class="clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}">
+    <div s-show="{{activeKey >= 0}}" s-ref="ref-pannelWrapper"
+        class="clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}">
+        <fragment s-for="toolbar, toolbarIndex in toolbars">
+            <div class="<%= styles.content %>" s-show="activeKey === toolbarIndex">
+                <div s-ref="ref-pannelContent-{{toolbarIndex}}" class="<%= styles.content %>"
+                    _r="{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}"></div>
+                <div s-if="toolbarChildrenRenderErrors[toolbarIndex].error" class="<%= styles.error %>">
+                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>
+                </div>
+                <div class="<%= styles.tools %>" s-if="{{toolbar.tools && toolbar.tools.length > 0}}">
+                    <fragment s-for="tool, index in toolbar.tools">
+                        <div s-if="tool.type !== 'separate'" s-ref="ref-tool-{{index}}"
+                            _r="{{fns.handleNodeRender(tool, index)}}" class="<%= styles.tool %>">
+                            <div s-if="tool.nodeInfo.html" class="{{tool.nodeInfo.className || '<%= styles.icon %>'}}">
+                                <span class="iconfont">{{tool.nodeInfo.html | raw}}</span>
+                            </div>
+                            <div s-if="tool.nodeInfo.text" class="{{tool.nodeInfo.className || '<%= styles.text %>'}}">
+                                <span>{{tool.nodeInfo.text}}</span>
+                            </div>
+                        </div>
+                    </fragment>
+                </div>
+            </div>
+        </fragment>
         <div class="<%= styles.expand %>" on-click="events.expandChange()">
             <span class="iconfont">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>
+            <div></div>
         </div>
+        <div on-mousedown="events.drageDown($event)" s-show="expand" class="<%= styles.drag %>"></div>
     </div>
 </div>

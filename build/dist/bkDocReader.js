@@ -22977,7 +22977,7 @@ var bkDocReader = (function (exports) {
      * @param eventId 事件ID
      * @param dispatch 派发函数
      */
-    function dispatchDomEvent(ele, eventIdList, component) {
+    function dispatchDomEvent(ele, eventIdList, component, thisInfo) {
         var _loop_1 = function (i) {
             var eventId = eventIdList[i];
             var idSplit = eventId.split("_");
@@ -22989,7 +22989,8 @@ var bkDocReader = (function (exports) {
                 event = event || window.event;
                 component.dispatch("HTML::ELE::EVENT", {
                     id: eventId,
-                    event: event
+                    event: event,
+                    thisInfo: thisInfo
                 });
             };
         };
@@ -23034,6 +23035,21 @@ var bkDocReader = (function (exports) {
         return disableFnId;
     }
     var nodeInfoCommonIds = ["attached", "isShow"];
+    function handleToolBarInfo(app, toolbarInfo) {
+        var datastore = app.getDataStore();
+        toolbarInfo.disabled = handleDisabled(toolbarInfo.disabled, datastore);
+        if (toolbarInfo.activeChange) {
+            datastore.remove(toolbarInfo._activeChangeFnId);
+            toolbarInfo._activeChangeFnId = createId();
+            datastore.set(toolbarInfo._activeChangeFnId, toolbarInfo.activeChange);
+        }
+        if (toolbarInfo.renderChildren) {
+            datastore.remove(toolbarInfo._renderChildrenId);
+            toolbarInfo._renderChildrenId = createId();
+            datastore.set(toolbarInfo._renderChildrenId, toolbarInfo.renderChildren);
+        }
+        return toolbarInfo;
+    }
     /**
      * 处理节点信息
      * @param nodeInfo 节点信息
@@ -23045,7 +23061,10 @@ var bkDocReader = (function (exports) {
         var tempEventMap = {};
         var dataStore = app.getDataStore();
         if (nodeInfo.click) {
-            var id = nodeEvenBindEvent(dataStore, "click", nodeInfo.click.bind(nodeInfo));
+            var clickFn = nodeInfo.click.bind(nodeInfo);
+            clickFn.srcFn = nodeInfo.click;
+            clickFn.self = nodeInfo;
+            var id = nodeEvenBindEvent(dataStore, "click", clickFn);
             eventIdList.push(id);
             tempEventMap["click"] = {
                 id: id
@@ -23072,8 +23091,11 @@ var bkDocReader = (function (exports) {
                 dataStore.remove(fnId);
             }
             nodeInfo[fnId] = createId();
-            nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
-            dataStore.set(nodeInfo[fnId], nodeInfo[fnName]);
+            // nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
+            var tempFn = nodeInfo[fnName].bind(nodeInfo);
+            tempFn.srcFn = nodeInfo[fnName];
+            tempFn.self = nodeInfo;
+            dataStore.set(nodeInfo[fnId], tempFn);
         }
         // if (nodeInfo.attached) {
         //   if (nodeInfo._attachedId) {
@@ -23111,6 +23133,7 @@ var bkDocReader = (function (exports) {
             // _nodeRenderMap[renderId] = nodeInfo;
         }
         nodeInfo = __assign(__assign({}, nodeInfo), { renderId: renderId, evenIdList: eventIdList });
+        delete nodeInfo["selector"];
         return JSON.parse(JSON.stringify(nodeInfo));
     }
     function nodeRender(component, renderId, app, parent, renderToDom) {
@@ -23134,8 +23157,8 @@ var bkDocReader = (function (exports) {
                         _a.sent();
                         _a.label = 2;
                     case 2:
-                        if (nodeInfo.attached) {
-                            nodeEventCall(app, nodeInfo.attached, app);
+                        if (nodeInfo._attachedId) {
+                            nodeEventCall(app, nodeInfo._attachedId, app);
                         }
                         return [2 /*return*/];
                 }
@@ -23152,14 +23175,39 @@ var bkDocReader = (function (exports) {
         for (var _i = 2; _i < arguments.length; _i++) {
             args[_i - 2] = arguments[_i];
         }
+        //   const nodeEventInfo = app.getDataStore().get(eventId) as any;
+        //   if (!nodeEventInfo) {
+        //     return;
+        //   }
+        //   if (typeof nodeEventInfo === "function") {
+        //     return nodeEventInfo(...args);
+        //   }
+        //   return nodeEventInfo.callback(...args);
+        return nodeEventCallBindThis.apply(void 0, __spreadArray([undefined, app, eventId], args, false));
+    }
+    function nodeEventCallBindThis(self, app, eventId) {
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            args[_i - 3] = arguments[_i];
+        }
         var nodeEventInfo = app.getDataStore().get(eventId);
         if (!nodeEventInfo) {
             return;
         }
-        if (typeof nodeEventInfo === "function") {
-            return nodeEventInfo.apply(void 0, args);
+        var callback = nodeEventInfo;
+        if (typeof callback !== "function") {
+            callback = nodeEventInfo.callback;
+            // return nodeEventInfo(...args);
         }
-        return nodeEventInfo.callback.apply(nodeEventInfo, args);
+        if (callback.srcFn && typeof self !== "undefined") {
+            Object.assign(callback.self, self);
+            // callback = callback.srcFn.bind();
+        }
+        // if (typeof self !== "undefined") {
+        //   callback = callback.bind(self);
+        // }
+        return callback.apply(void 0, args);
+        // return nodeEventInfo.callback(...args);
     }
     /**
      * 节点元素事件注销
@@ -23434,9 +23482,11 @@ var bkDocReader = (function (exports) {
         dispatchDomEvent: dispatchDomEvent,
         nodeEventInfoGet: nodeEventInfoGet,
         handleDisabled: handleDisabled,
+        handleToolBarInfo: handleToolBarInfo,
         handleNodeInfo: handleNodeInfo,
         nodeRender: nodeRender,
         nodeEventCall: nodeEventCall,
+        nodeEventCallBindThis: nodeEventCallBindThis,
         nodeEventDestroy: nodeEventDestroy
     });
 
@@ -23467,11 +23517,11 @@ var bkDocReader = (function (exports) {
       }
     }
 
-    var css_248z$e = ".index-module_common_font__kzEJV{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__8S-Xs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_header__bANPo{min-height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX{background:#2752e7;height:40px;overflow:hidden;position:relative;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;position:absolute;right:13px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE>span{font-size:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{color:#fff;cursor:pointer;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;text-align:center;width:98px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT>span,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH>span{font-size:12px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB{float:left}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{transition:all .3s;width:50px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH.index-module_active__a-6ac{background-color:#fff;color:#333}.index-module_header__bANPo>.index-module_tabPanels__FVo0y{background-color:#fff;box-shadow:0 4px 6px -5px rgba(11,20,54,.5);height:0;overflow:hidden;position:relative;transition:all .3s;width:100%;z-index:2}.index-module_header__bANPo>.index-module_tabPanels__FVo0y.index-module_active__a-6ac{height:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{background-color:#888;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:50px;position:absolute;text-align:center;top:0;width:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq>span,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp>span{font-size:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{left:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq{right:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u{height:100%;overflow:auto;overflow:hidden;padding:0 24px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2{float:left;height:100%;margin-right:16px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN{height:100%;width:2px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN>div{background-color:#888;height:42px;margin-top:4px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-{cursor:pointer;height:100%;overflow:hidden;width:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_text__XqzxF{color:#2752e7}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_text__XqzxF{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO>span{font-size:24px}";
-    var styles$c = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-    styleInject(css_248z$e);
+    var css_248z$f = ".index-module_common_font__kzEJV{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__8S-Xs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_header__bANPo{min-height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX{background:#2752e7;height:40px;overflow:hidden;position:relative;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;position:absolute;right:13px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE>span{font-size:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{color:#fff;cursor:pointer;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;text-align:center;width:98px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT>span,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH>span{font-size:12px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB{float:left}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{transition:all .3s;width:50px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH.index-module_active__a-6ac{background-color:#fff;color:#333}.index-module_header__bANPo>.index-module_tabPanels__FVo0y{background-color:#fff;box-shadow:0 4px 6px -5px rgba(11,20,54,.5);height:0;overflow:hidden;position:relative;transition:all .3s;width:100%;z-index:2}.index-module_header__bANPo>.index-module_tabPanels__FVo0y.index-module_active__a-6ac{height:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{background-color:#888;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:50px;position:absolute;text-align:center;top:0;width:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq>span,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp>span{font-size:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{left:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq{right:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u{height:100%;overflow:auto;overflow:hidden;padding:0 24px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2{float:left;height:100%;margin-right:16px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN{height:100%;width:2px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN>div{background-color:#888;height:42px;margin-top:4px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-{cursor:pointer;height:100%;overflow:hidden;width:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_text__XqzxF{color:#2752e7}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_text__XqzxF{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO>span{font-size:24px}";
+    var styles$d = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+    styleInject(css_248z$f);
 
-    var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-show=\"fns.showTool(toolInfo, bookmarkInfos.index)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+    var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
     var lodash = {exports: {}};
 
@@ -40677,14 +40727,14 @@ var bkDocReader = (function (exports) {
     var headerToolMarginRight = 16;
     var headerToolPanelHeight = 50;
 
-    var html$a = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
+    var html$b = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
 
     var ToolBtn = dist.exports.defineComponent({
-        template: lodash.exports.template(html$a)({ styles: styles$c })
+        template: lodash.exports.template(html$b)({ styles: styles$d })
     });
 
     var template$5 = lodash.exports.template(htmlTemplate)({
-        styles: styles$c
+        styles: styles$d
     });
     var Header = dist.exports.defineComponent({
         template: template$5,
@@ -40785,7 +40835,16 @@ var bkDocReader = (function (exports) {
                 if (!toolbarConfig.tools || toolbarConfig.tools.length === 0) {
                     return false;
                 }
-                return true;
+                var len = 0;
+                var showToolFn = this.fns.showTool.bind(this);
+                for (var i = 0; i < toolbarConfig.tools.length; i++) {
+                    var tool = toolbarConfig.tools[i];
+                    if (showToolFn(tool)) {
+                        len += 1;
+                        break;
+                    }
+                }
+                return len != 0;
             },
             showTool: function (toolInfo) {
                 var _a, _b;
@@ -40799,7 +40858,8 @@ var bkDocReader = (function (exports) {
                 if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b._isShowId) {
                     try {
                         var appInterface_1 = getApp(this.data.get("appId"));
-                        return nodeEventCall(appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
+                        // return dom.nodeEventCall(
+                        return nodeEventCallBindThis(toolInfo.nodeInfo, appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
                         // return toolInfo.nodeInfo.isShow(appInterface);
                     }
                     catch (e) {
@@ -40877,8 +40937,8 @@ var bkDocReader = (function (exports) {
                 var expand = this.data.get("expand");
                 this.data.set("expand", !expand);
             },
-            handleRender: function (toolInfo, index) {
-                var toolEle = this.ref("ref-tool-" + index);
+            handleRender: function (toolInfo, i, index) {
+                var toolEle = this.ref("ref-tool-" + i + "-" + index);
                 if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
                     return undefined;
                 }
@@ -40888,13 +40948,14 @@ var bkDocReader = (function (exports) {
                 }
                 else if (toolInfo.nodeInfo._attachedId) {
                     var appInterface = getApp(this.data.get("appId"));
-                    nodeEventCall(appInterface, toolInfo.nodeInfo._attachedId, appInterface);
+                    // dom.nodeEventCall(
+                    nodeEventCallBindThis(toolInfo.nodeInfo, appInterface, toolInfo.nodeInfo._attachedId, appInterface);
                 }
                 if (!toolInfo.nodeInfo.evenIdList ||
                     toolInfo.nodeInfo.evenIdList.length === 0) {
                     return undefined;
                 }
-                dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+                dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this, toolInfo.nodeInfo);
                 return undefined;
             },
             prevAndNextToolClick: function (isNext) {
@@ -40925,27 +40986,27 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$9 = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
+    var html$a = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
 
-    var css_248z$d = ".index-module_reader__8JtQW{bottom:16px;left:16px;overflow:hidden;position:absolute;right:16px;top:16px}.index-module_reader__8JtQW>.index-module_tempContent__lb78H{bottom:0;left:0;position:absolute;right:0;top:0;z-index:9}.index-module_reader__8JtQW .index-module_error__updK0{color:red;font-weight:700;margin:98px auto 0}.index-module_reader__8JtQW .index-module_error__updK0>h3{font-weight:bolder;text-align:center}.index-module_reader__8JtQW .index-module_readerContent__5qVGr{height:100%;overflow:hidden;position:absolute;width:100%}";
-    var styles$b = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+    var css_248z$e = ".index-module_reader__8JtQW{bottom:16px;left:16px;overflow:hidden;position:absolute;right:16px;top:16px}.index-module_reader__8JtQW>.index-module_tempContent__lb78H{bottom:0;left:0;position:absolute;right:0;top:0;z-index:9}.index-module_reader__8JtQW .index-module_error__updK0{color:red;font-weight:700;margin:98px auto 0}.index-module_reader__8JtQW .index-module_error__updK0>h3{font-weight:bolder;text-align:center}.index-module_reader__8JtQW .index-module_readerContent__5qVGr{height:100%;overflow:hidden;position:absolute;width:100%}";
+    var styles$c = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+    styleInject(css_248z$e);
+
+    var css_248z$d = ".index-module_common_font__1JO7K{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__5IRoi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_toolJump__1AnPZ{height:100%;line-height:50px;text-align:center}.index-module_toolJump__1AnPZ>span{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center;transition:all .3s}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolJump__1AnPZ>span:hover{color:#2752e7}.index-module_toolJump__1AnPZ>input{width:30px}.index-module_toolIconBtn__99EQS{color:#444c5e;height:100%;line-height:50px;transition:all .3s}.index-module_toolIconBtn__99EQS:hover{color:#2752e7}.index-module_toolIconBtn__99EQS>span{font-size:24px}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed;transition:all .3s}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolScale__GZ9IV{height:100%;padding-top:10px;width:100%}.index-module_active__SH6e7{color:#2752e7}";
+    var styles$b = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
     styleInject(css_248z$d);
 
-    var css_248z$c = ".index-module_common_font__1JO7K{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__5IRoi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_toolJump__1AnPZ{height:100%;line-height:50px;text-align:center}.index-module_toolJump__1AnPZ>span{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center;transition:all .3s}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolJump__1AnPZ>span:hover{color:#2752e7}.index-module_toolJump__1AnPZ>input{width:30px}.index-module_toolIconBtn__99EQS{color:#444c5e;height:100%;line-height:50px;transition:all .3s}.index-module_toolIconBtn__99EQS:hover{color:#2752e7}.index-module_toolIconBtn__99EQS>span{font-size:24px}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed;transition:all .3s}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolScale__GZ9IV{height:100%;padding-top:10px;width:100%}.index-module_active__SH6e7{color:#2752e7}";
-    var styles$a = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+    var html$9 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+
+    var html$8 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
+
+    var css_248z$c = "";
+    var styles$a = {};
     styleInject(css_248z$c);
-
-    var html$8 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
-
-    var html$7 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
-
-    var css_248z$b = "";
-    var styles$9 = {};
-    styleInject(css_248z$b);
 
     var allowKeys = [8, 37, 39, 46];
     var InputNumber = dist.exports.defineComponent({
-        template: lodash.exports.template(html$7)(styles$9),
+        template: lodash.exports.template(html$8)(styles$a),
         initData: function () {
             return {
                 value: "1",
@@ -41045,7 +41106,7 @@ var bkDocReader = (function (exports) {
         components: {
             "input-number": InputNumber
         },
-        template: lodash.exports.template(html$8)({ styles: styles$a }),
+        template: lodash.exports.template(html$9)({ styles: styles$b }),
         initData: function () {
             return {
                 maxValue: undefined,
@@ -41064,14 +41125,14 @@ var bkDocReader = (function (exports) {
             prevDisableClass: function () {
                 var val = this.data.get("value");
                 if (val == 1) {
-                    return styles$a.disabled;
+                    return styles$b.disabled;
                 }
             },
             nextDisableClass: function () {
                 var val = this.data.get("value");
                 var maxVal = this.data.get("maxValue");
                 if (val >= maxVal) {
-                    return styles$a.disabled;
+                    return styles$b.disabled;
                 }
             }
         },
@@ -41088,6 +41149,7 @@ var bkDocReader = (function (exports) {
                     this.data.set("maxValue", 1);
                     return;
                 }
+                this.data.set("value", currentBookmark.parserWrapperInfo.parserInterface.nowPageNo());
                 currentBookmark.parserWrapperInfo.parserInterface.addListener("pageNoChange", this.events.pageNoChange);
                 this.data.set("maxValue", currentBookmark.parserWrapperInfo.parserInterface.getNumPages());
             },
@@ -41117,22 +41179,22 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$6 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
+    var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
 
-    var html$5 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
+    var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
-    var css_248z$a = ".index-module_common_font__niHsZ{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__COYLB{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_select__2NwCG{border:1px solid #888;border-radius:4px;height:28px;line-height:28px;margin:0 auto;position:relative;transition:all .3s;width:100%}.index-module_select__2NwCG>.index-module_value__4778I{bottom:0;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:6px;overflow:hidden;position:absolute;right:21px;text-align:center;text-align:left;text-overflow:ellipsis;top:0;white-space:nowrap;z-index:2}.index-module_select__2NwCG>.index-module_value__4778I>.index-module_suffix__bXZSl{height:28px;line-height:28px;position:absolute;right:16px;top:0;z-index:1}.index-module_select__2NwCG.index-module_active__zruap,.index-module_select__2NwCG:hover{border:1px solid #40a9ff}.index-module_select__2NwCG>span{display:block;font-size:12px;height:28px;line-height:28px;position:absolute;right:9px;top:0;width:12px}";
-    var styles$8 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+    var css_248z$b = ".index-module_common_font__niHsZ{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__COYLB{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_select__2NwCG{border:1px solid #888;border-radius:4px;height:28px;line-height:28px;margin:0 auto;position:relative;transition:all .3s;width:100%}.index-module_select__2NwCG>.index-module_value__4778I{bottom:0;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:6px;overflow:hidden;position:absolute;right:21px;text-align:center;text-align:left;text-overflow:ellipsis;top:0;white-space:nowrap;z-index:2}.index-module_select__2NwCG>.index-module_value__4778I>.index-module_suffix__bXZSl{height:28px;line-height:28px;position:absolute;right:16px;top:0;z-index:1}.index-module_select__2NwCG.index-module_active__zruap,.index-module_select__2NwCG:hover{border:1px solid #40a9ff}.index-module_select__2NwCG>span{display:block;font-size:12px;height:28px;line-height:28px;position:absolute;right:9px;top:0;width:12px}";
+    var styles$9 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+    styleInject(css_248z$b);
+
+    var html$5 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
+
+    var css_248z$a = ".index-module_common_font__Sz-yv{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__MHvJv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_options__BzSRC{background-color:#fff;box-shadow:2px 0 7px -1px rgba(0,0,0,.25);color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;left:100px;overflow:hidden;position:absolute;text-align:center;text-align:left;text-overflow:ellipsis;top:28px;transition:all .3s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;white-space:nowrap;width:86px;z-index:99}.index-module_options__BzSRC>.index-module_option__7PE8z{cursor:pointer;height:28px;line-height:28px;padding-left:6px;transition:all .2s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_options__BzSRC>.index-module_option__7PE8z:hover{background-color:#f5f5f5}.index-module_options__BzSRC>.index-module_option__7PE8z.index-module_active__Xn-PG{background-color:#e9f6fe;font-weight:400}";
+    var styles$8 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
     styleInject(css_248z$a);
 
-    var html$4 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
-
-    var css_248z$9 = ".index-module_common_font__Sz-yv{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__MHvJv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_options__BzSRC{background-color:#fff;box-shadow:2px 0 7px -1px rgba(0,0,0,.25);color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;left:100px;overflow:hidden;position:absolute;text-align:center;text-align:left;text-overflow:ellipsis;top:28px;transition:all .3s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;white-space:nowrap;width:86px;z-index:99}.index-module_options__BzSRC>.index-module_option__7PE8z{cursor:pointer;height:28px;line-height:28px;padding-left:6px;transition:all .2s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_options__BzSRC>.index-module_option__7PE8z:hover{background-color:#f5f5f5}.index-module_options__BzSRC>.index-module_option__7PE8z.index-module_active__Xn-PG{background-color:#e9f6fe;font-weight:400}";
-    var styles$7 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
-    styleInject(css_248z$9);
-
     var Options = dist.exports.defineComponent({
-        template: lodash.exports.template(html$4)({ styles: styles$7 }),
+        template: lodash.exports.template(html$5)({ styles: styles$8 }),
         attached: function () {
             this.events.documentClick = this.events.documentClick.bind(this);
             eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
@@ -41226,7 +41288,7 @@ var bkDocReader = (function (exports) {
     });
 
     var Select = dist.exports.defineComponent({
-        template: lodash.exports.template(html$5)({ styles: styles$8 }),
+        template: lodash.exports.template(html$6)({ styles: styles$9 }),
         components: {
             "input-number": InputNumber
         },
@@ -41282,7 +41344,7 @@ var bkDocReader = (function (exports) {
         components: {
             "c-select": Select
         },
-        template: lodash.exports.template(html$6)({ styles: styles$a }),
+        template: lodash.exports.template(html$7)({ styles: styles$b }),
         attached: function () {
             this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
             this.events.scalChange = this.events.scalChange.bind(this);
@@ -41320,7 +41382,7 @@ var bkDocReader = (function (exports) {
                 this.data.set("activeVal", scale);
             },
             bookmarkChange: function (app, currentBookmark) {
-                if (currentBookmark.index === -1) {
+                if (!currentBookmark || currentBookmark.index === -1) {
                     return;
                 }
                 currentBookmark.parserWrapperInfo.parserInterface.addListener("scaleChange", this.events.scalChange);
@@ -41328,7 +41390,6 @@ var bkDocReader = (function (exports) {
                 this.data.set("activeVal", parseInt(scale * 100 + ""));
             },
             valChange: function (val) {
-                debugger;
                 this.app
                     .currentBookmark()
                     .parserWrapperInfo.parserInterface.setScale(val / 100);
@@ -41336,14 +41397,14 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$3 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
+    var html$4 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
 
-    var css_248z$8 = ".index-module_content__2P82G{border:1px solid #999;border-radius:20px 20px 20px 20px;cursor:pointer;height:363px;left:50%;margin-left:-146px;margin-top:-181.5px;position:absolute;top:50%;width:292px}.index-module_content__2P82G:hover{background:#fff}.index-module_content__2P82G>img{display:block;height:90px;left:50%;margin-left:-45px;margin-top:-45px;position:absolute;top:50%;width:90px}";
-    var styles$6 = {"content":"index-module_content__2P82G"};
-    styleInject(css_248z$8);
+    var css_248z$9 = ".index-module_content__2P82G{border:1px solid #999;border-radius:20px 20px 20px 20px;cursor:pointer;height:363px;left:50%;margin-left:-146px;margin-top:-181.5px;position:absolute;top:50%;width:292px}.index-module_content__2P82G:hover{background:#fff}.index-module_content__2P82G>img{display:block;height:90px;left:50%;margin-left:-45px;margin-top:-45px;position:absolute;top:50%;width:90px}";
+    var styles$7 = {"content":"index-module_content__2P82G"};
+    styleInject(css_248z$9);
 
     var TempReaderContent = dist.exports.defineComponent({
-        template: lodash.exports.template(html$3)({ styles: styles$6 }),
+        template: lodash.exports.template(html$4)({ styles: styles$7 }),
         openFile: function () {
             return __awaiter(this, void 0, void 0, function () {
                 var result;
@@ -41389,9 +41450,12 @@ var bkDocReader = (function (exports) {
     }
     function _bindListener(eventListenerInterface, name, callback, self) {
         eventListenerInterface.removeListener(name, callback);
-        callback = callback.bind(self);
-        eventListenerInterface.addListener(name, callback);
-        return callback;
+        callback = callback.srcFn || callback;
+        var tempCallback = callback.bind(self);
+        tempCallback.srcFn = callback;
+        // const tempCallback = callback.bind(self);
+        eventListenerInterface.addListener(name, tempCallback);
+        return tempCallback;
     }
     var scaleBookmarkChange = function (app, current) {
         if (!current || !current.id) {
@@ -41430,6 +41494,9 @@ var bkDocReader = (function (exports) {
         suitableScaleChange = _bindListener(app.getReader(), "scaleChange", suitableScaleChange, this);
     }
     var selectOrMoveBookmarkChange = function (app, current) {
+        if (!current || !current.id) {
+            return;
+        }
         if (this.text === "移动") {
             var pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
             if (pageSupport &&
@@ -41478,579 +41545,148 @@ var bkDocReader = (function (exports) {
             selectOrMoveBookmarkChange = callback;
         }
     }
+    // export function selectDisabledHandler(this: NodeInfoThis) {
+    // }
+    function jumpBtnGroupCheckFn(app, currentBookmark) {
+        if (!currentBookmark || !currentBookmark.id) {
+            return;
+        }
+        var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
+        var numPages = parserInterface.getNumPages();
+        var nowPageNo = parserInterface.nowPageNo();
+        var haveDisabled = this.className.includes(" " + styles$b.disabled);
+        if (this.title === "跳转到首页" || this.title === "上一页") {
+            if (nowPageNo <= 1) {
+                if (haveDisabled) {
+                    return;
+                }
+                this.className += " " + styles$b.disabled;
+                this.update();
+            }
+            else if (haveDisabled) {
+                this.className = this.className.split(" " + styles$b.disabled).join("");
+                this.update();
+            }
+            return;
+        }
+        if (this.title === "下一页" || this.title === "跳转到尾页") {
+            if (nowPageNo >= numPages) {
+                if (haveDisabled) {
+                    return;
+                }
+                this.className += " " + styles$b.disabled;
+                this.update();
+            }
+            else if (haveDisabled) {
+                this.className = this.className.split(" " + styles$b.disabled).join("");
+                this.update();
+            }
+            return;
+        }
+    }
+    function jumpBtnGroupCheckAttached(app) {
+        var self = this;
+        if (self._bookmarkChangeFn) {
+            app.removeListener("bookmarkChange", self._bookmarkChangeFn);
+        }
+        self._bookmarkChangeFn = _bindListener(app, "bookmarkChange", jumpBtnGroupCheckFn, self);
+        if (self._pageNoChangeFn) {
+            app.getReader().removeListener("pageNoChange", self._pageNoChangeFn);
+        }
+        self._pageNoChangeFn = function (pageNo) {
+            self._bookmarkChangeFn(app, app.currentBookmark());
+        };
+        app.getReader().addListener("pageNoChange", self._pageNoChangeFn);
+    }
+    function supportJumpPage(app) {
+        var supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
+            .support.pages;
+        return supportPages && supportPages.jump;
+    }
 
-    var fullBtnId = createId();
-    function narrowDisabledHandler(app) {
-        debugger;
-        var isDisabled = false;
-        try {
-            var scale = parseInt(app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
-                "");
-            var scalMinVal = scaleVals[0];
-            if (scale <= scalMinVal) {
-                isDisabled = true;
-            }
-        }
-        catch (e) {
-            isDisabled = false;
-        }
-        if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
-            this.className += " " + styles$a.disabled;
-            this.update(this);
-        }
-        else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
-            this.className = this.className.split(" ")[0];
-            this.update(this);
-        }
-    }
-    var _narrowDisabledHandler = narrowDisabledHandler;
-    function enlargeDisabledHandle(app) {
-        var isDisabled = false;
-        try {
-            var appInterface = app.currentBookmark().parserWrapperInfo
-                .parserInterface;
-            var scale = parseInt(appInterface.getScale() * 100 + "");
-            var scaleMaxVal = scaleVals[scaleVals.length - 1];
-            if (scale >= scaleMaxVal) {
-                isDisabled = true;
-            }
-        }
-        catch (e) {
-            isDisabled = false;
-        }
-        if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
-            this.className += " " + styles$a.disabled;
-            this.update(this);
-        }
-        else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
-            this.className = this.className.split(" ")[0];
-            this.update(this);
-        }
-    }
-    var _enlargeDisabledHandle = enlargeDisabledHandle;
-    function narrowOrEnlargeScaleChange(scale) {
-        scale = parseInt(scale * 100 + "");
-        var isNarrow = this.title === "缩小";
-        var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
-        var isDisabled = isNarrow ? scale <= val : scale >= val;
-        if (isDisabled) {
-            if (!this.className.includes(" " + styles$a.disabled)) {
-                this.className += " " + styles$a.disabled;
-                this.update(this);
-            }
-        }
-        else if (this.className.includes(" " + styles$a.disabled)) {
-            this.className = this.className.split(" ")[0];
-            this.update(this);
-        }
-    }
-    var _narrowScaleChange = narrowOrEnlargeScaleChange;
-    var _EnlargeScaleChange = narrowOrEnlargeScaleChange;
-    var scaleOptions = [
-        {
-            val: 20,
-            text: "20%"
+    var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n        <div class=\"<%= styles.title %>\">\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n        </div>\n        <div class=\"<%= styles.contents %>\">\n            <div class=\"<%= styles.label %>\">\n                印章选择\n            </div>\n            <div class=\"<%= styles.sealContent %>\">\n                <fragment s-for=\"sealInfo in sealList\">\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n                    </div>\n                </fragment>\n            </div>\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n                页面选项设置\n            </div>\n        </div>\n        <div class=\"<%= styles.btnGroup %>\">\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\n        </div>\n    </div>\n</div>";
+
+    var css_248z$8 = ".index-module_sealSelectMask__vmm9t{background-color:rgba(0,0,0,.2);bottom:0;left:0;overflow:hidden;position:absolute;right:0;top:0;z-index:999}.index-module_sealSelectMask__vmm9t.index-module_hide__mFEJS{display:none}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o{background-color:#fff;left:50%;margin-left:-230.5px;position:absolute;top:50%;width:461px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx{background:#2752e7;height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx>.index-module_close__5YfKo{color:#fff;cursor:pointer;display:block;float:right;height:40px;line-height:40px;margin-right:20px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx>.index-module_text__fZ6fQ{color:#fff;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:14px;font-weight:400;height:40px;line-height:40px;padding-left:16px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8{padding:14px 31px 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_label__5Byyv{color:#333;font-family:Microsoft YaHei UI-Bold,Microsoft YaHei UI;font-size:12px;font-weight:700;height:30px;line-height:30px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre{border:1px solid #e6e6e6;height:180px;margin-bottom:14px;overflow-x:hidden;overflow-y:auto;width:391px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL{border:1px dashed transparent;border-radius:9px 9px 9px 9px;cursor:pointer;float:left;font-size:0;margin-left:18px;margin-top:9px;padding:4px;transition:all .3s;width:150px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL.index-module_active__DHS0n,.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL:hover{border:1px dashed #2752e7}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV{bottom:30px;overflow:hidden;position:absolute;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV>.index-module_okBtn__WDAew{background:#2752e7;border-radius:4px 4px 4px 4px;color:#fff;cursor:pointer;float:right;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:14px;font-weight:400;height:34px;line-height:34px;margin-right:31px;text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:99px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV>.index-module_okBtn__WDAew.index-module_disabled__CjHxO{background-color:#444c5e;cursor:not-allowed}";
+    var styles$6 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+    styleInject(css_248z$8);
+
+    var SealSelect = dist.exports.defineComponent({
+        template: lodash.exports.template(html$3)({ styles: styles$6 }),
+        initData: function () {
+            return {
+                mode: "seal",
+                sealList: [],
+                maskHideClassName: styles$6.hide
+            };
         },
-        {
-            val: 50,
-            text: "50%"
+        attached: function () {
+            console.log("初始化成功...");
         },
-        {
-            val: 100,
-            text: "100%"
-        },
-        {
-            val: 200,
-            text: "200%"
-        },
-        {
-            val: 400,
-            text: "400%"
-        },
-    ];
-    var scaleVals = scaleOptions.map(function (v) { return v.val; });
-    var headerTabsBtns = {
-        open: {
-            type: "default",
-            disabled: true,
-            nodeInfo: {
-                text: "打开",
-                html: "&#xe65e;",
-                title: "打开文件",
-                click: function (app) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var result;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, app.getReader().selectFile()];
-                                case 1:
-                                    result = _a.sent();
-                                    if (!result) {
-                                        return [2 /*return*/];
-                                    }
-                                    return [4 /*yield*/, result.loadFile()];
-                                case 2:
-                                    _a.sent();
-                                    return [2 /*return*/];
-                            }
-                        });
-                    });
-                }
-            }
-        },
-        save: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "保存",
-                html: "&#xe65c;",
-                title: "保存"
-            }
-        },
-        saveAs: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "另存为",
-                html: "&#xe65c;",
-                title: "另存为"
-            }
-        },
-        print: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "打印",
-                html: "&#xe65d;",
-                title: "打印"
-            }
-        },
-        jump: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                width: 80,
-                render: function (app, nodeInfo, parent) {
-                    if (this._toolJump) {
-                        this._toolJump.dispose();
-                    }
-                    this._toolJump = new ToolJump();
-                    this._toolJump.app = app;
-                    this._toolJump.attach(parent);
-                },
-                isShow: function (app) {
-                    var supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
-                        .support.pages;
-                    return supportPages && supportPages.jump;
-                }
-            }
-        },
-        select: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "选择",
-                title: "选择",
-                html: "&#xe65f;",
-                attached: selectOrMoveAttached,
-                isShow: function (app) {
-                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
-                        .support.pages;
-                    return support && support.moduleSwitch && support.moduleSwitch.select;
-                },
-                click: function (app) {
-                    var current = app.currentBookmark();
-                    if (!current || !current.id) {
-                        return;
-                    }
-                    current.parserWrapperInfo.parserInterface.setMode("select");
-                    var moveNodeInfo = this.selector.next();
-                    if (!this.active) {
-                        this.active = true;
-                        this.update();
-                    }
-                    if (moveNodeInfo.active) {
-                        moveNodeInfo.active = false;
-                        moveNodeInfo.update(moveNodeInfo);
-                    }
-                }
-            }
-        },
-        move: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "移动",
-                title: "移动",
-                html: "&#xe660;",
-                isShow: function (app) {
-                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
-                        .support.pages;
-                    return support && support.moduleSwitch && support.moduleSwitch.move;
-                },
-                attached: selectOrMoveAttached,
-                // attached: selectOrMoveAttached,
-                click: function (app) {
-                    var current = app.currentBookmark();
-                    if (!current || !current.id) {
-                        return;
-                    }
-                    current.parserWrapperInfo.parserInterface.setMode("move");
-                    var selectNodeInfo = this.selector.prev();
-                    if (!this.active) {
-                        this.active = true;
-                        this.update();
-                    }
-                    if (selectNodeInfo.active) {
-                        selectNodeInfo.active = false;
-                        selectNodeInfo.update(selectNodeInfo);
-                    }
-                }
-            }
-        },
-        ActualSize: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "实际大小",
-                title: "实际大小",
-                html: "&#xe661;",
-                isShow: showSupportScale,
-                attached: actualSizeAttached,
-                click: function (app) {
-                    app.currentBookmark().parserWrapperInfo.parserInterface.setScale(1);
-                }
-            }
-        },
-        SuitableWidth: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "适合宽度",
-                title: "适合宽度",
-                html: "&#xe662;",
-                isShow: showSupportFull("width"),
-                click: function (app) {
-                    app
-                        .currentBookmark()
-                        .parserWrapperInfo.parserInterface.setFull("width");
-                }
-            }
-        },
-        SuitablePage: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                text: "适合页面",
-                title: "适合页面",
-                html: "&#xe663;",
-                attached: suitablePageAttached,
-                click: function (app) {
-                    app.currentBookmark().parserWrapperInfo.parserInterface.setScale(0.8);
-                }
-            }
-        },
-        narrow: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                html: "&#xe67b;",
-                needReader: true,
-                title: "缩小",
-                width: 24,
-                className: styles$a.toolIconBtn,
-                isShow: showSupportScale,
-                attached: function (app) {
-                    app.removeListener("bookmarkChange", _narrowDisabledHandler);
-                    _narrowDisabledHandler = narrowDisabledHandler.bind(this);
-                    app.addListener("bookmarkChange", _narrowDisabledHandler);
-                    app.getReader().removeListener("scaleChange", _narrowScaleChange);
-                    _narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
-                    app.getReader().addListener("scaleChange", _narrowScaleChange);
-                },
-                click: function (app) {
-                    try {
-                        var nextNodeInfo = this.selector.next();
-                        if (nextNodeInfo.className.includes(" " + styles$a.disabled)) {
-                            nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
-                            nextNodeInfo.update(nextNodeInfo);
-                        }
-                        if (this.className.includes(" " + styles$a.disabled)) {
-                            return;
-                        }
-                        var parserInterface = app.currentBookmark().parserWrapperInfo
-                            .parserInterface;
-                        var nowScale = parseInt(parserInterface.getScale() * 100 + "");
-                        var index = scaleVals.indexOf(nowScale);
-                        if (index === -1) {
-                            for (var i = 1; i < scaleVals.length; i++) {
-                                var val = scaleVals[i];
-                                if (nowScale > val) {
-                                    index = i - 1;
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            index -= 1;
-                        }
-                        if (index <= 0) {
-                            if (this.className.includes(" " + styles$a.disabled)) {
-                                return;
-                            }
-                            this.className += " " + styles$a.disabled;
-                            this.update(this);
-                            if (index === -1) {
-                                return;
-                            }
-                        }
-                        else if (this.className.includes(" " + styles$a.disabled)) {
-                            this.className = this.className.split(" ")[0];
-                            this.update(this);
-                        }
-                        parserInterface.setScale(scaleVals[index] / 100);
-                    }
-                    catch (e) { }
-                }
-            }
-        },
-        scale: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                title: "缩放比率",
-                width: 82,
-                render: function (app, nodeInfo, parent) {
-                    if (this._toolscale) {
-                        this._toolscale.dispose();
-                    }
-                    this._toolscale = new ToolScale({
-                        data: {
-                            activeVal: 100,
-                            options: scaleOptions
-                        }
-                    });
-                    this._toolscale.app = app;
-                    this._toolscale.attach(parent);
-                },
-                isShow: showSupportScale
-            }
-        },
-        enlarge: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                html: "&#xe65a;",
-                title: "放大",
-                width: 24,
-                className: styles$a.toolIconBtn,
-                isShow: showSupportScale,
-                attached: function (app) {
-                    app.removeListener("bookmarkChange", _enlargeDisabledHandle);
-                    _enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
-                    app.addListener("bookmarkChange", _enlargeDisabledHandle);
-                    app.getReader().removeListener("scaleChange", _EnlargeScaleChange);
-                    _EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
-                    app.getReader().addListener("scaleChange", _EnlargeScaleChange);
-                },
-                click: function (app) {
-                    var prevNodeInfo = this.selector.prev();
-                    if (prevNodeInfo.className.includes(" " + styles$a.disabled)) {
-                        prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
-                        prevNodeInfo.update(prevNodeInfo);
-                    }
-                    if (this.className.includes(" " + styles$a.disabled)) {
-                        return;
-                    }
-                    try {
-                        var parserInterface = app.currentBookmark().parserWrapperInfo
-                            .parserInterface;
-                        var nowScale = parseInt(parserInterface.getScale() * 100 + "");
-                        var index = scaleVals.indexOf(nowScale);
-                        if (index === -1) {
-                            for (var i = 0; i < scaleVals.length; i++) {
-                                var val = scaleVals[i];
-                                if (val > nowScale) {
-                                    index = i;
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            index += 1;
-                        }
-                        if (index >= scaleVals.length - 1 || index === -1) {
-                            if (this.className.includes(" " + styles$a.disabled)) {
-                                return;
-                            }
-                            this.className += " " + styles$a.disabled;
-                            this.update(this);
-                            if (index >= scaleVals.length) {
-                                return;
-                            }
-                        }
-                        else if (this.className.includes(" " + styles$a.disabled)) {
-                            this.className = this.className.split(" ")[0];
-                            this.update(this);
-                        }
-                        parserInterface.setScale(scaleVals[index] / 100);
-                    }
-                    catch (e) { }
-                }
-            }
-        },
-        find: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                html: "&#xe664;",
-                title: "查找",
-                text: "查找"
-            }
-        },
-        full: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                html: "&#xe665;",
-                title: "全屏",
-                text: "全屏",
-                isShow: showSupportFull("content"),
-                click: function (app) {
-                    app
-                        .currentBookmark()
-                        .parserWrapperInfo.parserInterface.setFull("content");
-                }
-            }
-        },
-        preferenc: {
-            type: "default",
-            needReader: true,
-            nodeInfo: {
-                html: "&#xe666;",
-                title: "首选项",
-                text: "首选项"
-            }
-        }
-    };
-    var defaultData = {
-        tabBtns: {
-            close: {
-                className: "iconfont",
-                // html: "&#xeaf2;",
-                html: "&#xe600;",
-                title: "关闭",
-                click: function (app) {
-                    app.destroy();
-                }
+        computed: {
+            disabled: function () {
+                return !this.data.get("activeSeal") ? styles$6.disabled : "";
             },
-            full: {
-                id: fullBtnId,
-                className: "iconfont",
-                html: "&#xe600;",
-                title: "全屏",
-                click: function (app) {
-                    var title = "全屏";
-                    if (isFullScreen()) {
-                        exitFullscreen();
-                    }
-                    else {
-                        full(app.getRootEle());
-                        title = "还原";
-                    }
-                    var btns = app.getNowData("tabPages.btnGroup.btns");
-                    for (var i in btns) {
-                        var btn = btns[i];
-                        if (btn.id === fullBtnId) {
-                            btn.title = title;
-                            app.updateByExpr("tabPages.btnGroup.btns", btns);
-                            return;
-                        }
-                    }
+            sealSelectStyles: function () {
+                var height = 601;
+                var mode = this.data.get("mode");
+                if (mode === "seal") {
+                    height = 360;
                 }
+                return "height: ".concat(height, "px;margin-top: ").concat(-height / 2, "px;");
             },
-            hide: {
-                className: "iconfont",
-                html: "&#xe600;",
-                title: "隐藏",
-                click: function (app) {
-                    app.hide();
+            titleText: function () {
+                var text = "多页签章";
+                var mode = this.data.get("mode");
+                if (mode === "seal") {
+                    text = "印章选择";
                 }
+                return text;
+            },
+            isPageSign: function () {
+                return this.data.get("mode") === "pages";
             }
         },
-        headerTabs: {
-            start: {
-                text: "开始",
-                tools: [
-                    headerTabsBtns.open,
-                    headerTabsBtns.save,
-                    headerTabsBtns.saveAs,
-                    headerTabsBtns.print,
-                    { type: "separate", needReader: true },
-                    headerTabsBtns.jump,
-                    headerTabsBtns.select,
-                    headerTabsBtns.move,
-                    headerTabsBtns.ActualSize,
-                    headerTabsBtns.SuitableWidth,
-                    headerTabsBtns.SuitablePage,
-                    { type: "separate", needReader: true },
-                    headerTabsBtns.scale,
-                    headerTabsBtns.narrow,
-                    headerTabsBtns.enlarge,
-                    { type: "separate", needReader: true },
-                    headerTabsBtns.find,
-                    headerTabsBtns.full,
-                    headerTabsBtns.preferenc,
-                ]
-            },
-            tools: {
-                text: "工具"
-            },
-            view: {
-                text: "视图"
-            },
-            reader: {
-                text: "阅读"
-            },
-            safety: {
-                text: "安全"
-            },
-            help: {
-                text: "帮助"
+        selectSeal: function (sealList, mode) {
+            var _this = this;
+            mode = mode || "seal";
+            if (this.data.get("maskHideClassName") !== styles$6.hide) {
+                throw new Error("选择器被锁定");
             }
+            var res = new Promise(function (resolve, reject) {
+                _this._waitResult = { resolve: resolve, reject: reject };
+            });
+            this.data.set("maskHideClassName", undefined);
+            this.data.set("activeSeal", undefined);
+            this.data.set("sealList", __spreadArray([], sealList, true));
+            this.data.set("mode", mode);
+            return res;
         },
-        sildebarLeftTabs: {
-            sign: {
-                text: "签名",
-                iconHtml: "&#xe64f;",
-                disabled: slidebarLeftToolbarDisabled
+        events: {
+            sealClick: function (sealInfo) {
+                this.data.set("activeSeal", sealInfo);
             },
-            comment: {
-                text: "注释",
-                iconHtml: "&#xe650;",
-                disabled: slidebarLeftToolbarDisabled
+            okClick: function () {
+                var activeSeal = this.data.get("activeSeal");
+                if (!activeSeal) {
+                    return;
+                }
+                this.data.set("sealList", []);
+                this.data.set("maskHideClassName", styles$6.hide);
+                this.data.set("activeSeal", undefined);
+                this._waitResult &&
+                    this._waitResult.resolve &&
+                    this._waitResult.resolve({ cancel: false, sealInfo: activeSeal });
             },
-            thumbnail: {
-                text: "缩图",
-                iconHtml: "&#xe651;",
-                disabled: slidebarLeftToolbarDisabled
+            closeClick: function () {
+                this.data.set("sealList", []);
+                this.data.set("maskHideClassName", styles$6.hide);
+                this.data.set("activeSeal", undefined);
+                this._waitResult &&
+                    this._waitResult.resolve &&
+                    this._waitResult.resolve({ cancel: true });
             }
         }
-    };
-    var defaultContentTemp = function (app, parent) {
-        var tempReaderComponent = new TempReaderContent({
-            owner: parent,
-            source: "<content-temp></content-temp>"
-        });
-        tempReaderComponent.app = app;
-        return tempReaderComponent;
-    };
-    function slidebarLeftToolbarDisabled(app) {
-        var currentBookmark = app.currentBookmark();
-        return (!currentBookmark ||
-            !currentBookmark.parserWrapperInfo ||
-            !currentBookmark.parserWrapperInfo.parserInterface);
-    }
+    });
 
     var AsyncLock = function (opts) {
     	opts = opts || {};
@@ -42339,9 +41975,892 @@ var bkDocReader = (function (exports) {
 
     var asyncLock = lib;
 
+    var lock = new asyncLock();
+    var sealSelectInterface;
+    window.addEventListener("load", function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            lock.acquire("initSealSelectInterface", function (done) {
+                try {
+                    if (sealSelectInterface) {
+                        return;
+                    }
+                    var sealSelectComponent = new SealSelect();
+                    sealSelectComponent.attach(document.body);
+                    sealSelectInterface = sealSelectComponent;
+                    // sealSelectInterface
+                    //   .selectSeal([
+                    //     {
+                    //       id: 1,
+                    //       imgUrl:
+                    //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                    //     } as any,
+                    //     {
+                    //       id: 2,
+                    //       imgUrl:
+                    //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                    //     } as any,
+                    //     {
+                    //       id: 3,
+                    //       imgUrl:
+                    //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                    //     } as any,
+                    //   ])
+                    //   .then((res) => console.log(res));
+                }
+                finally {
+                    done();
+                }
+            });
+            return [2 /*return*/];
+        });
+    }); });
+    var fullBtnId = createId();
+    function narrowDisabledHandler(app) {
+        var isDisabled = false;
+        try {
+            var scale = parseInt(app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
+                "");
+            var scalMinVal = scaleVals[0];
+            if (scale <= scalMinVal) {
+                isDisabled = true;
+            }
+        }
+        catch (e) {
+            isDisabled = false;
+        }
+        if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
+            this.className += " " + styles$b.disabled;
+            this.update(this);
+        }
+        else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+            this.className = this.className.split(" ")[0];
+            this.update(this);
+        }
+    }
+    function enlargeDisabledHandle(app) {
+        var isDisabled = false;
+        try {
+            var appInterface = app.currentBookmark().parserWrapperInfo
+                .parserInterface;
+            var scale = parseInt(appInterface.getScale() * 100 + "");
+            var scaleMaxVal = scaleVals[scaleVals.length - 1];
+            if (scale >= scaleMaxVal) {
+                isDisabled = true;
+            }
+        }
+        catch (e) {
+            isDisabled = false;
+        }
+        if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
+            this.className += " " + styles$b.disabled;
+            this.update(this);
+        }
+        else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+            this.className = this.className.split(" ")[0];
+            this.update(this);
+        }
+    }
+    function narrowOrEnlargeScaleChange(scale) {
+        scale = parseInt(scale * 100 + "");
+        var isNarrow = this.title === "缩小";
+        var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
+        var isDisabled = isNarrow ? scale <= val : scale >= val;
+        if (isDisabled) {
+            if (!this.className.includes(" " + styles$b.disabled)) {
+                this.className += " " + styles$b.disabled;
+                this.update(this);
+            }
+        }
+        else if (this.className.includes(" " + styles$b.disabled)) {
+            this.className = this.className.split(" ")[0];
+            this.update(this);
+        }
+    }
+    // let _narrowScaleChange = narrowOrEnlargeScaleChange;
+    // let _EnlargeScaleChange = narrowOrEnlargeScaleChange;
+    var scaleOptions = [
+        {
+            val: 20,
+            text: "20%"
+        },
+        {
+            val: 50,
+            text: "50%"
+        },
+        {
+            val: 100,
+            text: "100%"
+        },
+        {
+            val: 200,
+            text: "200%"
+        },
+        {
+            val: 400,
+            text: "400%"
+        },
+    ];
+    var scaleVals = scaleOptions.map(function (v) { return v.val; });
+    var headerTabsBtns = {
+        open: {
+            type: "default",
+            disabled: true,
+            nodeInfo: {
+                text: "打开",
+                html: "&#xe65e;",
+                title: "打开文件",
+                click: function (app) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var result;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, app.getReader().selectFile()];
+                                case 1:
+                                    result = _a.sent();
+                                    if (!result) {
+                                        return [2 /*return*/];
+                                    }
+                                    return [4 /*yield*/, result.loadFile()];
+                                case 2:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                }
+            }
+        },
+        save: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "保存",
+                html: "&#xe65c;",
+                title: "保存"
+            }
+        },
+        saveAs: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "另存为",
+                html: "&#xe65c;",
+                title: "另存为"
+            }
+        },
+        print: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "打印",
+                html: "&#xe65d;",
+                title: "打印"
+            }
+        },
+        jump: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                width: 80,
+                render: function (app, nodeInfo, parent) {
+                    console.log("jump初始化");
+                    if (this._toolJump) {
+                        this._toolJump.dispose();
+                    }
+                    this._toolJump = new ToolJump();
+                    this._toolJump.app = app;
+                    this._toolJump.attach(parent);
+                },
+                isShow: supportJumpPage
+            }
+        },
+        select: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "选择",
+                title: "选择",
+                html: "&#xe65f;",
+                attached: selectOrMoveAttached,
+                isShow: function (app) {
+                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                        .support.pages;
+                    return support && support.moduleSwitch && support.moduleSwitch.select;
+                },
+                click: function (app) {
+                    var current = app.currentBookmark();
+                    if (!current || !current.id) {
+                        return;
+                    }
+                    current.parserWrapperInfo.parserInterface.setMode("select");
+                    var moveNodeInfo = this.selector.next();
+                    if (!this.active) {
+                        this.active = true;
+                        this.update();
+                    }
+                    if (moveNodeInfo.active) {
+                        moveNodeInfo.active = false;
+                        moveNodeInfo.update(moveNodeInfo);
+                    }
+                }
+            }
+        },
+        move: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "移动",
+                title: "移动",
+                html: "&#xe660;",
+                isShow: function (app) {
+                    var support = app.currentBookmark().parserWrapperInfo.parserInfo
+                        .support.pages;
+                    return support && support.moduleSwitch && support.moduleSwitch.move;
+                },
+                attached: selectOrMoveAttached,
+                // attached: selectOrMoveAttached,
+                click: function (app) {
+                    var current = app.currentBookmark();
+                    if (!current || !current.id) {
+                        return;
+                    }
+                    current.parserWrapperInfo.parserInterface.setMode("move");
+                    var selectNodeInfo = this.selector.prev();
+                    if (!this.active) {
+                        this.active = true;
+                        this.update();
+                    }
+                    if (selectNodeInfo.active) {
+                        selectNodeInfo.active = false;
+                        selectNodeInfo.update(selectNodeInfo);
+                    }
+                }
+            }
+        },
+        ActualSize: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "实际大小",
+                title: "实际大小",
+                html: "&#xe661;",
+                isShow: showSupportScale,
+                attached: actualSizeAttached,
+                click: function (app) {
+                    app.currentBookmark().parserWrapperInfo.parserInterface.setScale(1);
+                }
+            }
+        },
+        SuitableWidth: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "适合宽度",
+                title: "适合宽度",
+                html: "&#xe662;",
+                isShow: showSupportFull("width"),
+                click: function (app) {
+                    app
+                        .currentBookmark()
+                        .parserWrapperInfo.parserInterface.setFull("width");
+                }
+            }
+        },
+        SuitablePage: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                text: "适合页面",
+                title: "适合页面",
+                html: "&#xe663;",
+                attached: suitablePageAttached,
+                click: function (app) {
+                    app.currentBookmark().parserWrapperInfo.parserInterface.setScale(0.8);
+                }
+            }
+        },
+        narrow: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe670;",
+                needReader: true,
+                title: "缩小",
+                width: 24,
+                className: styles$b.toolIconBtn,
+                isShow: showSupportScale,
+                attached: function (app) {
+                    var self = this;
+                    if (self._narrowDisabledHandler) {
+                        app.removeListener("bookmarkChange", self._narrowDisabledHandler);
+                    }
+                    self._narrowDisabledHandler = narrowDisabledHandler.bind(this);
+                    app.addListener("bookmarkChange", self._narrowDisabledHandler);
+                    if (self._narrowScaleChange) {
+                        app
+                            .getReader()
+                            .removeListener("scaleChange", self._narrowScaleChange);
+                    }
+                    self._narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                    app.getReader().addListener("scaleChange", self._narrowScaleChange);
+                },
+                click: function (app) {
+                    try {
+                        var nextNodeInfo = this.selector.next();
+                        if (nextNodeInfo.className.includes(" " + styles$b.disabled)) {
+                            nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
+                            nextNodeInfo.update(nextNodeInfo);
+                        }
+                        if (this.className.includes(" " + styles$b.disabled)) {
+                            return;
+                        }
+                        var parserInterface = app.currentBookmark().parserWrapperInfo
+                            .parserInterface;
+                        var nowScale = parseInt(parserInterface.getScale() * 100 + "");
+                        var index = scaleVals.indexOf(nowScale);
+                        if (index === -1) {
+                            for (var i = 1; i < scaleVals.length; i++) {
+                                var val = scaleVals[i];
+                                if (nowScale > val) {
+                                    index = i - 1;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            index -= 1;
+                        }
+                        if (index <= 0) {
+                            if (this.className.includes(" " + styles$b.disabled)) {
+                                return;
+                            }
+                            this.className += " " + styles$b.disabled;
+                            this.update(this);
+                            if (index === -1) {
+                                return;
+                            }
+                        }
+                        else if (this.className.includes(" " + styles$b.disabled)) {
+                            this.className = this.className.split(" ")[0];
+                            this.update(this);
+                        }
+                        parserInterface.setScale(scaleVals[index] / 100);
+                    }
+                    catch (e) { }
+                }
+            }
+        },
+        scale: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                title: "缩放比率",
+                width: 82,
+                render: function (app, nodeInfo, parent) {
+                    if (this._toolscale) {
+                        this._toolscale.dispose();
+                    }
+                    this._toolscale = new ToolScale({
+                        data: {
+                            activeVal: 100,
+                            options: scaleOptions
+                        }
+                    });
+                    this._toolscale.app = app;
+                    this._toolscale.attach(parent);
+                },
+                isShow: showSupportScale
+            }
+        },
+        enlarge: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe671;",
+                title: "放大",
+                width: 24,
+                className: styles$b.toolIconBtn,
+                isShow: showSupportScale,
+                attached: function (app) {
+                    var self = this;
+                    if (self._enlargeDisabledHandle) {
+                        app.removeListener("bookmarkChange", self._enlargeDisabledHandle);
+                    }
+                    self._enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
+                    app.addListener("bookmarkChange", self._enlargeDisabledHandle);
+                    if (self._EnlargeScaleChange) {
+                        app
+                            .getReader()
+                            .removeListener("scaleChange", self._EnlargeScaleChange);
+                    }
+                    self._EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                    app.getReader().addListener("scaleChange", self._EnlargeScaleChange);
+                },
+                click: function (app) {
+                    var prevNodeInfo = this.selector.prev();
+                    if (prevNodeInfo.className.includes(" " + styles$b.disabled)) {
+                        prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
+                        prevNodeInfo.update(prevNodeInfo);
+                    }
+                    if (this.className.includes(" " + styles$b.disabled)) {
+                        return;
+                    }
+                    try {
+                        var parserInterface = app.currentBookmark().parserWrapperInfo
+                            .parserInterface;
+                        var nowScale = parseInt(parserInterface.getScale() * 100 + "");
+                        var index = scaleVals.indexOf(nowScale);
+                        if (index === -1) {
+                            for (var i = 0; i < scaleVals.length; i++) {
+                                var val = scaleVals[i];
+                                if (val > nowScale) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            index += 1;
+                        }
+                        if (index >= scaleVals.length - 1 || index === -1) {
+                            if (this.className.includes(" " + styles$b.disabled)) {
+                                return;
+                            }
+                            this.className += " " + styles$b.disabled;
+                            this.update(this);
+                            if (index >= scaleVals.length) {
+                                return;
+                            }
+                        }
+                        else if (this.className.includes(" " + styles$b.disabled)) {
+                            this.className = this.className.split(" ")[0];
+                            this.update(this);
+                        }
+                        parserInterface.setScale(scaleVals[index] / 100);
+                    }
+                    catch (e) { }
+                }
+            }
+        },
+        find: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe664;",
+                title: "查找",
+                text: "查找"
+            }
+        },
+        full: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe665;",
+                title: "全屏",
+                text: "全屏",
+                isShow: showSupportFull("content"),
+                click: function (app) {
+                    app
+                        .currentBookmark()
+                        .parserWrapperInfo.parserInterface.setFull("content");
+                }
+            }
+        },
+        preferenc: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe666;",
+                title: "首选项",
+                text: "首选项"
+            }
+        },
+        sealDragAdd: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe610;",
+                title: "手工签章",
+                text: "手工签章",
+                isShow: function (app) {
+                    var sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+                        .support.seal;
+                    if (!sealSupport || !sealSupport.sealList) {
+                        return false;
+                    }
+                    return true;
+                },
+                click: function (app, event) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var currentBookmark, sealList, res, dragRes;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    currentBookmark = app.currentBookmark();
+                                    if (!currentBookmark || !currentBookmark.id) {
+                                        return [2 /*return*/];
+                                    }
+                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                                case 1:
+                                    sealList = _a.sent();
+                                    if (!sealList) {
+                                        return [2 /*return*/];
+                                    }
+                                    return [4 /*yield*/, sealSelectInterface.selectSeal(sealList)];
+                                case 2:
+                                    res = _a.sent();
+                                    if (res.cancel) {
+                                        return [2 /*return*/];
+                                    }
+                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDragOne(res.sealInfo)];
+                                case 3:
+                                    dragRes = _a.sent();
+                                    debugger;
+                                    console.log(dragRes);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                }
+            }
+        },
+        rotation: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe667;",
+                title: "顺时针旋转",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                isShow: function (app) {
+                    return app.currentBookmark().parserWrapperInfo.parserInfo.support
+                        .rotation;
+                },
+                click: function (app) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark ||
+                        !currentBookmark.id ||
+                        !currentBookmark.parserWrapperInfo.parserInfo.support.rotation) {
+                        return;
+                    }
+                    var rotation = currentBookmark.parserWrapperInfo.parserInterface.getRotation() + 90;
+                    currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+                }
+            }
+        },
+        anticlockwiseRotation: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe669;",
+                title: "逆时针旋转",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                isShow: function (app) {
+                    return app.currentBookmark().parserWrapperInfo.parserInfo.support
+                        .rotation;
+                },
+                click: function (app) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark ||
+                        !currentBookmark.id ||
+                        !currentBookmark.parserWrapperInfo.parserInfo.support.rotation) {
+                        return;
+                    }
+                    var rotation = currentBookmark.parserWrapperInfo.parserInterface.getRotation() - 90;
+                    currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+                }
+            }
+        },
+        jumpToHead: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe719;",
+                title: "跳转到首页",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                attached: jumpBtnGroupCheckAttached,
+                isShow: supportJumpPage,
+                click: function (app) {
+                    if (this.className.includes(" " + styles$b.disabled)) {
+                        return;
+                    }
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        return;
+                    }
+                    if (!this.className.includes(" " + styles$b.disabled)) {
+                        this.className += " " + styles$b.disabled;
+                        this.update();
+                    }
+                    currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
+                }
+            }
+        },
+        jumpToPrev: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe615;",
+                title: "上一页",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                attached: jumpBtnGroupCheckAttached,
+                isShow: supportJumpPage,
+                click: function (app) {
+                    if (this.className.includes(" " + styles$b.disabled)) {
+                        return;
+                    }
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        return;
+                    }
+                    var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
+                    if (nowPageNo <= 1 && this.className.includes(" " + styles$b.disabled)) {
+                        this.className += " " + styles$b.disabled;
+                        this.update();
+                    }
+                    if (nowPageNo >= 1) {
+                        currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+                    }
+                }
+            }
+        },
+        jumpToNext: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe718;",
+                title: "下一页",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                attached: jumpBtnGroupCheckAttached,
+                isShow: supportJumpPage,
+                click: function (app, event) {
+                    if (this.className.includes(" " + styles$b.disabled)) {
+                        return;
+                    }
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        return;
+                    }
+                    var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
+                    var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+                    if (nowPageNo >= numPages &&
+                        this.className.includes(" " + styles$b.disabled)) {
+                        this.className += " " + styles$b.disabled;
+                        this.update();
+                    }
+                    if (nowPageNo <= numPages) {
+                        currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+                    }
+                }
+            }
+        },
+        jumpToEnd: {
+            type: "default",
+            needReader: true,
+            nodeInfo: {
+                html: "&#xe690;",
+                title: "跳转到尾页",
+                className: styles$b.toolIconBtn,
+                width: 24,
+                attached: jumpBtnGroupCheckAttached,
+                isShow: supportJumpPage,
+                click: function (app) {
+                    if (this.className.includes(" " + styles$b.disabled)) {
+                        return;
+                    }
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        return;
+                    }
+                    var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+                    if (!this.className.includes(" " + styles$b.disabled)) {
+                        this.className += " " + styles$b.disabled;
+                        this.update();
+                    }
+                    currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
+                }
+            }
+        }
+    };
+    var defaultData = {
+        tabBtns: {
+            close: {
+                className: "iconfont",
+                // html: "&#xeaf2;",
+                html: "&#xe600;",
+                title: "关闭",
+                click: function (app) {
+                    app.destroy();
+                }
+            },
+            full: {
+                id: fullBtnId,
+                className: "iconfont",
+                html: "&#xe600;",
+                title: "全屏",
+                click: function (app) {
+                    var title = "全屏";
+                    if (isFullScreen()) {
+                        exitFullscreen();
+                    }
+                    else {
+                        full(app.getRootEle());
+                        title = "还原";
+                    }
+                    var btns = app.getNowData("tabPages.btnGroup.btns");
+                    for (var i in btns) {
+                        var btn = btns[i];
+                        if (btn.id === fullBtnId) {
+                            btn.title = title;
+                            app.updateByExpr("tabPages.btnGroup.btns", btns);
+                            return;
+                        }
+                    }
+                }
+            },
+            hide: {
+                className: "iconfont",
+                html: "&#xe600;",
+                title: "隐藏",
+                click: function (app) {
+                    app.hide();
+                }
+            }
+        },
+        headerTabs: {
+            start: {
+                text: "开始",
+                tools: [
+                    headerTabsBtns.open,
+                    headerTabsBtns.save,
+                    headerTabsBtns.saveAs,
+                    headerTabsBtns.print,
+                    { type: "separate", needReader: true },
+                    headerTabsBtns.jump,
+                    headerTabsBtns.select,
+                    headerTabsBtns.move,
+                    headerTabsBtns.ActualSize,
+                    headerTabsBtns.SuitableWidth,
+                    headerTabsBtns.SuitablePage,
+                    { type: "separate", needReader: true },
+                    headerTabsBtns.scale,
+                    headerTabsBtns.narrow,
+                    headerTabsBtns.enlarge,
+                    { type: "separate", needReader: true },
+                    headerTabsBtns.find,
+                    headerTabsBtns.full,
+                    // headerTabsBtns.preferenc,
+                ]
+            },
+            tools: {
+                text: "工具",
+                tools: [__assign({}, headerTabsBtns.find)]
+            },
+            view: {
+                text: "视图",
+                tools: [
+                    lodash.exports.cloneDeep(headerTabsBtns.ActualSize),
+                    lodash.exports.cloneDeep(headerTabsBtns.SuitableWidth),
+                    lodash.exports.cloneDeep(headerTabsBtns.SuitablePage),
+                    lodash.exports.cloneDeep(headerTabsBtns.full),
+                ]
+            },
+            reader: {
+                text: "阅读",
+                tools: [
+                    lodash.exports.cloneDeep(headerTabsBtns.narrow),
+                    lodash.exports.cloneDeep(headerTabsBtns.enlarge),
+                    headerTabsBtns.rotation,
+                    headerTabsBtns.anticlockwiseRotation,
+                    headerTabsBtns.jumpToHead,
+                    headerTabsBtns.jumpToPrev,
+                    headerTabsBtns.jumpToNext,
+                    headerTabsBtns.jumpToEnd,
+                ]
+            },
+            safety: {
+                text: "安全",
+                tools: [headerTabsBtns.sealDragAdd]
+            },
+            help: {
+                text: "帮助"
+            }
+        },
+        sildebarLeftTabs: {
+            outline: {
+                text: "书签",
+                iconHtml: "&#xe67b;",
+                // iconHtml: "&#xe64f;",
+                disabled: slidebarLeftToolbarDisabled,
+                renderChildren: function (app, dom) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        dom.innerHTML = "";
+                        return;
+                    }
+                    dom.style.padding = "30px 9px 0 9px";
+                    currentBookmark.parserWrapperInfo.parserInterface.renderOutline(dom);
+                }
+            },
+            sign: {
+                text: "签章",
+                iconHtml: "&#xe64f;",
+                disabled: slidebarLeftToolbarDisabled
+            },
+            comment: {
+                text: "注释",
+                iconHtml: "&#xe650;",
+                disabled: slidebarLeftToolbarDisabled,
+                renderChildren: function (app, dom) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        dom.innerHTML = "";
+                        return;
+                    }
+                    dom.style.paddingTop = "27px";
+                    currentBookmark.parserWrapperInfo.parserInterface.renderAnnotations(dom);
+                }
+            },
+            thumbnail: {
+                text: "缩图",
+                iconHtml: "&#xe651;",
+                disabled: slidebarLeftToolbarDisabled,
+                renderChildren: function (app, dom) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        dom.innerHTML = "";
+                        return;
+                    }
+                    dom.style.paddingTop = "27px";
+                    currentBookmark.parserWrapperInfo.parserInterface.renderThumbnail(dom, {
+                        width: 106
+                    });
+                }
+            }
+        }
+    };
+    var defaultContentTemp = function (app, parent) {
+        var tempReaderComponent = new TempReaderContent({
+            owner: parent,
+            source: "<content-temp></content-temp>"
+        });
+        tempReaderComponent.app = app;
+        return tempReaderComponent;
+    };
+    function slidebarLeftToolbarDisabled(app) {
+        var currentBookmark = app.currentBookmark();
+        return (!currentBookmark ||
+            !currentBookmark.parserWrapperInfo ||
+            !currentBookmark.parserWrapperInfo.parserInterface);
+    }
+
     new asyncLock();
     var Reader = dist.exports.defineComponent({
-        template: lodash.exports.template(html$9)({ styles: styles$b }),
+        template: lodash.exports.template(html$a)({ styles: styles$c }),
         initData: function () {
             return {
                 bookmarkLoadErrors: { __length: 0 }
@@ -42441,7 +42960,7 @@ var bkDocReader = (function (exports) {
                                 throw new Error("解析器未实现渲染方法");
                             }
                             readerEle = createElement("div");
-                            readerEle.className = styles$b.readerContent;
+                            readerEle.className = styles$c.readerContent;
                             this.readerEleList[bookmark.id] = readerEle;
                             rootEle.appendChild(readerEle);
                             res = parserInterface.render(readerEle);
@@ -42521,10 +43040,10 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" s-ref=\"ref-pannelWrapper\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}\">\n        <fragment s-for=\"toolbar, toolbarIndex in toolbars\">\n            <div class=\"<%= styles.content %>\" s-show=\"activeKey === toolbarIndex\">\n                <div s-ref=\"ref-pannelContent-{{toolbarIndex}}\" class=\"<%= styles.content %>\" _r=\"{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}\"></div>\n                <div s-if=\"toolbarChildrenRenderErrors[toolbarIndex].error\" class=\"<%= styles.error %>\">\n                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>\n                </div>\n                <div class=\"<%= styles.tools %>\" s-if=\"{{toolbar.tools && toolbar.tools.length > 0}}\">\n                    <fragment s-for=\"tool, index in toolbar.tools\">\n                        <div s-if=\"tool.type !== 'separate'\" s-ref=\"ref-tool-{{index}}\" _r=\"{{fns.handleNodeRender(tool, index)}}\" class=\"<%= styles.tool %>\">\n                            <div s-if=\"tool.nodeInfo.html\" class=\"{{tool.nodeInfo.className || '<%= styles.icon %>'}}\">\n                                <span class=\"iconfont\">{{tool.nodeInfo.html | raw}}</span>\n                            </div>\n                            <div s-if=\"tool.nodeInfo.text\" class=\"{{tool.nodeInfo.className || '<%= styles.text %>'}}\">\n                                <span>{{tool.nodeInfo.text}}</span>\n                            </div>\n                        </div>\n                    </fragment>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n            <div></div>\n        </div>\n        <div on-mousedown=\"events.drageDown($event)\" s-show=\"expand\" class=\"<%= styles.drag %>\"></div>\n    </div>\n</div>";
 
-    var css_248z$7 = ".index-module_common_font__rsmEw{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__p5aoa{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_slidebarLeft__higRK{background:#eff1f3;height:100%;overflow:hidden;position:relative;transition:all .3;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA{float:left;height:100%;position:relative;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_comment__h9Ykh{border-bottom:2px solid #e6e6e6;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:25px;left:0;line-height:25px;margin-bottom:2px;position:absolute;text-align:center;top:0;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6{bottom:0;left:0;overflow-x:hidden;overflow-y:auto;position:absolute;top:44px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2{border:none;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:45px;margin-bottom:17px;padding-top:5px;text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_disabled__Ptq3y{cursor:not-allowed}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{height:20px;line-height:20px;margin-bottom:4px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{font-size:20px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc{background-color:#fff}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_icon__Zsx8e>span{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1{background-color:#fff;float:left;height:100%;overflow:hidden;position:relative;transition:all .3s;width:160px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_fold__Hp4cY{width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV{cursor:pointer;height:100%;position:absolute;right:0;text-align:center;top:0;width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>span{color:#fff;color:#333;display:block;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;position:absolute;text-align:center;top:50%;width:100%}";
-    var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
+    var css_248z$7 = ".index-module_common_font__rsmEw{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__p5aoa{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_slidebarLeft__higRK{background:#fff;height:100%;overflow:hidden;position:relative;transition:all .3;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA{float:left;height:100%;position:relative;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_comment__h9Ykh{border-bottom:2px solid #e6e6e6;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:25px;left:0;line-height:25px;margin-bottom:2px;position:absolute;text-align:center;top:0;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6{bottom:0;left:0;overflow-x:hidden;overflow-y:auto;position:absolute;top:44px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2{border:none;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:45px;margin-bottom:17px;padding-top:5px;text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_disabled__Ptq3y{cursor:not-allowed}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{height:20px;line-height:20px;margin-bottom:4px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{font-size:20px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc{background:#e3e4e4}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_icon__Zsx8e>span{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1{background-color:#e3e4e4;float:left;height:100%;min-width:16px;overflow:hidden;position:relative;transition:all .3s}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_fold__Hp4cY{width:16px!important}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_expand__RCTjV{width:160px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_drag__WvhVF{bottom:0;cursor:col-resize;position:absolute;right:0;top:0;width:2px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco{bottom:0;left:0;overflow:auto;position:absolute;right:16px;top:0}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_content__UdWco{bottom:0;left:0;overflow:auto;position:absolute;right:0;top:0}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_error__lEXU4{padding-top:28px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_error__lEXU4>h3{color:red;display:block;font-weight:bolder;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM{overflow:auto;padding-top:18px;position:relative}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4{cursor:pointer;height:50px;margin:0 auto 18px;width:50px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4.index-module_active__ZtWjc>.index-module_icon__Zsx8e,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4.index-module_active__ZtWjc>.index-module_text__TXr-l,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4:hover>.index-module_icon__Zsx8e,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4:hover>.index-module_text__TXr-l{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_text__TXr-l{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_icon__Zsx8e{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_icon__Zsx8e>span{font-size:24px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV{cursor:pointer;height:100%;position:absolute;right:0;text-align:left;top:0;width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>span{color:#fff;color:#333;display:block;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;position:absolute;text-align:center;text-align:left;top:50%;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>div{background:#d9d9d9;height:20px;position:absolute;right:0;top:calc(50% - 3px);width:6px}";
+    var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
     styleInject(css_248z$7);
 
     var SlidebarLeft = dist.exports.defineComponent({
@@ -42532,8 +43051,14 @@ var bkDocReader = (function (exports) {
         template: lodash.exports.template(html$2)({ styles: styles$5 }),
         initData: function () {
             return {
-                expand: false
+                expand: false,
+                pannelDragWidth: 0,
+                dragX: 0
             };
+        },
+        attached: function () {
+            this.events.drageMove = this.events.drageMove.bind(this);
+            this.events.drageUp = this.events.drageUp.bind(this);
         },
         computed: {
             slideWrapperIeStyle: function () {
@@ -42551,9 +43076,67 @@ var bkDocReader = (function (exports) {
                     width = 40 + 160;
                 }
                 return "width: " + width + "px;";
+            },
+            tabPanelWidth: function () {
+                var expand = this.data.get("expand");
+                if (!expand) {
+                    return 0;
+                }
+                var appSize = this.data.get("appSize");
+                var maxWidth = appSize.minWidth / 2 - 40;
+                var width = this.data.get("pannelDragWidth");
+                if (width < 0) {
+                    return 160;
+                }
+                var targetWidth = 160 + width;
+                if (targetWidth > maxWidth) {
+                    targetWidth = maxWidth;
+                }
+                return targetWidth;
             }
         },
         events: {
+            drageUp: function (event) {
+                this.dragX = 0;
+                eventUtil.removeHandler(window, "mousemove", this.events.drageMove);
+                eventUtil.removeHandler(window, "mouseup", this.events.drageUp);
+                var pannelWrapperEle = this.ref("ref-pannelWrapper");
+                if (!pannelWrapperEle) {
+                    return;
+                }
+                pannelWrapperEle.style.transition = "";
+            },
+            drageMove: function (event) {
+                var pannelWrapperEle = this.ref("ref-pannelWrapper");
+                if (!pannelWrapperEle) {
+                    return;
+                }
+                var appSize = this.data.get("appSize");
+                var maxWidth = appSize.minWidth / 2;
+                var moveX = event.x - this.dragX;
+                this.dragX = event.x;
+                var width = parseInt(pannelWrapperEle.style.width || "160");
+                var targetWidth = width + moveX;
+                if (targetWidth < 160) {
+                    targetWidth = 160;
+                }
+                else if (targetWidth > maxWidth) {
+                    targetWidth = maxWidth;
+                }
+                pannelWrapperEle.style.width = targetWidth + "px";
+            },
+            drageDown: function (event) {
+                var pannelWrapperEle = this.ref("ref-pannelWrapper");
+                if (!pannelWrapperEle) {
+                    return;
+                }
+                pannelWrapperEle.style.transition = "unset";
+                this.dragX = event.x;
+                eventUtil.removeHandler(window, "mousemove", this.events.drageMove);
+                eventUtil.removeHandler(window, "mouseup", this.events.drageUp);
+                eventUtil.addHandler(window, "mousemove", this.events.drageMove);
+                eventUtil.addHandler(window, "mouseup", this.events.drageUp);
+            },
             tabClick: function (event, key, toolbar, disabled) {
                 if (disabled) {
                     return;
@@ -42569,6 +43152,68 @@ var bkDocReader = (function (exports) {
             }
         },
         fns: {
+            handleToolbarRender: function (toolbarInfo, index, id) {
+                var _this = this;
+                if (!toolbarInfo._renderChildrenId) {
+                    return;
+                }
+                var pannelContentEle = this.ref("ref-pannelContent-" + index);
+                if (!pannelContentEle) {
+                    return;
+                }
+                var appInterface = getAppBySanComponent(this);
+                try {
+                    var res = nodeEventCall(appInterface, toolbarInfo._renderChildrenId, appInterface, pannelContentEle);
+                    if (res instanceof Promise) {
+                        res
+                            .then(function () {
+                            _this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                                error: false,
+                                msg: ""
+                            });
+                        })["catch"](function (err) {
+                            _this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                                error: true,
+                                msg: err.message || err
+                            });
+                        });
+                    }
+                    else {
+                        this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                            error: false,
+                            msg: ""
+                        });
+                    }
+                }
+                catch (e) {
+                    this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                        error: true,
+                        msg: e.message || e
+                    });
+                    return;
+                }
+            },
+            handleNodeRender: function (toolInfo, index) {
+                var toolEle = this.ref("ref-tool-" + index);
+                if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
+                    return undefined;
+                }
+                if (toolInfo.nodeInfo.renderId) {
+                    nodeRender(this, toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
+                    return undefined;
+                }
+                else if (toolInfo.nodeInfo._attachedId) {
+                    var appInterface = getApp(this.data.get("appId"));
+                    // dom.nodeEventCall(
+                    nodeEventCallBindThis(toolInfo.nodeInfo, appInterface, toolInfo.nodeInfo._attachedId, appInterface);
+                }
+                if (!toolInfo.nodeInfo.evenIdList ||
+                    toolInfo.nodeInfo.evenIdList.length === 0) {
+                    return undefined;
+                }
+                dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this, toolInfo.nodeInfo);
+                return undefined;
+            },
             disabled: function (disabled) {
                 if (typeof disabled === "boolean") {
                     return disabled ? styles$5.disabled : "";
@@ -42734,7 +43379,7 @@ var bkDocReader = (function (exports) {
                 return;
             }
             var btnEle = this.ref("btn");
-            dispatchDomEvent(btnEle, eventIdList, this);
+            dispatchDomEvent(btnEle, eventIdList, this, undefined);
         },
         detached: function () {
             var dataStore = getApp(this.data.get("appId")).getDataStore();
@@ -42876,7 +43521,7 @@ var bkDocReader = (function (exports) {
     });
 
     var isFirst = true;
-    var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+    var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
     var AppUi = dist.exports.defineComponent({
         components: {
             "ui-tabs": TabPages,
@@ -43042,6 +43687,34 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.contentIsFull = function () {
             return false;
         };
+        ReaderParserAbstract.prototype.renderThumbnail = function (domEle, options) { };
+        ReaderParserAbstract.prototype.renderOutline = function (domEle) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.renderAnnotations = function (domEle) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.sealList = function () {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.sealPositionAdd = function (sealInfo, position) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.sealVerify = function (sealFieldName) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.sealVerifyAll = function () {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.setRotation = function (deg) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.getRotation = function () {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.sealDragOne = function (sealInfo, options) {
+            throw ErrNoSupportFunction;
+        };
         ReaderParserAbstract.supportAll = {
             nowBrowser: true,
             fileSuffix: [],
@@ -43049,6 +43722,10 @@ var bkDocReader = (function (exports) {
                 return true;
             },
             scale: true,
+            rotation: true,
+            thumbnail: true,
+            outline: true,
+            annotations: true,
             full: {
                 width: true,
                 content: true
@@ -43063,6 +43740,11 @@ var bkDocReader = (function (exports) {
                 adaptiveView: true,
                 showPageNo: true
             },
+            seal: {
+                sealList: true,
+                positionSeal: true,
+                verifySeal: true
+            },
             listener: {
                 pageNoChange: true,
                 scaleChange: true,
@@ -43074,18 +43756,24 @@ var bkDocReader = (function (exports) {
     var readerParserSupportDefault = {
         nowBrowser: false,
         fileSuffix: [],
+        thumbnail: false,
+        outline: false,
+        annotations: false,
         isSupportFile: function (file) {
             return false;
         },
         scale: false,
+        rotation: false,
         full: false,
         pages: false,
+        seal: false,
         listener: false
     };
     var ErrFileNotParsed = new Error("文件无法被解析, 请添加对应解析器");
     var ErrNoSupportFileSuffix = new Error("没有可被解析的文件后缀，请尝试添加解析器");
     var ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
     var ErrLackOfParser = new Error("缺失解析器信息");
+    var ErrNoSupportFunction = new Error("未实现的方法");
 
     var appEventBookmarkChange = "bookmarkChange";
     var fontfaceStyleId = new Date().getTime() + "";
@@ -43109,6 +43797,7 @@ var bkDocReader = (function (exports) {
                 defaultData.headerTabs.start,
                 defaultData.headerTabs.tools,
                 defaultData.headerTabs.view,
+                defaultData.headerTabs.reader,
                 defaultData.headerTabs.safety,
                 defaultData.headerTabs.help,
             ]
@@ -43116,6 +43805,7 @@ var bkDocReader = (function (exports) {
         sidebars: {
             left: {
                 toolbars: [
+                    defaultData.sildebarLeftTabs.outline,
                     defaultData.sildebarLeftTabs.sign,
                     defaultData.sildebarLeftTabs.comment,
                     defaultData.sildebarLeftTabs.thumbnail,
@@ -43129,7 +43819,7 @@ var bkDocReader = (function (exports) {
         components: {
             "ui-app": AppUi
         },
-        template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" appShow=\"{{show}}\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions, bookmarkInfos}}}\" appId=\"{{appId}}\" ></<ui-app>",
+        template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" appShow=\"{{show}}\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions, bookmarkInfos, appSize: {minWidth: appOptions.minWidth || 1280, minHeight: appOptions.minHeight || 800}}}}\" appId=\"{{appId}}\" ></<ui-app>",
         initData: function () {
             return {
                 show: false,
@@ -43139,7 +43829,7 @@ var bkDocReader = (function (exports) {
         messages: {
             "HTML::ELE::EVENT": function (args) {
                 var val = args && args.value;
-                this.eventMapping(val.id, val.event);
+                this.eventMapping(val.id, val.event, val.thisInfo);
             },
             "TABS::ADD": function () {
                 console.log("标签新增被触发");
@@ -43243,7 +43933,6 @@ var bkDocReader = (function (exports) {
         };
         ReaderImpl.prototype._parserInterfaceBindEvent = function (parser) {
             var eventMap = this._eventList.all();
-            debugger;
             for (var key in eventMap) {
                 var eventCallList = eventMap[key];
                 for (var j = 0; j < eventCallList.length; j++) {
@@ -43478,8 +44167,8 @@ var bkDocReader = (function (exports) {
                         appId: _this._appId
                     }
                 });
-                _this._appComponent.eventMapping = function (id, event) {
-                    nodeEventCall(_this, id, _this, event);
+                _this._appComponent.eventMapping = function (id, event, thisInfo) {
+                    nodeEventCallBindThis(thisInfo, _this, id, _this, event);
                 };
                 _this.update(defaultOptions);
                 _this.update(_this._initOptions);
@@ -43500,13 +44189,18 @@ var bkDocReader = (function (exports) {
             this._handleToobarConfigs = function (toolbarConfigs, expr) {
                 var app = _this;
                 var _loop_1 = function (i) {
-                    var toolbar_1 = toolbarConfigs[i];
-                    toolbar_1.disabled = handleDisabled(toolbar_1.disabled, _this._datastore);
-                    if (toolbar_1.activeChange) {
-                        var activeChangeFnId = createId();
-                        _this._datastore.set(activeChangeFnId, toolbar_1.activeChange);
-                        toolbar_1._activeChangeFnId = activeChangeFnId;
-                    }
+                    var toolbar_1 = handleToolBarInfo(app, toolbarConfigs[i]);
+                    // toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
+                    // if (toolbar.activeChange) {
+                    //   this._datastore.remove(toolbar._activeChangeFnId);
+                    //   toolbar._activeChangeFnId = id.createId();
+                    //   this._datastore.set(toolbar._activeChangeFnId, toolbar.activeChange);
+                    // }
+                    // if (toolbar.renderChildren) {
+                    //   this._datastore.remove(toolbar._renderChildrenId);
+                    //   toolbar._renderChildrenId = id.createId();
+                    //   this._datastore.set(toolbar._renderChildrenId, toolbar.renderChildren);
+                    // }
                     if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
                         return "continue";
                     }
@@ -43873,6 +44567,7 @@ var bkDocReader = (function (exports) {
     exports.ErrFileNotParsed = ErrFileNotParsed;
     exports.ErrLackOfParser = ErrLackOfParser;
     exports.ErrNoSupportFileSuffix = ErrNoSupportFileSuffix;
+    exports.ErrNoSupportFunction = ErrNoSupportFunction;
     exports.ReaderParserAbstract = ReaderParserAbstract;
     exports.defaultContentTemp = defaultContentTemp;
     exports.defaultData = defaultData;

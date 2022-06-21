@@ -4,6 +4,7 @@ import {
   AppInterface,
   NodeInfoThis,
 } from "../../types";
+import styles from "./index.module.less";
 
 export function showSupportScale(app: AppInterface) {
   return app.currentBookmark().parserWrapperInfo.parserInfo.support.scale;
@@ -37,13 +38,16 @@ function _bindListener(
     addListener(name: string, call: any);
   },
   name: string,
-  callback: Function,
+  callback: any,
   self: any
 ): any {
   eventListenerInterface.removeListener(name, callback);
-  callback = callback.bind(self);
-  eventListenerInterface.addListener(name, callback);
-  return callback;
+  callback = callback.srcFn || callback;
+  const tempCallback = callback.bind(self);
+  tempCallback.srcFn = callback;
+  // const tempCallback = callback.bind(self);
+  eventListenerInterface.addListener(name, tempCallback);
+  return tempCallback;
 }
 
 let scaleBookmarkChange = function (
@@ -126,6 +130,9 @@ let selectOrMoveBookmarkChange = function (
   app: AppInterface,
   current: AppBookmarkInfoWithIndex
 ) {
+  if (!current || !current.id) {
+    return;
+  }
   if (this.text === "移动") {
     const pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
     if (
@@ -182,4 +189,79 @@ export function selectOrMoveAttached(this: NodeInfoThis, app: AppInterface) {
   } else {
     selectOrMoveBookmarkChange = callback;
   }
+}
+
+// export function selectDisabledHandler(this: NodeInfoThis) {
+
+// }
+
+function jumpBtnGroupCheckFn(
+  this: NodeInfoThis,
+  app: AppInterface,
+  currentBookmark: AppBookmarkInfoWithIndex
+) {
+  if (!currentBookmark || !currentBookmark.id) {
+    return;
+  }
+
+  const parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
+  const numPages = parserInterface.getNumPages();
+  const nowPageNo = parserInterface.nowPageNo();
+  const haveDisabled = this.className.includes(" " + styles.disabled);
+
+  if (this.title === "跳转到首页" || this.title === "上一页") {
+    if (nowPageNo <= 1) {
+      if (haveDisabled) {
+        return;
+      }
+      this.className += " " + styles.disabled;
+      this.update();
+    } else if (haveDisabled) {
+      this.className = this.className.split(" " + styles.disabled).join("");
+      this.update();
+    }
+    return;
+  }
+
+  if (this.title === "下一页" || this.title === "跳转到尾页") {
+    if (nowPageNo >= numPages) {
+      if (haveDisabled) {
+        return;
+      }
+      this.className += " " + styles.disabled;
+      this.update();
+    } else if (haveDisabled) {
+      this.className = this.className.split(" " + styles.disabled).join("");
+      this.update();
+    }
+    return;
+  }
+}
+
+export function jumpBtnGroupCheckAttached(app: AppInterface) {
+  const self = this as any;
+  if (self._bookmarkChangeFn) {
+    app.removeListener("bookmarkChange", self._bookmarkChangeFn);
+  }
+
+  self._bookmarkChangeFn = _bindListener(
+    app,
+    "bookmarkChange",
+    jumpBtnGroupCheckFn,
+    self
+  );
+
+  if (self._pageNoChangeFn) {
+    app.getReader().removeListener("pageNoChange", self._pageNoChangeFn);
+  }
+  self._pageNoChangeFn = (pageNo: number) => {
+    self._bookmarkChangeFn(app, app.currentBookmark());
+  };
+  app.getReader().addListener("pageNoChange", self._pageNoChangeFn);
+}
+
+export function supportJumpPage(app: AppInterface) {
+  const supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
+    .support.pages;
+  return supportPages && supportPages.jump;
 }

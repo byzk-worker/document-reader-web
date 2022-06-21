@@ -6,7 +6,8 @@
             </span>
         </div>
         <fragment s-for="toolbarConfig, i in toolbars">
-            <div class="<%= styles.tabs %>" on-click="events.tabClick(i)" s-if="fns.showToolBar(toolbarConfig)">
+            <div class="<%= styles.tabs %>" on-click="events.tabClick(i)"
+                s-if="fns.showToolBar(toolbarConfig, bookmarkInfos.id)">
                 <div title="{{toolbarConfig.text}}"
                     class="<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}">
                     <span s-if="!!toolbarConfig.iconHtml" class="iconfont">{{toolbarConfig.iconHtml}}</span>
@@ -23,19 +24,23 @@
             s-show="fns.showControlBreakWrapper(showControlBreak, false)"></div>
         <div s-ref="toolsPanel" class="<%= styles.tabPanel %>"
             style="{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;">
-            <fragment s-for="toolInfo, index in handlePanelTools">
-                <div class="<%= styles.wrapper %>" s-show="fns.showTool(toolInfo, bookmarkInfos.index)">
-                    <div s-ref="ref-tool-{{index}}" s-if="!!toolInfo.nodeInfo && toolInfo.type === 'default'"
-                        class="<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}" title="{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}"
-                        style="{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}">
-                        {{events.handleRender(toolInfo, index)}}
-                        <ui-toolbtn s-if="!toolInfo.nodeInfo.renderId" s-bind="{{{...toolInfo.nodeInfo}}}"></ui-toolbtn>
+            <fragment s-for="toolbarConfig, i in toolbars">
+                <fragment s-for="toolInfo, index in toolbarConfig.tools">
+                    <div s-show="selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)" class="<%= styles.wrapper %>">
+                        <div s-ref="ref-tool-{{i}}-{{index}}" s-if="!!toolInfo.nodeInfo && toolInfo.type === 'default'"
+                            class="<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}"
+                            title="{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}"
+                            style="{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}">
+                            {{events.handleRender(toolInfo, i, index)}}
+                            <ui-toolbtn s-if="!toolInfo.nodeInfo.renderId" s-bind="{{{...toolInfo.nodeInfo}}}"></ui-toolbtn>
+                        </div>
+                        <div s-if="toolInfo.type === 'separate'" class="<%= styles.separate %>">
+                            <div></div>
+                        </div>
                     </div>
-                    <div s-if="toolInfo.type === 'separate'" class="<%= styles.separate %>">
-                        <div></div>
-                    </div>
-                </div>
+                </fragment>
             </fragment>
+            
         </div>
         <div on-click="events.prevAndNextToolClick(true)" class="<%= styles.nextTool %>"
             s-show="fns.showControlBreakWrapper(showControlBreak, true)"></div>

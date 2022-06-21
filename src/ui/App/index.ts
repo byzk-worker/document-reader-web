@@ -14,18 +14,18 @@ let isFirst = true;
 const template = `
 <div id="${styles.app}" on-contextmenu="events.contextmenu($event)">
     <div id="${styles.header}" s-ref="header">
-        <ui-tabs appShow="{{appShow}}" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos="{{bookmarkInfos}}" appId="{{appId}}" ></ui-tabs>
-        <ui-header appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" bookmarkInfos="{{bookmarkInfos}}" ></ui-header>
+        <ui-tabs appSize={{appSize}} appShow="{{appShow}}" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos="{{bookmarkInfos}}" appId="{{appId}}" ></ui-tabs>
+        <ui-header appSize={{appSize}} appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" bookmarkInfos="{{bookmarkInfos}}" ></ui-header>
     </div>
     <div id="${styles.content}" style="height: {{contentHeight}}px">
       <div s-if="{{!sidebars || sidebars.left !== false}}" id="${styles.sidebarLeft}">
-        <ui-slide-left bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
+        <ui-slide-left appSize={{appSize}} bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
       </div>
       <div  s-if="{{!sidebars || sidebars.right !== false}}" id="${styles.sidebarRight}">
-        <ui-slide-right bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
+        <ui-slide-right appSize={{appSize}} bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
       </div>
       <div id="${styles.reader}">
-        <ui-reader bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(content||{})}}}"></ui-reader>
+        <ui-reader appSize={{appSize}} bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" s-ref="ref-reader" appId="{{appId}}" s-bind="{{{...(content||{})}}}"></ui-reader>
       </div>
     </div>
     <div id="${styles.fotter}" s-ref="fotter"></div>

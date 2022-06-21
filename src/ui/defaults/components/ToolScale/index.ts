@@ -70,7 +70,7 @@ export default defineComponent<DataType>({
       app: AppInterface,
       currentBookmark: AppBookmarkInfoWithIndex
     ) {
-      if (currentBookmark.index === -1) {
+      if (!currentBookmark || currentBookmark.index === -1) {
         return;
       }
       currentBookmark.parserWrapperInfo.parserInterface.addListener(
@@ -81,7 +81,6 @@ export default defineComponent<DataType>({
       this.data.set("activeVal", parseInt(scale * 100 + ""));
     },
     valChange(this: ToolScaleComponent, val: number) {
-      debugger;
       this.app
         .currentBookmark()
         .parserWrapperInfo.parserInterface.setScale(val / 100);

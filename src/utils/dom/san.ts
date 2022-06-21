@@ -1,4 +1,4 @@
-import { AppInterface, Diasble, NodeInfo } from "../../types";
+import { AppInterface, Diasble, NodeInfo, ToolbarConfig } from "../../types";
 import { Component } from "san";
 import { createId } from "../id";
 import { DataStore } from "../../dataStore";
@@ -13,7 +13,8 @@ import { getApp } from "../app";
 export function dispatchDomEvent(
   ele: HTMLElement,
   eventIdList: string[],
-  component: Component
+  component: Component,
+  thisInfo: any
 ) {
   for (let i = 0; i < eventIdList.length; i++) {
     const eventId = eventIdList[i];
@@ -31,6 +32,7 @@ export function dispatchDomEvent(
       component.dispatch("HTML::ELE::EVENT", {
         id: eventId,
         event,
+        thisInfo,
       });
     };
   }
@@ -97,6 +99,27 @@ export function handleDisabled(
 
 const nodeInfoCommonIds = ["attached", "isShow"];
 
+export function handleToolBarInfo(
+  app: AppInterface,
+  toolbarInfo: ToolbarConfig
+) {
+  const datastore = app.getDataStore();
+  toolbarInfo.disabled = handleDisabled(toolbarInfo.disabled, datastore);
+  if (toolbarInfo.activeChange) {
+    datastore.remove(toolbarInfo._activeChangeFnId);
+    toolbarInfo._activeChangeFnId = createId();
+    datastore.set(toolbarInfo._activeChangeFnId, toolbarInfo.activeChange);
+  }
+
+  if (toolbarInfo.renderChildren) {
+    datastore.remove(toolbarInfo._renderChildrenId);
+    toolbarInfo._renderChildrenId = createId();
+    datastore.set(toolbarInfo._renderChildrenId, toolbarInfo.renderChildren);
+  }
+
+  return toolbarInfo;
+}
+
 /**
  * 处理节点信息
  * @param nodeInfo 节点信息
@@ -112,11 +135,10 @@ export function handleNodeInfo(
 
   const dataStore = app.getDataStore();
   if (nodeInfo.click) {
-    const id = nodeEvenBindEvent(
-      dataStore,
-      "click",
-      nodeInfo.click.bind(nodeInfo)
-    );
+    const clickFn = nodeInfo.click.bind(nodeInfo);
+    clickFn.srcFn = nodeInfo.click;
+    clickFn.self = nodeInfo;
+    const id = nodeEvenBindEvent(dataStore, "click", clickFn);
     eventIdList.push(id);
     tempEventMap["click"] = {
       id,
@@ -150,8 +172,11 @@ export function handleNodeInfo(
       dataStore.remove(fnId);
     }
     nodeInfo[fnId] = createId();
-    nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo)
-    dataStore.set(nodeInfo[fnId], nodeInfo[fnName])
+    // nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
+    const tempFn = nodeInfo[fnName].bind(nodeInfo);
+    tempFn.srcFn = nodeInfo[fnName];
+    tempFn.self = nodeInfo;
+    dataStore.set(nodeInfo[fnId], tempFn);
   }
 
   // if (nodeInfo.attached) {
@@ -198,6 +223,7 @@ export function handleNodeInfo(
     renderId,
     evenIdList: eventIdList,
   };
+  delete nodeInfo["selector"];
 
   return JSON.parse(JSON.stringify(nodeInfo));
 }
@@ -224,8 +250,8 @@ export async function nodeRender(
   if (res instanceof Promise) {
     await res;
   }
-  if (nodeInfo.attached) {
-    nodeEventCall(app, nodeInfo.attached as any, app);
+  if (nodeInfo._attachedId) {
+    nodeEventCall(app, nodeInfo._attachedId, app);
   }
   // const ele = nodeInfo.render(app, nodeInfo, parent);
   // if (renderToDom) {
@@ -250,14 +276,43 @@ export function nodeEventCall(
   eventId: string,
   ...args: any
 ): void {
+  //   const nodeEventInfo = app.getDataStore().get(eventId) as any;
+  //   if (!nodeEventInfo) {
+  //     return;
+  //   }
+  //   if (typeof nodeEventInfo === "function") {
+  //     return nodeEventInfo(...args);
+  //   }
+  //   return nodeEventInfo.callback(...args);
+  return nodeEventCallBindThis(undefined, app, eventId, ...args);
+}
+
+export function nodeEventCallBindThis(
+  self: any,
+  app: AppInterface,
+  eventId: string,
+  ...args: any
+) {
   const nodeEventInfo = app.getDataStore().get(eventId) as any;
   if (!nodeEventInfo) {
     return;
   }
-  if (typeof nodeEventInfo === "function") {
-    return nodeEventInfo(...args);
+
+  let callback = nodeEventInfo;
+  if (typeof callback !== "function") {
+    callback = nodeEventInfo.callback;
+    // return nodeEventInfo(...args);
   }
-  return nodeEventInfo.callback(...args);
+  if (callback.srcFn && typeof self !== "undefined") {
+    Object.assign(callback.self, self)
+    // callback = callback.srcFn.bind();
+  }
+
+  // if (typeof self !== "undefined") {
+  //   callback = callback.bind(self);
+  // }
+  return callback(...args);
+  // return nodeEventInfo.callback(...args);
 }
 
 /**

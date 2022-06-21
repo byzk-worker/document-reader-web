@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 import {
   AppInterface,
   NodeInfo,
@@ -6,18 +7,60 @@ import {
   ToolInfo,
 } from "../../types";
 import { dom, id } from "../../utils";
-import { Component, debug } from "san";
+import { Component } from "san";
 import styles from "./index.module.less";
 import ToolJump from "./components/ToolJump";
 import ToolScale from "./components/ToolScale";
 import TempReaderContent from "./components/TempReaderContent";
 import {
   actualSizeAttached,
+  jumpBtnGroupCheckAttached,
   selectOrMoveAttached,
   showSupportFull,
   showSupportScale,
   suitablePageAttached,
+  supportJumpPage,
 } from "./common";
+import SealSelect, { SealSelectInterface } from "./components/SealSelect";
+//@ts-ignore
+import AsyncLock from "async-lock";
+const lock = new AsyncLock();
+
+let sealSelectInterface: SealSelectInterface;
+
+window.addEventListener("load", async () => {
+  lock.acquire("initSealSelectInterface", (done) => {
+    try {
+      if (sealSelectInterface) {
+        return;
+      }
+      const sealSelectComponent = new SealSelect() as any;
+      sealSelectComponent.attach(document.body);
+      sealSelectInterface = sealSelectComponent as any;
+      // sealSelectInterface
+      //   .selectSeal([
+      //     {
+      //       id: 1,
+      //       imgUrl:
+      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+      //     } as any,
+      //     {
+      //       id: 2,
+      //       imgUrl:
+      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+      //     } as any,
+      //     {
+      //       id: 3,
+      //       imgUrl:
+      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+      //     } as any,
+      //   ])
+      //   .then((res) => console.log(res));
+    } finally {
+      done();
+    }
+  });
+});
 
 const fullBtnId = id.createId();
 
@@ -27,7 +70,6 @@ function narrowDisabledHandler(
   },
   app: AppInterface
 ) {
-  debugger;
   let isDisabled = false;
   try {
     const scale = parseInt(
@@ -49,8 +91,6 @@ function narrowDisabledHandler(
     this.update(this);
   }
 }
-
-let _narrowDisabledHandler = narrowDisabledHandler;
 
 function enlargeDisabledHandle(
   this: NodeInfo & {
@@ -79,8 +119,6 @@ function enlargeDisabledHandle(
   }
 }
 
-let _enlargeDisabledHandle = enlargeDisabledHandle;
-
 function narrowOrEnlargeScaleChange(this: NodeInfoThis, scale: number) {
   scale = parseInt(scale * 100 + "");
   const isNarrow = this.title === "缩小";
@@ -96,8 +134,8 @@ function narrowOrEnlargeScaleChange(this: NodeInfoThis, scale: number) {
     this.update(this);
   }
 }
-let _narrowScaleChange = narrowOrEnlargeScaleChange;
-let _EnlargeScaleChange = narrowOrEnlargeScaleChange;
+// let _narrowScaleChange = narrowOrEnlargeScaleChange;
+// let _EnlargeScaleChange = narrowOrEnlargeScaleChange;
 
 const scaleOptions = [
   {
@@ -174,6 +212,7 @@ const headerTabsBtns = {
     nodeInfo: {
       width: 80,
       render(this: { _toolJump: Component }, app, nodeInfo, parent): void {
+        console.log("jump初始化");
         if (this._toolJump) {
           this._toolJump.dispose();
         }
@@ -182,11 +221,7 @@ const headerTabsBtns = {
         (this._toolJump as any).app = app;
         this._toolJump.attach(parent);
       },
-      isShow(app) {
-        const supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
-          .support.pages;
-        return supportPages && supportPages.jump;
-      },
+      isShow: supportJumpPage,
     },
   } as ToolInfo,
   select: {
@@ -298,19 +333,27 @@ const headerTabsBtns = {
     type: "default",
     needReader: true,
     nodeInfo: {
-      html: "&#xe67b;",
+      html: "&#xe670;",
       needReader: true,
       title: "缩小",
       width: 24,
       className: styles.toolIconBtn,
       isShow: showSupportScale,
       attached(app) {
-        app.removeListener("bookmarkChange", _narrowDisabledHandler);
-        _narrowDisabledHandler = narrowDisabledHandler.bind(this);
-        app.addListener("bookmarkChange", _narrowDisabledHandler);
-        app.getReader().removeListener("scaleChange", _narrowScaleChange);
-        _narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
-        app.getReader().addListener("scaleChange", _narrowScaleChange);
+        const self = this as any;
+        if (self._narrowDisabledHandler) {
+          app.removeListener("bookmarkChange", self._narrowDisabledHandler);
+        }
+        self._narrowDisabledHandler = narrowDisabledHandler.bind(this);
+        app.addListener("bookmarkChange", self._narrowDisabledHandler);
+
+        if (self._narrowScaleChange) {
+          app
+            .getReader()
+            .removeListener("scaleChange", self._narrowScaleChange);
+        }
+        self._narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
+        app.getReader().addListener("scaleChange", self._narrowScaleChange);
       },
       click(app) {
         try {
@@ -383,18 +426,26 @@ const headerTabsBtns = {
     type: "default",
     needReader: true,
     nodeInfo: {
-      html: "&#xe65a;",
+      html: "&#xe671;",
       title: "放大",
       width: 24,
       className: styles.toolIconBtn,
       isShow: showSupportScale,
       attached(app) {
-        app.removeListener("bookmarkChange", _enlargeDisabledHandle);
-        _enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
-        app.addListener("bookmarkChange", _enlargeDisabledHandle);
-        app.getReader().removeListener("scaleChange", _EnlargeScaleChange);
-        _EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
-        app.getReader().addListener("scaleChange", _EnlargeScaleChange);
+        const self = this as any;
+        if (self._enlargeDisabledHandle) {
+          app.removeListener("bookmarkChange", self._enlargeDisabledHandle);
+        }
+        self._enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
+        app.addListener("bookmarkChange", self._enlargeDisabledHandle);
+
+        if (self._EnlargeScaleChange) {
+          app
+            .getReader()
+            .removeListener("scaleChange", self._EnlargeScaleChange);
+        }
+        self._EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
+        app.getReader().addListener("scaleChange", self._EnlargeScaleChange);
       },
       click(app) {
         const prevNodeInfo = this.selector.prev();
@@ -476,6 +527,217 @@ const headerTabsBtns = {
       text: "首选项",
     },
   } as ToolInfo,
+  sealDragAdd: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe610;",
+      title: "手工签章",
+      text: "手工签章",
+      isShow(app) {
+        const sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.seal;
+        if (!sealSupport || !sealSupport.sealList) {
+          return false;
+        }
+        return true;
+      },
+      async click(app, event) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+        const sealList = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
+        if (!sealList) {
+          return;
+        }
+        const res = await sealSelectInterface.selectSeal(sealList);
+        if (res.cancel) {
+          return;
+        }
+        const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDragOne(
+          res.sealInfo
+        );
+        debugger;
+        console.log(dragRes);
+      },
+    },
+  } as ToolInfo,
+  rotation: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe667;",
+      title: "顺时针旋转",
+      className: styles.toolIconBtn,
+      width: 24,
+      isShow(app) {
+        return app.currentBookmark().parserWrapperInfo.parserInfo.support
+          .rotation;
+      },
+      click(app) {
+        const currentBookmark = app.currentBookmark();
+        if (
+          !currentBookmark ||
+          !currentBookmark.id ||
+          !currentBookmark.parserWrapperInfo.parserInfo.support.rotation
+        ) {
+          return;
+        }
+        const rotation =
+          currentBookmark.parserWrapperInfo.parserInterface.getRotation() + 90;
+        currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+      },
+    },
+  } as ToolInfo,
+  anticlockwiseRotation: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe669;",
+      title: "逆时针旋转",
+      className: styles.toolIconBtn,
+      width: 24,
+      isShow(app) {
+        return app.currentBookmark().parserWrapperInfo.parserInfo.support
+          .rotation;
+      },
+      click(app) {
+        const currentBookmark = app.currentBookmark();
+        if (
+          !currentBookmark ||
+          !currentBookmark.id ||
+          !currentBookmark.parserWrapperInfo.parserInfo.support.rotation
+        ) {
+          return;
+        }
+        const rotation =
+          currentBookmark.parserWrapperInfo.parserInterface.getRotation() - 90;
+        currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+      },
+    },
+  } as ToolInfo,
+  jumpToHead: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe719;",
+      title: "跳转到首页",
+      className: styles.toolIconBtn,
+      width: 24,
+      attached: jumpBtnGroupCheckAttached,
+      isShow: supportJumpPage,
+      click(app) {
+        if (this.className.includes(" " + styles.disabled)) {
+          return;
+        }
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+        if (!this.className.includes(" " + styles.disabled)) {
+          this.className += " " + styles.disabled;
+          this.update();
+        }
+        currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
+      },
+    },
+  } as ToolInfo,
+  jumpToPrev: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe615;",
+      title: "上一页",
+      className: styles.toolIconBtn,
+      width: 24,
+      attached: jumpBtnGroupCheckAttached,
+      isShow: supportJumpPage,
+      click(app) {
+        if (this.className.includes(" " + styles.disabled)) {
+          return;
+        }
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+
+        const nowPageNo =
+          currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
+        if (nowPageNo <= 1 && this.className.includes(" " + styles.disabled)) {
+          this.className += " " + styles.disabled;
+          this.update();
+        }
+
+        if (nowPageNo >= 1) {
+          currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+        }
+      },
+    },
+  } as ToolInfo,
+  jumpToNext: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe718;",
+      title: "下一页",
+      className: styles.toolIconBtn,
+      width: 24,
+      attached: jumpBtnGroupCheckAttached,
+      isShow: supportJumpPage,
+      click(app, event) {
+        if (this.className.includes(" " + styles.disabled)) {
+          return;
+        }
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+
+        const nowPageNo =
+          currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
+        const numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+        if (
+          nowPageNo >= numPages &&
+          this.className.includes(" " + styles.disabled)
+        ) {
+          this.className += " " + styles.disabled;
+          this.update();
+        }
+        if (nowPageNo <= numPages) {
+          currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+        }
+      },
+    },
+  } as ToolInfo,
+  jumpToEnd: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe690;",
+      title: "跳转到尾页",
+      className: styles.toolIconBtn,
+      width: 24,
+      attached: jumpBtnGroupCheckAttached,
+      isShow: supportJumpPage,
+      click(app) {
+        if (this.className.includes(" " + styles.disabled)) {
+          return;
+        }
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+
+        const numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+        if (!this.className.includes(" " + styles.disabled)) {
+          this.className += " " + styles.disabled;
+          this.update();
+        }
+        currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
+      },
+    },
+  } as ToolInfo,
 };
 
 export const defaultData = {
@@ -545,28 +807,61 @@ export const defaultData = {
         { type: "separate", needReader: true },
         headerTabsBtns.find,
         headerTabsBtns.full,
-        headerTabsBtns.preferenc,
+        // headerTabsBtns.preferenc,
       ],
     } as ToolbarConfig,
     tools: {
       text: "工具",
+      tools: [{ ...headerTabsBtns.find }],
     } as ToolbarConfig,
     view: {
       text: "视图",
+      tools: [
+        cloneDeep(headerTabsBtns.ActualSize),
+        cloneDeep(headerTabsBtns.SuitableWidth),
+        cloneDeep(headerTabsBtns.SuitablePage),
+        cloneDeep(headerTabsBtns.full),
+      ],
     } as ToolbarConfig,
     reader: {
       text: "阅读",
+      tools: [
+        cloneDeep(headerTabsBtns.narrow),
+        cloneDeep(headerTabsBtns.enlarge),
+        headerTabsBtns.rotation,
+        headerTabsBtns.anticlockwiseRotation,
+        headerTabsBtns.jumpToHead,
+        headerTabsBtns.jumpToPrev,
+        headerTabsBtns.jumpToNext,
+        headerTabsBtns.jumpToEnd,
+      ],
     } as ToolbarConfig,
     safety: {
       text: "安全",
+      tools: [headerTabsBtns.sealDragAdd],
     } as ToolbarConfig,
     help: {
       text: "帮助",
     } as ToolbarConfig,
   },
   sildebarLeftTabs: {
+    outline: {
+      text: "书签",
+      iconHtml: "&#xe67b;",
+      // iconHtml: "&#xe64f;",
+      disabled: slidebarLeftToolbarDisabled,
+      renderChildren(app, dom) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          dom.innerHTML = "";
+          return;
+        }
+        dom.style.padding = "30px 9px 0 9px";
+        currentBookmark.parserWrapperInfo.parserInterface.renderOutline(dom);
+      },
+    } as ToolbarConfig,
     sign: {
-      text: "签名",
+      text: "签章",
       iconHtml: "&#xe64f;",
       disabled: slidebarLeftToolbarDisabled,
     } as ToolbarConfig,
@@ -574,11 +869,33 @@ export const defaultData = {
       text: "注释",
       iconHtml: "&#xe650;",
       disabled: slidebarLeftToolbarDisabled,
+      renderChildren(app, dom) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          dom.innerHTML = "";
+          return;
+        }
+        dom.style.paddingTop = "27px";
+        currentBookmark.parserWrapperInfo.parserInterface.renderAnnotations(
+          dom
+        );
+      },
     } as ToolbarConfig,
     thumbnail: {
       text: "缩图",
       iconHtml: "&#xe651;",
       disabled: slidebarLeftToolbarDisabled,
+      renderChildren(app, dom) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          dom.innerHTML = "";
+          return;
+        }
+        dom.style.paddingTop = "27px";
+        currentBookmark.parserWrapperInfo.parserInterface.renderThumbnail(dom, {
+          width: 106,
+        });
+      },
     } as ToolbarConfig,
   },
 };

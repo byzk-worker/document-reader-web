@@ -53,6 +53,7 @@ const defaultOptions: AppUpdateOptions = {
       defaultData.headerTabs.start,
       defaultData.headerTabs.tools,
       defaultData.headerTabs.view,
+      defaultData.headerTabs.reader,
       defaultData.headerTabs.safety,
       defaultData.headerTabs.help,
     ],
@@ -60,6 +61,7 @@ const defaultOptions: AppUpdateOptions = {
   sidebars: {
     left: {
       toolbars: [
+        defaultData.sildebarLeftTabs.outline,
         defaultData.sildebarLeftTabs.sign,
         defaultData.sildebarLeftTabs.comment,
         defaultData.sildebarLeftTabs.thumbnail,
@@ -84,7 +86,7 @@ const App = defineComponent<AppProps>({
   components: {
     "ui-app": AppUi,
   },
-  template: `<ui-app s-ref="ref-app" s-show="show" appShow="{{show}}" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions, bookmarkInfos}}}" appId="{{appId}}" ></<ui-app>`,
+  template: `<ui-app s-ref="ref-app" s-show="show" appShow="{{show}}" style="min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;" s-bind="{{{...appOptions, bookmarkInfos, appSize: {minWidth: appOptions.minWidth || 1280, minHeight: appOptions.minHeight || 800}}}}" appId="{{appId}}" ></<ui-app>`,
   initData: function () {
     return {
       show: false,
@@ -94,7 +96,7 @@ const App = defineComponent<AppProps>({
   messages: {
     "HTML::ELE::EVENT"(args) {
       const val = args && (args.value as any);
-      this.eventMapping(val.id, val.event);
+      this.eventMapping(val.id, val.event, val.thisInfo);
     },
     "TABS::ADD"() {
       console.log("标签新增被触发");
@@ -219,7 +221,6 @@ class ReaderImpl implements ReaderInterface {
 
   private _parserInterfaceBindEvent(parser: ReaderParserInterface) {
     const eventMap = this._eventList.all();
-    debugger;
     for (let key in eventMap) {
       const eventCallList = eventMap[key] as any[];
       for (let j = 0; j < eventCallList.length; j++) {
@@ -482,8 +483,12 @@ export class AppImpl implements AppInterface {
         appId: this._appId,
       },
     });
-    (this._appComponent as any).eventMapping = (id: any, event: any) => {
-      dom.nodeEventCall(this, id, this, event);
+    (this._appComponent as any).eventMapping = (
+      id: any,
+      event: any,
+      thisInfo: any
+    ) => {
+      dom.nodeEventCallBindThis(thisInfo, this, id, this, event);
     };
     this.update(defaultOptions);
     this.update(this._initOptions!);
@@ -545,14 +550,20 @@ export class AppImpl implements AppInterface {
   ) => {
     const app = this;
     for (let i = 0; i < toolbarConfigs.length; i++) {
-      const toolbar = toolbarConfigs[i];
-      toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
+      const toolbar = dom.handleToolBarInfo(app, toolbarConfigs[i]);
+      // toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
 
-      if (toolbar.activeChange) {
-        const activeChangeFnId = id.createId();
-        this._datastore.set(activeChangeFnId, toolbar.activeChange);
-        toolbar._activeChangeFnId = activeChangeFnId;
-      }
+      // if (toolbar.activeChange) {
+      //   this._datastore.remove(toolbar._activeChangeFnId);
+      //   toolbar._activeChangeFnId = id.createId();
+      //   this._datastore.set(toolbar._activeChangeFnId, toolbar.activeChange);
+      // }
+
+      // if (toolbar.renderChildren) {
+      //   this._datastore.remove(toolbar._renderChildrenId);
+      //   toolbar._renderChildrenId = id.createId();
+      //   this._datastore.set(toolbar._renderChildrenId, toolbar.renderChildren);
+      // }
 
       if (!toolbar.tools || toolbar.tools.length === 0) {
         continue;

@@ -1,5 +1,5 @@
 import { defineComponent } from 'san';
-import { template as template$6 } from 'lodash';
+import { template as template$6, cloneDeep } from 'lodash';
 import AsyncLock from 'async-lock';
 import classNames from 'classnames';
 
@@ -193,7 +193,7 @@ function getAppDataStore(id) {
  * @param eventId 事件ID
  * @param dispatch 派发函数
  */
-function dispatchDomEvent(ele, eventIdList, component) {
+function dispatchDomEvent(ele, eventIdList, component, thisInfo) {
     var _loop_1 = function (i) {
         var eventId = eventIdList[i];
         var idSplit = eventId.split("_");
@@ -205,7 +205,8 @@ function dispatchDomEvent(ele, eventIdList, component) {
             event = event || window.event;
             component.dispatch("HTML::ELE::EVENT", {
                 id: eventId,
-                event: event
+                event: event,
+                thisInfo: thisInfo
             });
         };
     };
@@ -250,6 +251,21 @@ function handleDisabled(disabledInfo, datas) {
     return disableFnId;
 }
 var nodeInfoCommonIds = ["attached", "isShow"];
+function handleToolBarInfo(app, toolbarInfo) {
+    var datastore = app.getDataStore();
+    toolbarInfo.disabled = handleDisabled(toolbarInfo.disabled, datastore);
+    if (toolbarInfo.activeChange) {
+        datastore.remove(toolbarInfo._activeChangeFnId);
+        toolbarInfo._activeChangeFnId = createId();
+        datastore.set(toolbarInfo._activeChangeFnId, toolbarInfo.activeChange);
+    }
+    if (toolbarInfo.renderChildren) {
+        datastore.remove(toolbarInfo._renderChildrenId);
+        toolbarInfo._renderChildrenId = createId();
+        datastore.set(toolbarInfo._renderChildrenId, toolbarInfo.renderChildren);
+    }
+    return toolbarInfo;
+}
 /**
  * 处理节点信息
  * @param nodeInfo 节点信息
@@ -261,7 +277,10 @@ function handleNodeInfo(app, nodeInfo) {
     var tempEventMap = {};
     var dataStore = app.getDataStore();
     if (nodeInfo.click) {
-        var id = nodeEvenBindEvent(dataStore, "click", nodeInfo.click.bind(nodeInfo));
+        var clickFn = nodeInfo.click.bind(nodeInfo);
+        clickFn.srcFn = nodeInfo.click;
+        clickFn.self = nodeInfo;
+        var id = nodeEvenBindEvent(dataStore, "click", clickFn);
         eventIdList.push(id);
         tempEventMap["click"] = {
             id: id
@@ -288,8 +307,11 @@ function handleNodeInfo(app, nodeInfo) {
             dataStore.remove(fnId);
         }
         nodeInfo[fnId] = createId();
-        nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
-        dataStore.set(nodeInfo[fnId], nodeInfo[fnName]);
+        // nodeInfo[fnName] = nodeInfo[fnName].bind(nodeInfo);
+        var tempFn = nodeInfo[fnName].bind(nodeInfo);
+        tempFn.srcFn = nodeInfo[fnName];
+        tempFn.self = nodeInfo;
+        dataStore.set(nodeInfo[fnId], tempFn);
     }
     // if (nodeInfo.attached) {
     //   if (nodeInfo._attachedId) {
@@ -327,6 +349,7 @@ function handleNodeInfo(app, nodeInfo) {
         // _nodeRenderMap[renderId] = nodeInfo;
     }
     nodeInfo = __assign(__assign({}, nodeInfo), { renderId: renderId, evenIdList: eventIdList });
+    delete nodeInfo["selector"];
     return JSON.parse(JSON.stringify(nodeInfo));
 }
 function nodeRender(component, renderId, app, parent, renderToDom) {
@@ -350,8 +373,8 @@ function nodeRender(component, renderId, app, parent, renderToDom) {
                     _a.sent();
                     _a.label = 2;
                 case 2:
-                    if (nodeInfo.attached) {
-                        nodeEventCall(app, nodeInfo.attached, app);
+                    if (nodeInfo._attachedId) {
+                        nodeEventCall(app, nodeInfo._attachedId, app);
                     }
                     return [2 /*return*/];
             }
@@ -368,14 +391,39 @@ function nodeEventCall(app, eventId) {
     for (var _i = 2; _i < arguments.length; _i++) {
         args[_i - 2] = arguments[_i];
     }
+    //   const nodeEventInfo = app.getDataStore().get(eventId) as any;
+    //   if (!nodeEventInfo) {
+    //     return;
+    //   }
+    //   if (typeof nodeEventInfo === "function") {
+    //     return nodeEventInfo(...args);
+    //   }
+    //   return nodeEventInfo.callback(...args);
+    return nodeEventCallBindThis.apply(void 0, __spreadArray([undefined, app, eventId], args, false));
+}
+function nodeEventCallBindThis(self, app, eventId) {
+    var args = [];
+    for (var _i = 3; _i < arguments.length; _i++) {
+        args[_i - 3] = arguments[_i];
+    }
     var nodeEventInfo = app.getDataStore().get(eventId);
     if (!nodeEventInfo) {
         return;
     }
-    if (typeof nodeEventInfo === "function") {
-        return nodeEventInfo.apply(void 0, args);
+    var callback = nodeEventInfo;
+    if (typeof callback !== "function") {
+        callback = nodeEventInfo.callback;
+        // return nodeEventInfo(...args);
     }
-    return nodeEventInfo.callback.apply(nodeEventInfo, args);
+    if (callback.srcFn && typeof self !== "undefined") {
+        Object.assign(callback.self, self);
+        // callback = callback.srcFn.bind();
+    }
+    // if (typeof self !== "undefined") {
+    //   callback = callback.bind(self);
+    // }
+    return callback.apply(void 0, args);
+    // return nodeEventInfo.callback(...args);
 }
 /**
  * 节点元素事件注销
@@ -650,27 +698,29 @@ var dom = /*#__PURE__*/Object.freeze({
     dispatchDomEvent: dispatchDomEvent,
     nodeEventInfoGet: nodeEventInfoGet,
     handleDisabled: handleDisabled,
+    handleToolBarInfo: handleToolBarInfo,
     handleNodeInfo: handleNodeInfo,
     nodeRender: nodeRender,
     nodeEventCall: nodeEventCall,
+    nodeEventCallBindThis: nodeEventCallBindThis,
     nodeEventDestroy: nodeEventDestroy
 });
 
-var styles$c = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+var styles$d = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
 
-var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolInfo, index in handlePanelTools\">\n                <div class=\"<%= styles.wrapper %>\" s-show=\"fns.showTool(toolInfo, bookmarkInfos.index)\">\n                    <div s-ref=\"ref-tool-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                        {{events.handleRender(toolInfo, index)}}\n                        <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                    </div>\n                    <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                        <div></div>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 var headerToolMarginRight = 16;
 var headerToolPanelHeight = 50;
 
-var html$a = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
+var html$b = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
 
 var ToolBtn = defineComponent({
-    template: template$6(html$a)({ styles: styles$c })
+    template: template$6(html$b)({ styles: styles$d })
 });
 
 var template$5 = template$6(htmlTemplate)({
-    styles: styles$c
+    styles: styles$d
 });
 var Header = defineComponent({
     template: template$5,
@@ -771,7 +821,16 @@ var Header = defineComponent({
             if (!toolbarConfig.tools || toolbarConfig.tools.length === 0) {
                 return false;
             }
-            return true;
+            var len = 0;
+            var showToolFn = this.fns.showTool.bind(this);
+            for (var i = 0; i < toolbarConfig.tools.length; i++) {
+                var tool = toolbarConfig.tools[i];
+                if (showToolFn(tool)) {
+                    len += 1;
+                    break;
+                }
+            }
+            return len != 0;
         },
         showTool: function (toolInfo) {
             var _a, _b;
@@ -785,7 +844,8 @@ var Header = defineComponent({
             if ((_b = toolInfo.nodeInfo) === null || _b === void 0 ? void 0 : _b._isShowId) {
                 try {
                     var appInterface_1 = getApp(this.data.get("appId"));
-                    return nodeEventCall(appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
+                    // return dom.nodeEventCall(
+                    return nodeEventCallBindThis(toolInfo.nodeInfo, appInterface_1, toolInfo.nodeInfo._isShowId, appInterface_1);
                     // return toolInfo.nodeInfo.isShow(appInterface);
                 }
                 catch (e) {
@@ -863,8 +923,8 @@ var Header = defineComponent({
             var expand = this.data.get("expand");
             this.data.set("expand", !expand);
         },
-        handleRender: function (toolInfo, index) {
-            var toolEle = this.ref("ref-tool-" + index);
+        handleRender: function (toolInfo, i, index) {
+            var toolEle = this.ref("ref-tool-" + i + "-" + index);
             if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
                 return undefined;
             }
@@ -874,13 +934,14 @@ var Header = defineComponent({
             }
             else if (toolInfo.nodeInfo._attachedId) {
                 var appInterface = getApp(this.data.get("appId"));
-                nodeEventCall(appInterface, toolInfo.nodeInfo._attachedId, appInterface);
+                // dom.nodeEventCall(
+                nodeEventCallBindThis(toolInfo.nodeInfo, appInterface, toolInfo.nodeInfo._attachedId, appInterface);
             }
             if (!toolInfo.nodeInfo.evenIdList ||
                 toolInfo.nodeInfo.evenIdList.length === 0) {
                 return undefined;
             }
-            dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+            dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this, toolInfo.nodeInfo);
             return undefined;
         },
         prevAndNextToolClick: function (isNext) {
@@ -911,21 +972,21 @@ var Header = defineComponent({
     }
 });
 
-var html$9 = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
+var html$a = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
 
-var styles$b = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+var styles$c = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
 
-var styles$a = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+var styles$b = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
 
-var html$8 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+var html$9 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
-var html$7 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
+var html$8 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-var styles$9 = {};
+var styles$a = {};
 
 var allowKeys = [8, 37, 39, 46];
 var InputNumber = defineComponent({
-    template: template$6(html$7)(styles$9),
+    template: template$6(html$8)(styles$a),
     initData: function () {
         return {
             value: "1",
@@ -1025,7 +1086,7 @@ var ToolJump = defineComponent({
     components: {
         "input-number": InputNumber
     },
-    template: template$6(html$8)({ styles: styles$a }),
+    template: template$6(html$9)({ styles: styles$b }),
     initData: function () {
         return {
             maxValue: undefined,
@@ -1044,14 +1105,14 @@ var ToolJump = defineComponent({
         prevDisableClass: function () {
             var val = this.data.get("value");
             if (val == 1) {
-                return styles$a.disabled;
+                return styles$b.disabled;
             }
         },
         nextDisableClass: function () {
             var val = this.data.get("value");
             var maxVal = this.data.get("maxValue");
             if (val >= maxVal) {
-                return styles$a.disabled;
+                return styles$b.disabled;
             }
         }
     },
@@ -1068,6 +1129,7 @@ var ToolJump = defineComponent({
                 this.data.set("maxValue", 1);
                 return;
             }
+            this.data.set("value", currentBookmark.parserWrapperInfo.parserInterface.nowPageNo());
             currentBookmark.parserWrapperInfo.parserInterface.addListener("pageNoChange", this.events.pageNoChange);
             this.data.set("maxValue", currentBookmark.parserWrapperInfo.parserInterface.getNumPages());
         },
@@ -1097,18 +1159,18 @@ var ToolJump = defineComponent({
     }
 });
 
-var html$6 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
+var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
 
-var html$5 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
+var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
-var styles$8 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+var styles$9 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
 
-var html$4 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
+var html$5 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
-var styles$7 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
+var styles$8 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 
 var Options = defineComponent({
-    template: template$6(html$4)({ styles: styles$7 }),
+    template: template$6(html$5)({ styles: styles$8 }),
     attached: function () {
         this.events.documentClick = this.events.documentClick.bind(this);
         eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
@@ -1202,7 +1264,7 @@ var Options = defineComponent({
 });
 
 var Select = defineComponent({
-    template: template$6(html$5)({ styles: styles$8 }),
+    template: template$6(html$6)({ styles: styles$9 }),
     components: {
         "input-number": InputNumber
     },
@@ -1258,7 +1320,7 @@ var ToolScale = defineComponent({
     components: {
         "c-select": Select
     },
-    template: template$6(html$6)({ styles: styles$a }),
+    template: template$6(html$7)({ styles: styles$b }),
     attached: function () {
         this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
         this.events.scalChange = this.events.scalChange.bind(this);
@@ -1296,7 +1358,7 @@ var ToolScale = defineComponent({
             this.data.set("activeVal", scale);
         },
         bookmarkChange: function (app, currentBookmark) {
-            if (currentBookmark.index === -1) {
+            if (!currentBookmark || currentBookmark.index === -1) {
                 return;
             }
             currentBookmark.parserWrapperInfo.parserInterface.addListener("scaleChange", this.events.scalChange);
@@ -1304,7 +1366,6 @@ var ToolScale = defineComponent({
             this.data.set("activeVal", parseInt(scale * 100 + ""));
         },
         valChange: function (val) {
-            debugger;
             this.app
                 .currentBookmark()
                 .parserWrapperInfo.parserInterface.setScale(val / 100);
@@ -1312,12 +1373,12 @@ var ToolScale = defineComponent({
     }
 });
 
-var html$3 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAAERZJREFUeF7tnXmQFUcdx789b++3S0wIaExJhSQqGkhVDDxCUClNSBnJUaWoGAxESSocKY9o2IXEo0oh+xY1psosOciF5CrwCKKJZEUTJcCSQ4FYqCHEBC2VYBJ4b6+3b9qatyy1u7A7x+t9293znf8oenq6P/37vN/0dM+sQAmO6emDdV2ycpLjJCZIF2cJR4yTrvtuKcQYAZwMyDpAVAEoB+CUoEm8hL4EXAA5CLRDIiOBN4WUB4Xj/Eu68jUhsc8V+b3Jurpdv18iMsPdDTEcFzhv5ZEx5Y6YKYWYIYALAUwcjuuwzrgTkHskxLNCyqfzZcnNz39DvKGaiDJBvCyRkzVXCQezpcTFqhvK+kjAj4CQskVCbKipq3lIVXYpWpApjUfOEXCWQIgFgKzw6wT/nwRKQKBLAGtc6TbvbKh7qZjrRRbkglvbz3Ad9xYAC4ppAM8lgWEmsMZxnRXbl1W/GuU6kQRJNbUtlVLeKjihjsKc55SeQB5SLm9tqG0Ke+lQgky79e2zXVG2WgrOMcKCZvmRJyCBp1yRWPT80qp9QVsTWJBUY3YWhFwLiFOCVs5yJKAhgUNCYN6OpclfB2lbIEFSTe3zIN0Hg1TIMiRgBAEp57c21K71a6uvIJTDDyH/31gCASQZUpCe2ypsMhYAG04CPgSEwKyhbrcGFcSbkOedxA7OORhjlhM4lBeJqYNN3AcVZGpT9imuiFseGuxegYD3dGtnffKSE+E4oSCpdKYeEI3kRwKxISBl/YnWSY4TJLXqrfFwy1/mrtrYhAY72kMg77jO2QNX3I8XJJ1dw+0jjJmYEljTWp+8rm/f+wkyecWRiU6ZszumcNhtEoCU7sS+Gxz7CZJqyjZDYhE5kUBcCQigeUd9cklv/48JMj0t63JoO3T0rb648mG/SaCrprZmdO/7JMcESaWzCwGsJh8SiD0BiYWtDcm7PA59BMm0AOKi2MMhgNgT8N5M3NFQO/OYIIV3yBPOf2NPhgBI4CiBfKJmjPeOeyGDTEln5gqIdaRDAiRwlICUc1sbah8uCDI1nb1bAv2e/xIUCcSZgATu3lmfvL4gSCqd2QOIc+IMhH0ngf4E5J7W+tpJ4ujj3cPEQwIk0J9ATW1NnZi88vB0J5H4I+GQAAkMyCEyP12k0lnvsz3e/iseJEACfQgIFwvElHRmpYBYRjIkQAIDCEisFKl02zpAziUcEiCB/gSEEOtEKp3ZAoiPEQ4JkMDADCK3eHMQb3s7v77O6CCB4+6wsFukGrMHIHA66ZAACRxH4ICXQd4CcBLhkAAJDCAg8JYnSCcA/tkCRgcJHE+g0xPE+5NXvl9YJD0SiCEB1xNExrDj7DIJBCJAQQJhYqG4EqAgcR159jsQAQoSCBMLxZUABYnryLPfgQhYL0iyQuCC8U4gGCwUjsC2/Xm0dYU7x7TS1gty9dRy3DCj3LRxMaK9P346h5/syBnR1qiNtF6QX1xfjdNO4jJP1AAZ6rx/H5a48s724ahamzqtFmTWxDJ865PcJDCc0fa9J7vwy13dw3mJEa3bakHuu7oK55zG+cdwRtjef7uYv7ZjOC8xonVbK8i0MxP40ezKEYUbl4vf9LNOPPNy3sruWivI9z9ViY+cnbBy0HTr1Pb9eXxlvbfn1b7DSkHe/04Ha+dX2TdaGvfouoc6sOuf3r5Xuw4rBVn+iQpceW6ZXSOleW+e/Es3vr3JvkUR6wQZUyuwaXG15uFkZ/M+c087XnvTrs3h1gmy8CPl+OK08AuDfzrgYuc/8sdejOkd5t4VFL9/2xTyqTMSOPf08E//Hn2uG7dtsSuLWCVIwgGeWFKNk6rDLwx+bUMnnn3FzicxYeX98FkJ/ODT4Z8A5vLAJ+9ox+EOe7KIVYJ89kNl+PrF4RcG47AiHFaSjYuq8c668D80d/4hh/u32bP9xCpBHl1QhfGjw98apDd34Wd/snc1OKwcXvnZ55Xhppnhf2wOZiQua7Zn+4k1glw8IYEVV0S7LfjwD9qixJD15zz7jRp4t61hj8bNXfi5JT841gjSPKcS548LvzD44PYcmp+x55YgbDAPVX7JjHLMmxr+gcfLB13Mvd+O7SdWCPKh9zhY/floC4Mfv70d2U57JpUqBamrFGj5SrRH5g2/6MTv/mb+Qw8rBPneFZWYOSF89vjNX7rxLQsXt1RK8t3LK3HJB8Kzfe4feSx5zPztJ8YLcsZoB48tiJY9rrq/A/sO2rc9QqUg7x3jYN0Xo/Fd+EgHXnzdbL7GC3LjRRX43Pnht5U8/1oeix81/xdOpQyD1eXdvnq3sWGPlr153LzRbMZGCzKqShQWBsvC3wHgxp92Yus+8++RwwZtlPJRFw69a825rwP73zA3ixgtyDUXlGPRR8M/ZXn1kIvP3WvHU5YoAR/lnPXXVmHcKeGzyIYXurGqxdztJ0YL8stF1RgbYbW36aku/PRFLgyGESXqwqGUwKV3tOPNNjOfFBoryBXnluHmT4Rf6c10Slx0uz0rvWGCvNiyW75aDe8zSmGPNVtzuGermWtNxgry4LwqTHhX+JR/37Yc7vqDmYMVNjBVl4+6U9rLHl4W8bKJaYeRghQzafSyh5dFeIQnUFcl0PLlaAuH32/pwvoXzLutNVKQ22ZX4sIzwz+62rirGyueNHfCGD6k1Z9xy6UVuHxS+Mfq+w+5mGPggxHjBPngaQ7uvzrawpW3P8jbJ8QjOoH3jnWw7ppo/G/Z2Imn9pr1aN04Qb55aQUui/ALtvWVPG7cYPaiVfSwVntm1Azurap7q+smHUYJ8q5RAo8vjHYP/NX1nfA+tsyjeALe7a0nSZTjhsc6C682m3IYJcjiGeWYH2H79V//42Leg2b9cukeQD+5pgrvGxv+KaK3w9fb6WvKYYwgFQngiRuqUVsZ/jn8d5/owqbd5j1B0TmIvIm6N2GPcnzhgQ78/b9mzAWNEWTO5DJ87ePhB+SNrMSsO7gwGCWQ/c759ZJqjE6G/8H6+Z+70fgbM54mGiPI+murMe6U8IOx+pkcHtjOhUG/YI/y/97nlbzFwyiH99669/667ocRgkR931x3+HFu3/LHO/Hbv+o/WacgcY7SEew7BVEInxlEIUxNqqIgCgeCgiiEqUlVFEThQFAQhTA1qYqCKBwICqIQpiZVURCFA0FBFMLUpCoKonAgKIhCmJpURUEUDgQFUQhTk6ooiMKBoCAKYWpSFQVROBAURCFMTaqiIAoHgoIohKlJVRRE4UBQEIUwNamKgigcCAqiEKYmVVEQhQNBQRTC1KQqCqJwICiIQpiaVEVBFA4EBVEIU5OqKIjCgYiLIL1/JmD8qeE/hqAQd0mqoiAKMcdBEE+O5Rt73tNeeUUFbJeEglCQwAR65Xjl6B+aOfNUx3pJKEjg8PAvaHMGGShHLw3bJaEg/nEfuIStggwmRxwkoSCBw9+/oI2C+MlhuyQUxD/uA5ewTZCgctgsCQUJHP7+BW0SJKwctkpCQfzjPnAJWwSJKoeNklCQwOHvX9AGQYqVwzZJKIh/3AcuYbogquSwSRIKEjj8/QuaLIhqOWyRhIL4x33gEqYKMlxy2CAJBQkc/v4FTRRkuOXoJ8mVFRg/2qwNjhTEP+4DlzBNkFLJYbIkFCRw+PsXNEmQUsthqiQUxD/uA5cwRZCRksNESShI4PD3L2iCIPsPuVj+eBd6t6z792p4ShR2ARswJ6EgCsdfd0F0kcOkTEJBYiKIbnKYIgkFiYEgusphgiQUxHJBdJdDd0koiMWCmCKHzpJQEEsF8eRo2pwrqncvvB7t74Of955wq+UCol87l15Srs2KOwUpKoT6n6z7U6wwXV30SCeiCnL+uASa51SGuZy2ZSmIwqGhID0wKYjCoApYlUilszJg2RErRkEoyEgFHwUpMXneYvUA5y2WwsBjBmEGURhOoapiBgmFq/jCzCDMIMVH0YAamEGYQZQHVcAKmUECglJVjBmEGURVLB2rhxmEGUR5UAWskBkkIChVxZhBmEFUxZKVGWThIx148XU3EiMuFEbCVtRJzCBF4Qt/MjMIM0j4qPE5g3MQzkGUB1XACplBAoJSVYwZhBlEVSxZOQehIBSEggxBgIJQEApCQXxjgJsVfREFL8BJOifpwaNFbUlO0tXy9K2Nt1i8xfINkrAFmEGYQcLGjKryzCCqSAashxmEGSRgqAQvxgzCDBI8WtSWZAZRy9O3NmYQZhDfIAlbwKYMErbvtpbnY16FI0tBFMLUpCoKonAgKIhCmJpURUEUDgQFUQhTk6ooiMKBoCAKYWpSFQVROBAURCFMTaqiIAoHgoIohKlJVRRE4UBQEIUwNamKgigcCAqiEKYmVVEQhQNBQRTC1KQqCqJwICiIQpiaVEVBFA4EBVEIU5OqKIjCgaAgCmFqUhUFUTgQFEQhTE2qoiAKB4KCKISpSVUUROFAUBCFMDWpioIoHAgKohCmJlVREIUDQUEUwtSkKgqicCAoiEKYmlRFQRQOxLQzE6ipUFehUFcVa4pIINsJbNufj3h26U4z4qMNpcPBK5FAfwIUhBFBAkMQoCAMDxKgIIwBEohGgBkkGjeeFRMCniDen1zlg52YDDi7GYqA6wnSCUDhQ9RQDWBhEtCZQKdINWbehhCjdG4l20YCI0NAvi1SjdkDEDh9ZBrAq5KA1gQOeLdYuwFM1LqZbBwJjAABCewWqXRmCyA+NgLX5yVJQG8CUm4RqXTbOkDO1bulbB0JlJ6AEGKdmJLOrhTAstJfnlckAc0JSKz05iALAKzRvKlsHgmUnIAQWCAmNx2e7sjEH0t+dV6QBDQnIGV+upj6nUOjZHXV25q3lc0jgZITKEfbqMIWk1Q6uwfAOSVvAS9IAvoS2NNan5xUEGRqOnu3BK7Tt61sGQmUloAE7t5Zn7y+IMiUdGaugFhX2ibwaiSgMQEp57Y21D5cEOTCVUfGdrvOfzRuLptGAiUlkMu7Y19cXnfw2Db3VLqtBZAXlbQVvBgJaEhACLTsWJqc6TWtjyDZhQBWa9heNokESktAYmFrQ/KufoL0PO6tfgOQ5aVtDa9GAjoREF3lyJ66tX7MkX6CeP9INbU3Q7qLdGou20ICJSUgsbq1Ibm495r9XrWdvOrIRMd1vO3vPEgglgSkdCfubKh76YSCFLJIY+ZeCPGlWNJhp+NO4N7W+uS1fSEc97GG1Kr28XDdlwE4cafF/seHgATchOuctX1Z9atDClLIIum2ekA2xgcPexp7AkLUty6taRrIYdDP/aTSmRZAcF0k9pFjPwAh0bKjoWfdI7Ag037YcXa+O78DEqfYj4g9jC8B+b+Em5+6bdlJ3rQiuCA9E/bsLAhsii889tx6AhKXtTYkfzVYP32/qJhKZ+YD4gHrQbGD8SMgnPmtS6vXDtVxX0F6Ju2UJH7RY3mPA8jhEQgkyLHbLQdrOSexPHCs7578H6SYN9RtVV8EgQXxTipM3HPdd/LplvVRZGUHvV26Tr570WAT8tCT9MEoHV0nWcnFRCvjyMZOuYBc3lpfmw7buVAZpG/lhRX3fP4WbksJi5zlS0zgXji5Fa03vWN/lOtGFqT3YoUNjrJsMaS8llvlowwBzxkGAjkIrHFzbvNzN9d5HySJfBQtSO+Vj34+6CpAzOabiZHHgycWRUD+FhAbylHz0NZ6UXifo9hDmSB9G+K9455zxUwHYoYELuQnhYodJp5/YgLyJQHxrAv5dHdebvbeIVdNalgEGdhIL7vka8onOTIxQUKeJeCMA9x3A2IMJE4GZB2EqALgvc1YkjapBsn6lBGQAHIA2iGRgcCbgDwIOP+ScF8TEPvcfH5vZaJul6osMVTL/w8grDqXX8Lz1wAAAABJRU5ErkJggg==\">\n</div>";
+var html$4 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
 
-var styles$6 = {"content":"index-module_content__2P82G"};
+var styles$7 = {"content":"index-module_content__2P82G"};
 
 var TempReaderContent = defineComponent({
-    template: template$6(html$3)({ styles: styles$6 }),
+    template: template$6(html$4)({ styles: styles$7 }),
     openFile: function () {
         return __awaiter(this, void 0, void 0, function () {
             var result;
@@ -1363,9 +1424,12 @@ function showSupportFull(mod) {
 }
 function _bindListener(eventListenerInterface, name, callback, self) {
     eventListenerInterface.removeListener(name, callback);
-    callback = callback.bind(self);
-    eventListenerInterface.addListener(name, callback);
-    return callback;
+    callback = callback.srcFn || callback;
+    var tempCallback = callback.bind(self);
+    tempCallback.srcFn = callback;
+    // const tempCallback = callback.bind(self);
+    eventListenerInterface.addListener(name, tempCallback);
+    return tempCallback;
 }
 var scaleBookmarkChange = function (app, current) {
     if (!current || !current.id) {
@@ -1404,6 +1468,9 @@ function suitablePageAttached(app) {
     suitableScaleChange = _bindListener(app.getReader(), "scaleChange", suitableScaleChange, this);
 }
 var selectOrMoveBookmarkChange = function (app, current) {
+    if (!current || !current.id) {
+        return;
+    }
     if (this.text === "移动") {
         var pageSupport = current.parserWrapperInfo.parserInfo.support.pages;
         if (pageSupport &&
@@ -1452,10 +1519,188 @@ function selectOrMoveAttached(app) {
         selectOrMoveBookmarkChange = callback;
     }
 }
+// export function selectDisabledHandler(this: NodeInfoThis) {
+// }
+function jumpBtnGroupCheckFn(app, currentBookmark) {
+    if (!currentBookmark || !currentBookmark.id) {
+        return;
+    }
+    var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
+    var numPages = parserInterface.getNumPages();
+    var nowPageNo = parserInterface.nowPageNo();
+    var haveDisabled = this.className.includes(" " + styles$b.disabled);
+    if (this.title === "跳转到首页" || this.title === "上一页") {
+        if (nowPageNo <= 1) {
+            if (haveDisabled) {
+                return;
+            }
+            this.className += " " + styles$b.disabled;
+            this.update();
+        }
+        else if (haveDisabled) {
+            this.className = this.className.split(" " + styles$b.disabled).join("");
+            this.update();
+        }
+        return;
+    }
+    if (this.title === "下一页" || this.title === "跳转到尾页") {
+        if (nowPageNo >= numPages) {
+            if (haveDisabled) {
+                return;
+            }
+            this.className += " " + styles$b.disabled;
+            this.update();
+        }
+        else if (haveDisabled) {
+            this.className = this.className.split(" " + styles$b.disabled).join("");
+            this.update();
+        }
+        return;
+    }
+}
+function jumpBtnGroupCheckAttached(app) {
+    var self = this;
+    if (self._bookmarkChangeFn) {
+        app.removeListener("bookmarkChange", self._bookmarkChangeFn);
+    }
+    self._bookmarkChangeFn = _bindListener(app, "bookmarkChange", jumpBtnGroupCheckFn, self);
+    if (self._pageNoChangeFn) {
+        app.getReader().removeListener("pageNoChange", self._pageNoChangeFn);
+    }
+    self._pageNoChangeFn = function (pageNo) {
+        self._bookmarkChangeFn(app, app.currentBookmark());
+    };
+    app.getReader().addListener("pageNoChange", self._pageNoChangeFn);
+}
+function supportJumpPage(app) {
+    var supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
+        .support.pages;
+    return supportPages && supportPages.jump;
+}
 
+var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n        <div class=\"<%= styles.title %>\">\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n        </div>\n        <div class=\"<%= styles.contents %>\">\n            <div class=\"<%= styles.label %>\">\n                印章选择\n            </div>\n            <div class=\"<%= styles.sealContent %>\">\n                <fragment s-for=\"sealInfo in sealList\">\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n                    </div>\n                </fragment>\n            </div>\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n                页面选项设置\n            </div>\n        </div>\n        <div class=\"<%= styles.btnGroup %>\">\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\n        </div>\n    </div>\n</div>";
+
+var styles$6 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+
+var SealSelect = defineComponent({
+    template: template$6(html$3)({ styles: styles$6 }),
+    initData: function () {
+        return {
+            mode: "seal",
+            sealList: [],
+            maskHideClassName: styles$6.hide
+        };
+    },
+    attached: function () {
+        console.log("初始化成功...");
+    },
+    computed: {
+        disabled: function () {
+            return !this.data.get("activeSeal") ? styles$6.disabled : "";
+        },
+        sealSelectStyles: function () {
+            var height = 601;
+            var mode = this.data.get("mode");
+            if (mode === "seal") {
+                height = 360;
+            }
+            return "height: ".concat(height, "px;margin-top: ").concat(-height / 2, "px;");
+        },
+        titleText: function () {
+            var text = "多页签章";
+            var mode = this.data.get("mode");
+            if (mode === "seal") {
+                text = "印章选择";
+            }
+            return text;
+        },
+        isPageSign: function () {
+            return this.data.get("mode") === "pages";
+        }
+    },
+    selectSeal: function (sealList, mode) {
+        var _this = this;
+        mode = mode || "seal";
+        if (this.data.get("maskHideClassName") !== styles$6.hide) {
+            throw new Error("选择器被锁定");
+        }
+        var res = new Promise(function (resolve, reject) {
+            _this._waitResult = { resolve: resolve, reject: reject };
+        });
+        this.data.set("maskHideClassName", undefined);
+        this.data.set("activeSeal", undefined);
+        this.data.set("sealList", __spreadArray([], sealList, true));
+        this.data.set("mode", mode);
+        return res;
+    },
+    events: {
+        sealClick: function (sealInfo) {
+            this.data.set("activeSeal", sealInfo);
+        },
+        okClick: function () {
+            var activeSeal = this.data.get("activeSeal");
+            if (!activeSeal) {
+                return;
+            }
+            this.data.set("sealList", []);
+            this.data.set("maskHideClassName", styles$6.hide);
+            this.data.set("activeSeal", undefined);
+            this._waitResult &&
+                this._waitResult.resolve &&
+                this._waitResult.resolve({ cancel: false, sealInfo: activeSeal });
+        },
+        closeClick: function () {
+            this.data.set("sealList", []);
+            this.data.set("maskHideClassName", styles$6.hide);
+            this.data.set("activeSeal", undefined);
+            this._waitResult &&
+                this._waitResult.resolve &&
+                this._waitResult.resolve({ cancel: true });
+        }
+    }
+});
+
+var lock = new AsyncLock();
+var sealSelectInterface;
+window.addEventListener("load", function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        lock.acquire("initSealSelectInterface", function (done) {
+            try {
+                if (sealSelectInterface) {
+                    return;
+                }
+                var sealSelectComponent = new SealSelect();
+                sealSelectComponent.attach(document.body);
+                sealSelectInterface = sealSelectComponent;
+                // sealSelectInterface
+                //   .selectSeal([
+                //     {
+                //       id: 1,
+                //       imgUrl:
+                //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                //     } as any,
+                //     {
+                //       id: 2,
+                //       imgUrl:
+                //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                //     } as any,
+                //     {
+                //       id: 3,
+                //       imgUrl:
+                //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+                //     } as any,
+                //   ])
+                //   .then((res) => console.log(res));
+            }
+            finally {
+                done();
+            }
+        });
+        return [2 /*return*/];
+    });
+}); });
 var fullBtnId = createId();
 function narrowDisabledHandler(app) {
-    debugger;
     var isDisabled = false;
     try {
         var scale = parseInt(app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
@@ -1468,16 +1713,15 @@ function narrowDisabledHandler(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
-        this.className += " " + styles$a.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
+        this.className += " " + styles$b.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
 }
-var _narrowDisabledHandler = narrowDisabledHandler;
 function enlargeDisabledHandle(app) {
     var isDisabled = false;
     try {
@@ -1492,34 +1736,33 @@ function enlargeDisabledHandle(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$a.disabled)) {
-        this.className += " " + styles$a.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
+        this.className += " " + styles$b.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$a.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
 }
-var _enlargeDisabledHandle = enlargeDisabledHandle;
 function narrowOrEnlargeScaleChange(scale) {
     scale = parseInt(scale * 100 + "");
     var isNarrow = this.title === "缩小";
     var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
     var isDisabled = isNarrow ? scale <= val : scale >= val;
     if (isDisabled) {
-        if (!this.className.includes(" " + styles$a.disabled)) {
-            this.className += " " + styles$a.disabled;
+        if (!this.className.includes(" " + styles$b.disabled)) {
+            this.className += " " + styles$b.disabled;
             this.update(this);
         }
     }
-    else if (this.className.includes(" " + styles$a.disabled)) {
+    else if (this.className.includes(" " + styles$b.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
 }
-var _narrowScaleChange = narrowOrEnlargeScaleChange;
-var _EnlargeScaleChange = narrowOrEnlargeScaleChange;
+// let _narrowScaleChange = narrowOrEnlargeScaleChange;
+// let _EnlargeScaleChange = narrowOrEnlargeScaleChange;
 var scaleOptions = [
     {
         val: 20,
@@ -1605,6 +1848,7 @@ var headerTabsBtns = {
         nodeInfo: {
             width: 80,
             render: function (app, nodeInfo, parent) {
+                console.log("jump初始化");
                 if (this._toolJump) {
                     this._toolJump.dispose();
                 }
@@ -1612,11 +1856,7 @@ var headerTabsBtns = {
                 this._toolJump.app = app;
                 this._toolJump.attach(parent);
             },
-            isShow: function (app) {
-                var supportPages = app.currentBookmark().parserWrapperInfo.parserInfo
-                    .support.pages;
-                return supportPages && supportPages.jump;
-            }
+            isShow: supportJumpPage
         }
     },
     select: {
@@ -1728,28 +1968,35 @@ var headerTabsBtns = {
         type: "default",
         needReader: true,
         nodeInfo: {
-            html: "&#xe67b;",
+            html: "&#xe670;",
             needReader: true,
             title: "缩小",
             width: 24,
-            className: styles$a.toolIconBtn,
+            className: styles$b.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
-                app.removeListener("bookmarkChange", _narrowDisabledHandler);
-                _narrowDisabledHandler = narrowDisabledHandler.bind(this);
-                app.addListener("bookmarkChange", _narrowDisabledHandler);
-                app.getReader().removeListener("scaleChange", _narrowScaleChange);
-                _narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
-                app.getReader().addListener("scaleChange", _narrowScaleChange);
+                var self = this;
+                if (self._narrowDisabledHandler) {
+                    app.removeListener("bookmarkChange", self._narrowDisabledHandler);
+                }
+                self._narrowDisabledHandler = narrowDisabledHandler.bind(this);
+                app.addListener("bookmarkChange", self._narrowDisabledHandler);
+                if (self._narrowScaleChange) {
+                    app
+                        .getReader()
+                        .removeListener("scaleChange", self._narrowScaleChange);
+                }
+                self._narrowScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                app.getReader().addListener("scaleChange", self._narrowScaleChange);
             },
             click: function (app) {
                 try {
                     var nextNodeInfo = this.selector.next();
-                    if (nextNodeInfo.className.includes(" " + styles$a.disabled)) {
+                    if (nextNodeInfo.className.includes(" " + styles$b.disabled)) {
                         nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
                         nextNodeInfo.update(nextNodeInfo);
                     }
-                    if (this.className.includes(" " + styles$a.disabled)) {
+                    if (this.className.includes(" " + styles$b.disabled)) {
                         return;
                     }
                     var parserInterface = app.currentBookmark().parserWrapperInfo
@@ -1769,16 +2016,16 @@ var headerTabsBtns = {
                         index -= 1;
                     }
                     if (index <= 0) {
-                        if (this.className.includes(" " + styles$a.disabled)) {
+                        if (this.className.includes(" " + styles$b.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$a.disabled;
+                        this.className += " " + styles$b.disabled;
                         this.update(this);
                         if (index === -1) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$a.disabled)) {
+                    else if (this.className.includes(" " + styles$b.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -1814,26 +2061,33 @@ var headerTabsBtns = {
         type: "default",
         needReader: true,
         nodeInfo: {
-            html: "&#xe65a;",
+            html: "&#xe671;",
             title: "放大",
             width: 24,
-            className: styles$a.toolIconBtn,
+            className: styles$b.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
-                app.removeListener("bookmarkChange", _enlargeDisabledHandle);
-                _enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
-                app.addListener("bookmarkChange", _enlargeDisabledHandle);
-                app.getReader().removeListener("scaleChange", _EnlargeScaleChange);
-                _EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
-                app.getReader().addListener("scaleChange", _EnlargeScaleChange);
+                var self = this;
+                if (self._enlargeDisabledHandle) {
+                    app.removeListener("bookmarkChange", self._enlargeDisabledHandle);
+                }
+                self._enlargeDisabledHandle = enlargeDisabledHandle.bind(this);
+                app.addListener("bookmarkChange", self._enlargeDisabledHandle);
+                if (self._EnlargeScaleChange) {
+                    app
+                        .getReader()
+                        .removeListener("scaleChange", self._EnlargeScaleChange);
+                }
+                self._EnlargeScaleChange = narrowOrEnlargeScaleChange.bind(this);
+                app.getReader().addListener("scaleChange", self._EnlargeScaleChange);
             },
             click: function (app) {
                 var prevNodeInfo = this.selector.prev();
-                if (prevNodeInfo.className.includes(" " + styles$a.disabled)) {
+                if (prevNodeInfo.className.includes(" " + styles$b.disabled)) {
                     prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
                     prevNodeInfo.update(prevNodeInfo);
                 }
-                if (this.className.includes(" " + styles$a.disabled)) {
+                if (this.className.includes(" " + styles$b.disabled)) {
                     return;
                 }
                 try {
@@ -1854,16 +2108,16 @@ var headerTabsBtns = {
                         index += 1;
                     }
                     if (index >= scaleVals.length - 1 || index === -1) {
-                        if (this.className.includes(" " + styles$a.disabled)) {
+                        if (this.className.includes(" " + styles$b.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$a.disabled;
+                        this.className += " " + styles$b.disabled;
                         this.update(this);
                         if (index >= scaleVals.length) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$a.disabled)) {
+                    else if (this.className.includes(" " + styles$b.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -1904,6 +2158,216 @@ var headerTabsBtns = {
             html: "&#xe666;",
             title: "首选项",
             text: "首选项"
+        }
+    },
+    sealDragAdd: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe610;",
+            title: "手工签章",
+            text: "手工签章",
+            isShow: function (app) {
+                var sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.seal;
+                if (!sealSupport || !sealSupport.sealList) {
+                    return false;
+                }
+                return true;
+            },
+            click: function (app, event) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var currentBookmark, sealList, res, dragRes;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                currentBookmark = app.currentBookmark();
+                                if (!currentBookmark || !currentBookmark.id) {
+                                    return [2 /*return*/];
+                                }
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                            case 1:
+                                sealList = _a.sent();
+                                if (!sealList) {
+                                    return [2 /*return*/];
+                                }
+                                return [4 /*yield*/, sealSelectInterface.selectSeal(sealList)];
+                            case 2:
+                                res = _a.sent();
+                                if (res.cancel) {
+                                    return [2 /*return*/];
+                                }
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDragOne(res.sealInfo)];
+                            case 3:
+                                dragRes = _a.sent();
+                                debugger;
+                                console.log(dragRes);
+                                return [2 /*return*/];
+                        }
+                    });
+                });
+            }
+        }
+    },
+    rotation: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe667;",
+            title: "顺时针旋转",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            isShow: function (app) {
+                return app.currentBookmark().parserWrapperInfo.parserInfo.support
+                    .rotation;
+            },
+            click: function (app) {
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark ||
+                    !currentBookmark.id ||
+                    !currentBookmark.parserWrapperInfo.parserInfo.support.rotation) {
+                    return;
+                }
+                var rotation = currentBookmark.parserWrapperInfo.parserInterface.getRotation() + 90;
+                currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+            }
+        }
+    },
+    anticlockwiseRotation: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe669;",
+            title: "逆时针旋转",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            isShow: function (app) {
+                return app.currentBookmark().parserWrapperInfo.parserInfo.support
+                    .rotation;
+            },
+            click: function (app) {
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark ||
+                    !currentBookmark.id ||
+                    !currentBookmark.parserWrapperInfo.parserInfo.support.rotation) {
+                    return;
+                }
+                var rotation = currentBookmark.parserWrapperInfo.parserInterface.getRotation() - 90;
+                currentBookmark.parserWrapperInfo.parserInterface.setRotation(rotation);
+            }
+        }
+    },
+    jumpToHead: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe719;",
+            title: "跳转到首页",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            attached: jumpBtnGroupCheckAttached,
+            isShow: supportJumpPage,
+            click: function (app) {
+                if (this.className.includes(" " + styles$b.disabled)) {
+                    return;
+                }
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    return;
+                }
+                if (!this.className.includes(" " + styles$b.disabled)) {
+                    this.className += " " + styles$b.disabled;
+                    this.update();
+                }
+                currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
+            }
+        }
+    },
+    jumpToPrev: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe615;",
+            title: "上一页",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            attached: jumpBtnGroupCheckAttached,
+            isShow: supportJumpPage,
+            click: function (app) {
+                if (this.className.includes(" " + styles$b.disabled)) {
+                    return;
+                }
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    return;
+                }
+                var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
+                if (nowPageNo <= 1 && this.className.includes(" " + styles$b.disabled)) {
+                    this.className += " " + styles$b.disabled;
+                    this.update();
+                }
+                if (nowPageNo >= 1) {
+                    currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+                }
+            }
+        }
+    },
+    jumpToNext: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe718;",
+            title: "下一页",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            attached: jumpBtnGroupCheckAttached,
+            isShow: supportJumpPage,
+            click: function (app, event) {
+                if (this.className.includes(" " + styles$b.disabled)) {
+                    return;
+                }
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    return;
+                }
+                var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
+                var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+                if (nowPageNo >= numPages &&
+                    this.className.includes(" " + styles$b.disabled)) {
+                    this.className += " " + styles$b.disabled;
+                    this.update();
+                }
+                if (nowPageNo <= numPages) {
+                    currentBookmark.parserWrapperInfo.parserInterface.jumpTo(nowPageNo);
+                }
+            }
+        }
+    },
+    jumpToEnd: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe690;",
+            title: "跳转到尾页",
+            className: styles$b.toolIconBtn,
+            width: 24,
+            attached: jumpBtnGroupCheckAttached,
+            isShow: supportJumpPage,
+            click: function (app) {
+                if (this.className.includes(" " + styles$b.disabled)) {
+                    return;
+                }
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    return;
+                }
+                var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
+                if (!this.className.includes(" " + styles$b.disabled)) {
+                    this.className += " " + styles$b.disabled;
+                    this.update();
+                }
+                currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
+            }
         }
     }
 };
@@ -1974,40 +2438,93 @@ var defaultData = {
                 { type: "separate", needReader: true },
                 headerTabsBtns.find,
                 headerTabsBtns.full,
-                headerTabsBtns.preferenc,
+                // headerTabsBtns.preferenc,
             ]
         },
         tools: {
-            text: "工具"
+            text: "工具",
+            tools: [__assign({}, headerTabsBtns.find)]
         },
         view: {
-            text: "视图"
+            text: "视图",
+            tools: [
+                cloneDeep(headerTabsBtns.ActualSize),
+                cloneDeep(headerTabsBtns.SuitableWidth),
+                cloneDeep(headerTabsBtns.SuitablePage),
+                cloneDeep(headerTabsBtns.full),
+            ]
         },
         reader: {
-            text: "阅读"
+            text: "阅读",
+            tools: [
+                cloneDeep(headerTabsBtns.narrow),
+                cloneDeep(headerTabsBtns.enlarge),
+                headerTabsBtns.rotation,
+                headerTabsBtns.anticlockwiseRotation,
+                headerTabsBtns.jumpToHead,
+                headerTabsBtns.jumpToPrev,
+                headerTabsBtns.jumpToNext,
+                headerTabsBtns.jumpToEnd,
+            ]
         },
         safety: {
-            text: "安全"
+            text: "安全",
+            tools: [headerTabsBtns.sealDragAdd]
         },
         help: {
             text: "帮助"
         }
     },
     sildebarLeftTabs: {
+        outline: {
+            text: "书签",
+            iconHtml: "&#xe67b;",
+            // iconHtml: "&#xe64f;",
+            disabled: slidebarLeftToolbarDisabled,
+            renderChildren: function (app, dom) {
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    dom.innerHTML = "";
+                    return;
+                }
+                dom.style.padding = "30px 9px 0 9px";
+                currentBookmark.parserWrapperInfo.parserInterface.renderOutline(dom);
+            }
+        },
         sign: {
-            text: "签名",
+            text: "签章",
             iconHtml: "&#xe64f;",
             disabled: slidebarLeftToolbarDisabled
         },
         comment: {
             text: "注释",
             iconHtml: "&#xe650;",
-            disabled: slidebarLeftToolbarDisabled
+            disabled: slidebarLeftToolbarDisabled,
+            renderChildren: function (app, dom) {
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    dom.innerHTML = "";
+                    return;
+                }
+                dom.style.paddingTop = "27px";
+                currentBookmark.parserWrapperInfo.parserInterface.renderAnnotations(dom);
+            }
         },
         thumbnail: {
             text: "缩图",
             iconHtml: "&#xe651;",
-            disabled: slidebarLeftToolbarDisabled
+            disabled: slidebarLeftToolbarDisabled,
+            renderChildren: function (app, dom) {
+                var currentBookmark = app.currentBookmark();
+                if (!currentBookmark || !currentBookmark.id) {
+                    dom.innerHTML = "";
+                    return;
+                }
+                dom.style.paddingTop = "27px";
+                currentBookmark.parserWrapperInfo.parserInterface.renderThumbnail(dom, {
+                    width: 106
+                });
+            }
         }
     }
 };
@@ -2028,7 +2545,7 @@ function slidebarLeftToolbarDisabled(app) {
 
 new AsyncLock();
 var Reader = defineComponent({
-    template: template$6(html$9)({ styles: styles$b }),
+    template: template$6(html$a)({ styles: styles$c }),
     initData: function () {
         return {
             bookmarkLoadErrors: { __length: 0 }
@@ -2128,7 +2645,7 @@ var Reader = defineComponent({
                             throw new Error("解析器未实现渲染方法");
                         }
                         readerEle = createElement("div");
-                        readerEle.className = styles$b.readerContent;
+                        readerEle.className = styles$c.readerContent;
                         this.readerEleList[bookmark.id] = readerEle;
                         rootEle.appendChild(readerEle);
                         res = parserInterface.render(readerEle);
@@ -2208,17 +2725,23 @@ var Reader = defineComponent({
     }
 });
 
-var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':''}}\">\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n        </div>\n    </div>\n</div>";
+var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" s-ref=\"ref-pannelWrapper\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}\">\n        <fragment s-for=\"toolbar, toolbarIndex in toolbars\">\n            <div class=\"<%= styles.content %>\" s-show=\"activeKey === toolbarIndex\">\n                <div s-ref=\"ref-pannelContent-{{toolbarIndex}}\" class=\"<%= styles.content %>\" _r=\"{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}\"></div>\n                <div s-if=\"toolbarChildrenRenderErrors[toolbarIndex].error\" class=\"<%= styles.error %>\">\n                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>\n                </div>\n                <div class=\"<%= styles.tools %>\" s-if=\"{{toolbar.tools && toolbar.tools.length > 0}}\">\n                    <fragment s-for=\"tool, index in toolbar.tools\">\n                        <div s-if=\"tool.type !== 'separate'\" s-ref=\"ref-tool-{{index}}\" _r=\"{{fns.handleNodeRender(tool, index)}}\" class=\"<%= styles.tool %>\">\n                            <div s-if=\"tool.nodeInfo.html\" class=\"{{tool.nodeInfo.className || '<%= styles.icon %>'}}\">\n                                <span class=\"iconfont\">{{tool.nodeInfo.html | raw}}</span>\n                            </div>\n                            <div s-if=\"tool.nodeInfo.text\" class=\"{{tool.nodeInfo.className || '<%= styles.text %>'}}\">\n                                <span>{{tool.nodeInfo.text}}</span>\n                            </div>\n                        </div>\n                    </fragment>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n            <div></div>\n        </div>\n        <div on-mousedown=\"events.drageDown($event)\" s-show=\"expand\" class=\"<%= styles.drag %>\"></div>\n    </div>\n</div>";
 
-var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV"};
+var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
 
 var SlidebarLeft = defineComponent({
     components: {},
     template: template$6(html$2)({ styles: styles$5 }),
     initData: function () {
         return {
-            expand: false
+            expand: false,
+            pannelDragWidth: 0,
+            dragX: 0
         };
+    },
+    attached: function () {
+        this.events.drageMove = this.events.drageMove.bind(this);
+        this.events.drageUp = this.events.drageUp.bind(this);
     },
     computed: {
         slideWrapperIeStyle: function () {
@@ -2236,9 +2759,67 @@ var SlidebarLeft = defineComponent({
                 width = 40 + 160;
             }
             return "width: " + width + "px;";
+        },
+        tabPanelWidth: function () {
+            var expand = this.data.get("expand");
+            if (!expand) {
+                return 0;
+            }
+            var appSize = this.data.get("appSize");
+            var maxWidth = appSize.minWidth / 2 - 40;
+            var width = this.data.get("pannelDragWidth");
+            if (width < 0) {
+                return 160;
+            }
+            var targetWidth = 160 + width;
+            if (targetWidth > maxWidth) {
+                targetWidth = maxWidth;
+            }
+            return targetWidth;
         }
     },
     events: {
+        drageUp: function (event) {
+            this.dragX = 0;
+            eventUtil.removeHandler(window, "mousemove", this.events.drageMove);
+            eventUtil.removeHandler(window, "mouseup", this.events.drageUp);
+            var pannelWrapperEle = this.ref("ref-pannelWrapper");
+            if (!pannelWrapperEle) {
+                return;
+            }
+            pannelWrapperEle.style.transition = "";
+        },
+        drageMove: function (event) {
+            var pannelWrapperEle = this.ref("ref-pannelWrapper");
+            if (!pannelWrapperEle) {
+                return;
+            }
+            var appSize = this.data.get("appSize");
+            var maxWidth = appSize.minWidth / 2;
+            var moveX = event.x - this.dragX;
+            this.dragX = event.x;
+            var width = parseInt(pannelWrapperEle.style.width || "160");
+            var targetWidth = width + moveX;
+            if (targetWidth < 160) {
+                targetWidth = 160;
+            }
+            else if (targetWidth > maxWidth) {
+                targetWidth = maxWidth;
+            }
+            pannelWrapperEle.style.width = targetWidth + "px";
+        },
+        drageDown: function (event) {
+            var pannelWrapperEle = this.ref("ref-pannelWrapper");
+            if (!pannelWrapperEle) {
+                return;
+            }
+            pannelWrapperEle.style.transition = "unset";
+            this.dragX = event.x;
+            eventUtil.removeHandler(window, "mousemove", this.events.drageMove);
+            eventUtil.removeHandler(window, "mouseup", this.events.drageUp);
+            eventUtil.addHandler(window, "mousemove", this.events.drageMove);
+            eventUtil.addHandler(window, "mouseup", this.events.drageUp);
+        },
         tabClick: function (event, key, toolbar, disabled) {
             if (disabled) {
                 return;
@@ -2254,6 +2835,68 @@ var SlidebarLeft = defineComponent({
         }
     },
     fns: {
+        handleToolbarRender: function (toolbarInfo, index, id) {
+            var _this = this;
+            if (!toolbarInfo._renderChildrenId) {
+                return;
+            }
+            var pannelContentEle = this.ref("ref-pannelContent-" + index);
+            if (!pannelContentEle) {
+                return;
+            }
+            var appInterface = getAppBySanComponent(this);
+            try {
+                var res = nodeEventCall(appInterface, toolbarInfo._renderChildrenId, appInterface, pannelContentEle);
+                if (res instanceof Promise) {
+                    res
+                        .then(function () {
+                        _this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                            error: false,
+                            msg: ""
+                        });
+                    })["catch"](function (err) {
+                        _this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                            error: true,
+                            msg: err.message || err
+                        });
+                    });
+                }
+                else {
+                    this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                        error: false,
+                        msg: ""
+                    });
+                }
+            }
+            catch (e) {
+                this.data.set("toolbarChildrenRenderErrors[".concat(index, "]"), {
+                    error: true,
+                    msg: e.message || e
+                });
+                return;
+            }
+        },
+        handleNodeRender: function (toolInfo, index) {
+            var toolEle = this.ref("ref-tool-" + index);
+            if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
+                return undefined;
+            }
+            if (toolInfo.nodeInfo.renderId) {
+                nodeRender(this, toolInfo.nodeInfo.renderId, getApp(this.data.get("appId")), this, toolEle);
+                return undefined;
+            }
+            else if (toolInfo.nodeInfo._attachedId) {
+                var appInterface = getApp(this.data.get("appId"));
+                // dom.nodeEventCall(
+                nodeEventCallBindThis(toolInfo.nodeInfo, appInterface, toolInfo.nodeInfo._attachedId, appInterface);
+            }
+            if (!toolInfo.nodeInfo.evenIdList ||
+                toolInfo.nodeInfo.evenIdList.length === 0) {
+                return undefined;
+            }
+            dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this, toolInfo.nodeInfo);
+            return undefined;
+        },
         disabled: function (disabled) {
             if (typeof disabled === "boolean") {
                 return disabled ? styles$5.disabled : "";
@@ -2349,7 +2992,7 @@ var TabBtn = defineComponent({
             return;
         }
         var btnEle = this.ref("btn");
-        dispatchDomEvent(btnEle, eventIdList, this);
+        dispatchDomEvent(btnEle, eventIdList, this, undefined);
     },
     detached: function () {
         var dataStore = getApp(this.data.get("appId")).getDataStore();
@@ -2491,7 +3134,7 @@ var TabPages = defineComponent({
 });
 
 var isFirst = true;
-var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
@@ -2657,6 +3300,34 @@ var ReaderParserAbstract = /** @class */ (function () {
     ReaderParserAbstract.prototype.contentIsFull = function () {
         return false;
     };
+    ReaderParserAbstract.prototype.renderThumbnail = function (domEle, options) { };
+    ReaderParserAbstract.prototype.renderOutline = function (domEle) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.renderAnnotations = function (domEle) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.sealList = function () {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.sealPositionAdd = function (sealInfo, position) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.sealVerify = function (sealFieldName) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.sealVerifyAll = function () {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.setRotation = function (deg) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.getRotation = function () {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.sealDragOne = function (sealInfo, options) {
+        throw ErrNoSupportFunction;
+    };
     ReaderParserAbstract.supportAll = {
         nowBrowser: true,
         fileSuffix: [],
@@ -2664,6 +3335,10 @@ var ReaderParserAbstract = /** @class */ (function () {
             return true;
         },
         scale: true,
+        rotation: true,
+        thumbnail: true,
+        outline: true,
+        annotations: true,
         full: {
             width: true,
             content: true
@@ -2678,6 +3353,11 @@ var ReaderParserAbstract = /** @class */ (function () {
             adaptiveView: true,
             showPageNo: true
         },
+        seal: {
+            sealList: true,
+            positionSeal: true,
+            verifySeal: true
+        },
         listener: {
             pageNoChange: true,
             scaleChange: true,
@@ -2689,18 +3369,24 @@ var ReaderParserAbstract = /** @class */ (function () {
 var readerParserSupportDefault = {
     nowBrowser: false,
     fileSuffix: [],
+    thumbnail: false,
+    outline: false,
+    annotations: false,
     isSupportFile: function (file) {
         return false;
     },
     scale: false,
+    rotation: false,
     full: false,
     pages: false,
+    seal: false,
     listener: false
 };
 var ErrFileNotParsed = new Error("文件无法被解析, 请添加对应解析器");
 var ErrNoSupportFileSuffix = new Error("没有可被解析的文件后缀，请尝试添加解析器");
 var ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
 var ErrLackOfParser = new Error("缺失解析器信息");
+var ErrNoSupportFunction = new Error("未实现的方法");
 
 var appEventBookmarkChange = "bookmarkChange";
 var fontfaceStyleId = new Date().getTime() + "";
@@ -2724,6 +3410,7 @@ var defaultOptions = {
             defaultData.headerTabs.start,
             defaultData.headerTabs.tools,
             defaultData.headerTabs.view,
+            defaultData.headerTabs.reader,
             defaultData.headerTabs.safety,
             defaultData.headerTabs.help,
         ]
@@ -2731,6 +3418,7 @@ var defaultOptions = {
     sidebars: {
         left: {
             toolbars: [
+                defaultData.sildebarLeftTabs.outline,
                 defaultData.sildebarLeftTabs.sign,
                 defaultData.sildebarLeftTabs.comment,
                 defaultData.sildebarLeftTabs.thumbnail,
@@ -2744,7 +3432,7 @@ var App$1 = defineComponent({
     components: {
         "ui-app": AppUi
     },
-    template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" appShow=\"{{show}}\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions, bookmarkInfos}}}\" appId=\"{{appId}}\" ></<ui-app>",
+    template: "<ui-app s-ref=\"ref-app\" s-show=\"show\" appShow=\"{{show}}\" style=\"min-height: {{appOptions.minHeight || 800}}px;min-width: {{appOptions.minWidth || 1280}}px;\" s-bind=\"{{{...appOptions, bookmarkInfos, appSize: {minWidth: appOptions.minWidth || 1280, minHeight: appOptions.minHeight || 800}}}}\" appId=\"{{appId}}\" ></<ui-app>",
     initData: function () {
         return {
             show: false,
@@ -2754,7 +3442,7 @@ var App$1 = defineComponent({
     messages: {
         "HTML::ELE::EVENT": function (args) {
             var val = args && args.value;
-            this.eventMapping(val.id, val.event);
+            this.eventMapping(val.id, val.event, val.thisInfo);
         },
         "TABS::ADD": function () {
             console.log("标签新增被触发");
@@ -2858,7 +3546,6 @@ var ReaderImpl = /** @class */ (function () {
     };
     ReaderImpl.prototype._parserInterfaceBindEvent = function (parser) {
         var eventMap = this._eventList.all();
-        debugger;
         for (var key in eventMap) {
             var eventCallList = eventMap[key];
             for (var j = 0; j < eventCallList.length; j++) {
@@ -3093,8 +3780,8 @@ var AppImpl = /** @class */ (function () {
                     appId: _this._appId
                 }
             });
-            _this._appComponent.eventMapping = function (id, event) {
-                nodeEventCall(_this, id, _this, event);
+            _this._appComponent.eventMapping = function (id, event, thisInfo) {
+                nodeEventCallBindThis(thisInfo, _this, id, _this, event);
             };
             _this.update(defaultOptions);
             _this.update(_this._initOptions);
@@ -3115,13 +3802,18 @@ var AppImpl = /** @class */ (function () {
         this._handleToobarConfigs = function (toolbarConfigs, expr) {
             var app = _this;
             var _loop_1 = function (i) {
-                var toolbar_1 = toolbarConfigs[i];
-                toolbar_1.disabled = handleDisabled(toolbar_1.disabled, _this._datastore);
-                if (toolbar_1.activeChange) {
-                    var activeChangeFnId = createId();
-                    _this._datastore.set(activeChangeFnId, toolbar_1.activeChange);
-                    toolbar_1._activeChangeFnId = activeChangeFnId;
-                }
+                var toolbar_1 = handleToolBarInfo(app, toolbarConfigs[i]);
+                // toolbar.disabled = dom.handleDisabled(toolbar.disabled, this._datastore);
+                // if (toolbar.activeChange) {
+                //   this._datastore.remove(toolbar._activeChangeFnId);
+                //   toolbar._activeChangeFnId = id.createId();
+                //   this._datastore.set(toolbar._activeChangeFnId, toolbar.activeChange);
+                // }
+                // if (toolbar.renderChildren) {
+                //   this._datastore.remove(toolbar._renderChildrenId);
+                //   toolbar._renderChildrenId = id.createId();
+                //   this._datastore.set(toolbar._renderChildrenId, toolbar.renderChildren);
+                // }
                 if (!toolbar_1.tools || toolbar_1.tools.length === 0) {
                     return "continue";
                 }
@@ -3477,4 +4169,4 @@ var AppImpl = /** @class */ (function () {
 // })();
 var App = AppImpl;
 
-export { App, ErrFeilSelectWait, ErrFileNotParsed, ErrLackOfParser, ErrNoSupportFileSuffix, ReaderParserAbstract, defaultContentTemp, defaultData, index as ieUtil, readerParserSupportDefault };
+export { App, ErrFeilSelectWait, ErrFileNotParsed, ErrLackOfParser, ErrNoSupportFileSuffix, ErrNoSupportFunction, ReaderParserAbstract, defaultContentTemp, defaultData, index as ieUtil, readerParserSupportDefault };

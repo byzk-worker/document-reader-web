@@ -23,6 +23,9 @@ type DataType = HeaderConfig & {
 };
 type HeaderComponent = Component<DataType> & {
   events: { resize(): void };
+  fns: {
+    showTool(toolInfo: ToolInfo);
+  };
 };
 const template = templateParser(htmlTemplate)({
   styles,
@@ -142,7 +145,17 @@ export default defineComponent<DataType>({
         return false;
       }
 
-      return true;
+      let len = 0;
+      const showToolFn = this.fns.showTool.bind(this);
+      for (let i = 0; i < toolbarConfig.tools.length; i++) {
+        const tool = toolbarConfig.tools[i];
+        if (showToolFn(tool)) {
+          len += 1;
+          break;
+        }
+      }
+
+      return len != 0;
     },
     showTool(this: HeaderComponent, toolInfo: ToolInfo | undefined) {
       if (toolInfo.type !== "separate" && (!toolInfo || !toolInfo.nodeInfo)) {
@@ -157,7 +170,9 @@ export default defineComponent<DataType>({
       if (toolInfo.nodeInfo?._isShowId) {
         try {
           const appInterface = app.getApp(this.data.get("appId"));
-          return dom.nodeEventCall(
+          // return dom.nodeEventCall(
+          return dom.nodeEventCallBindThis(
+            toolInfo.nodeInfo,
             appInterface,
             toolInfo.nodeInfo._isShowId as any,
             appInterface
@@ -248,8 +263,15 @@ export default defineComponent<DataType>({
       const expand = this.data.get("expand");
       this.data.set("expand", !expand);
     },
-    handleRender(this: HeaderComponent, toolInfo: ToolInfo, index: number) {
-      const toolEle = (this.ref("ref-tool-" + index) as any) as HTMLDivElement;
+    handleRender(
+      this: HeaderComponent,
+      toolInfo: ToolInfo,
+      i: number,
+      index: number
+    ) {
+      const toolEle = (this.ref(
+        "ref-tool-" + i + "-" + index
+      ) as any) as HTMLDivElement;
       if (!toolEle || !toolInfo || !toolInfo.nodeInfo) {
         return undefined;
       }
@@ -265,7 +287,9 @@ export default defineComponent<DataType>({
         return undefined;
       } else if (toolInfo.nodeInfo._attachedId) {
         const appInterface = app.getApp(this.data.get("appId"));
-        dom.nodeEventCall(
+        // dom.nodeEventCall(
+        dom.nodeEventCallBindThis(
+          toolInfo.nodeInfo,
           appInterface,
           toolInfo.nodeInfo._attachedId as any,
           appInterface
@@ -279,7 +303,12 @@ export default defineComponent<DataType>({
         return undefined;
       }
 
-      dom.dispatchDomEvent(toolEle, toolInfo.nodeInfo.evenIdList, this);
+      dom.dispatchDomEvent(
+        toolEle,
+        toolInfo.nodeInfo.evenIdList,
+        this,
+        toolInfo.nodeInfo
+      );
 
       return undefined;
     },

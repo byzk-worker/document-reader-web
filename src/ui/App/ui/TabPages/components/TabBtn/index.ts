@@ -33,7 +33,7 @@ export default defineComponent({
       return;
     }
     const btnEle = (this.ref("btn") as any) as HTMLElement;
-    dom.dispatchDomEvent(btnEle, eventIdList, this);
+    dom.dispatchDomEvent(btnEle, eventIdList, this, undefined);
   },
   detached(this: Component<NodeInfo>) {
     const dataStore = app.getApp(this.data.get("appId")).getDataStore();

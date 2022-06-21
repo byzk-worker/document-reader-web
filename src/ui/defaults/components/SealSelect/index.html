@@ -1,0 +1,26 @@
+<div class="<%= styles.sealSelectMask %> {{maskHideClassName}}">
+    <div style="{{sealSelectStyles}}" class="<%= styles.sealSelect %>">
+        <div class="<%= styles.title %>">
+            <div class="<%= styles.text %>">{{titleText}}</div>
+            <span class="iconfont <%= styles.close %>" on-click="events.closeClick()">&#xe600;</span>
+        </div>
+        <div class="<%= styles.contents %>">
+            <div class="<%= styles.label %>">
+                印章选择
+            </div>
+            <div class="<%= styles.sealContent %>">
+                <fragment s-for="sealInfo in sealList">
+                    <div on-click="events.sealClick(sealInfo)" class="<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}">
+                        <img width="150" src="{{sealInfo.imgUrl}}" />
+                    </div>
+                </fragment>
+            </div>
+            <div s-show="isPageSign" class="<%= styles.label %>">
+                页面选项设置
+            </div>
+        </div>
+        <div class="<%= styles.btnGroup %>">
+            <div on-click="events.okClick()" class="<%= styles.okBtn %> {{disabled}}">确定</div>
+        </div>
+    </div>
+</div>

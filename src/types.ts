@@ -251,12 +251,19 @@ export interface ToolbarConfig {
   /**
    * 激活切换事件ID
    */
-  _activeChangeFnId: string;
+  _activeChangeFnId?: string;
   /**
    * 选中状态变更
    * @param active 是/否选中
    */
   activeChange?(app: AppInterface, event: ToolbarConfigActiveChangeEvent): void;
+  /**
+   * 渲染子元素
+   * @param app 当前应用信息
+   * @param domEle 挂载的dom节点
+   */
+  renderChildren?(app: AppInterface, domEle: HTMLElement): Promise<void> | void;
+  _renderChildrenId?: string;
 }
 
 export interface ToolbarConfigActiveChangeEvent {
@@ -475,10 +482,26 @@ export interface ReaderParserSupport {
    */
   scale: boolean;
   /**
+   * 是否支持旋转
+   */
+  rotation: boolean;
+  /**
    * 是否支持此文件的加载
    * @param file 要加载的文件
    */
   isSupportFile(file: FileInfo): boolean;
+  /**
+   * 是否支持缩率图
+   */
+  thumbnail: boolean;
+  /**
+   * 是否支持导航
+   */
+  outline: boolean;
+  /**
+   * 是否支持注释
+   */
+  annotations: boolean;
   /**
    * 是否支持全屏
    */
@@ -529,6 +552,25 @@ export interface ReaderParserSupport {
         showPageNo: boolean;
       };
   /**
+   * 印章相关配置
+   */
+  seal:
+    | false
+    | {
+        /**
+         * 是否支持获取印章列表
+         */
+        sealList: boolean;
+        /**
+         * 是否支持坐标签章
+         */
+        positionSeal: boolean;
+        /**
+         * 是否支持验章
+         */
+        verifySeal: boolean;
+      };
+  /**
    * 是否支持事件监听
    */
   listener:
@@ -559,7 +601,93 @@ export interface FileInfo {
   rawHtmlEle: HTMLInputElement;
 }
 
+export interface SealInfo {
+  id: string;
+  name?: string;
+  title?: string;
+  imgUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface SealVerifyResult {
+  error: boolean;
+  name: string;
+  page: number;
+  errMsg?: string;
+  signTime?: string;
+  signerName?: string;
+}
+
+export interface SealDrgaOption {
+  pageNo?: number[];
+  maxPageNo?: number;
+  minPageNo?: number;
+  cernterPositionMode?: "center" | "leftBottom";
+}
+
+export interface SealDragResult {
+  pageNo: number;
+  sealInfo: SealInfo;
+  x: number;
+  y: number;
+  cernterPositionMode?: "center" | "leftBottom";
+}
+
 export interface ReaderParserInterface {
+  /**
+   * 获取印章列表
+   */
+  sealList?(): Promise<SealInfo[] | undefined>;
+  /**
+   * 拖拽一个印章
+   * @param sealInfo 要拖拽的印章信息
+   * @param options 选项
+   */
+  sealDragOne?(
+    sealInfo: SealInfo,
+    options?: SealDrgaOption
+  ): Promise<SealDragResult>;
+  /**
+   * 坐标签章
+   */
+  sealPositionAdd?(
+    sealInfo: SealInfo,
+    position: { x: number; y: number }
+  ): Promise<void>;
+  /**
+   * 验证印章通过表单名称
+   * @param sealFieldName 印章表单名称
+   */
+  sealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  /**
+   * 验证全文印章
+   */
+  sealVerifyAll?(): Promise<SealVerifyResult[]>;
+  /**
+   * 渲染注释
+   * @param domEle 要加载到的dom元素
+   */
+  renderAnnotations?(domEle: HTMLElement): Promise<void> | void;
+  /**
+   * 渲染导航菜单
+   * @param domEle 目标元素
+   */
+  renderOutline?(domEle: HTMLElement): Promise<void> | void;
+  /**
+   * 渲染缩略图
+   * @param domEle dom元素
+   * @param width 宽度
+   */
+  renderThumbnail?(
+    domEle: HTMLElement,
+    options?: {
+      width?: number;
+      height?: number;
+      widthUnit?: "px" | "%";
+      heightUnit?: "px" | "%";
+    }
+  ): Promise<void> | void;
   /**
    * 将阅读器内容附加到dom元素
    * @param domEle dom元素节点
@@ -579,6 +707,15 @@ export interface ReaderParserInterface {
    * 设置缩放
    */
   setScale?(scale?: number): void;
+  /**
+   * 获取旋转的角度
+   */
+  getRotation?(): number;
+  /**
+   * 设置旋转角度
+   * @param deg 角度
+   */
+  setRotation?(deg: number): void;
   /**
    * 获取当前模式
    * @returns 模式
@@ -673,6 +810,10 @@ export interface ReaderParserInterface {
     callback: (mode: "move" | "select") => void
   );
   /**
+   * 当前页码
+   */
+  nowPageNo?(): number;
+  /**
    * 显示页码
    * 需要pages.showPageNo为true生效
    */
@@ -694,6 +835,10 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
       return true;
     },
     scale: true,
+    rotation: true,
+    thumbnail: true,
+    outline: true,
+    annotations: true,
     full: {
       width: true,
       content: true,
@@ -707,6 +852,11 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
       find: true,
       adaptiveView: true,
       showPageNo: true,
+    },
+    seal: {
+      sealList: true,
+      positionSeal: true,
+      verifySeal: true,
     },
     listener: {
       pageNoChange: true,
@@ -826,6 +976,48 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   contentIsFull(): boolean {
     return false;
   }
+  renderThumbnail(
+    domEle: HTMLElement,
+    options?: {
+      width?: number;
+      height?: number;
+      widthUnit?: "px" | "%";
+      heightUnit?: "px" | "%";
+    }
+  ): void | Promise<void> {}
+  renderOutline(domEle: HTMLElement): void | Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  renderAnnotations(domEle: HTMLElement): void | Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  sealList(): Promise<SealInfo[] | undefined> {
+    throw ErrNoSupportFunction;
+  }
+  sealPositionAdd(
+    sealInfo: SealInfo,
+    position: { x: number; y: number }
+  ): Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  sealVerify(sealFieldName: string): Promise<SealVerifyResult> {
+    throw ErrNoSupportFunction;
+  }
+  sealVerifyAll(): Promise<SealVerifyResult[]> {
+    throw ErrNoSupportFunction;
+  }
+  setRotation(deg: number): void {
+    throw ErrNoSupportFunction;
+  }
+  getRotation(): number {
+    throw ErrNoSupportFunction;
+  }
+  sealDragOne(
+    sealInfo: SealInfo,
+    options?: SealDrgaOption
+  ): Promise<SealDragResult> {
+    throw ErrNoSupportFunction;
+  }
 }
 
 /**
@@ -850,12 +1042,17 @@ export interface ReaderParserInfo {
 export const readerParserSupportDefault: ReaderParserSupport = {
   nowBrowser: false,
   fileSuffix: [],
+  thumbnail: false,
+  outline: false,
+  annotations: false,
   isSupportFile: function (file: FileInfo): boolean {
     return false;
   },
   scale: false,
+  rotation: false,
   full: false,
   pages: false,
+  seal: false,
   listener: false,
 };
 
@@ -909,3 +1106,4 @@ export const ErrNoSupportFileSuffix = new Error(
 );
 export const ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
 export const ErrLackOfParser = new Error("缺失解析器信息");
+export const ErrNoSupportFunction = new Error("未实现的方法");

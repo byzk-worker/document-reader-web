@@ -1,0 +1,122 @@
+@sealSelectWidth: 461px;
+@titleHeight: 40px;
+.sealSelectMask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  overflow: hidden;
+  &.hide {
+    display: none;
+  }
+
+  > .sealSelect {
+    position: absolute;
+    width: @sealSelectWidth;
+    left: 50%;
+    top: 50%;
+    margin-left: calc(-@sealSelectWidth / 2);
+    background-color: #ffffff;
+
+    > .title {
+      width: 100%;
+      height: @titleHeight;
+      background: #2752e7;
+      user-select: none;
+
+      > .close {
+        float: right;
+        color: #ffffff;
+        display: block;
+        height: @titleHeight;
+        line-height: @titleHeight;
+        margin-right: 20px;
+        cursor: pointer;
+      }
+      > .text {
+        user-select: none;
+        float: left;
+        color: #ffffff;
+        padding-left: 16px;
+        height: @titleHeight;
+        line-height: @titleHeight;
+
+        font-size: 14px;
+        font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+        font-weight: 400;
+      }
+    }
+
+    > .contents {
+      width: 100%;
+      padding: 14px 31px 0;
+      user-select: none;
+
+      > .label {
+        color: #333333;
+        font-size: 12px;
+        font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;
+        font-weight: bold;
+        height: 30px;
+        line-height: 30px;
+      }
+      > .sealContent {
+        width: 391px;
+        height: 180px;
+        border: 1px solid #e6e6e6;
+        margin-bottom: 14px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        // padding-top: 9px;
+        > .seal {
+          width: 150px;
+          float: left;
+          margin-left: 18px;
+          margin-top: 9px;
+          cursor: pointer;
+          transition: all 0.3s;
+          border: 1px dashed transparent;
+          padding: 4px;
+          border-radius: 9px 9px 9px 9px;
+          font-size: 0;
+          &:hover,
+          &.active {
+            border: 1px dashed #2752e7;
+          }
+        }
+      }
+    }
+
+    > .btnGroup {
+      width: 100%;
+      overflow: hidden;
+      position: absolute;
+      bottom: 30px;
+
+      > .okBtn {
+        width: 99px;
+        height: 34px;
+        background: #2752e7;
+        border-radius: 4px 4px 4px 4px;
+        line-height: 34px;
+        font-size: 14px;
+        text-align: center;
+        color: #ffffff;
+        font-weight: 400;
+        font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;
+        float: right;
+        margin-right: 31px;
+        user-select: none;
+        cursor: pointer;
+
+        &.disabled {
+          background-color: #444c5e;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

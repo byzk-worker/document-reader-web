@@ -37,14 +37,6 @@ export declare interface NodeInfo {
    */
   width?: number;
   /**
-   * 事件ID.
-   */
-  readonly evenIdList?: string[];
-  /**
-   * render函数的id.
-   */
-  readonly renderId?: string;
-  /**
    * 手动渲染，如果存在其他将全部失效, 包括事件
    */
   render?(
@@ -52,13 +44,11 @@ export declare interface NodeInfo {
     nodeIno: NodeInfo,
     target: HTMLElement
   ): void | Promise<void>;
-  _renderId?: string;
   /**
    * 加载完成
    * @param app 应用接口
    */
   attached?(this: NodeInfoThis, app: AppInterface): void;
-  _attachedId?: string;
   /**
    * 单击事件
    */

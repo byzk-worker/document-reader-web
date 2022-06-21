@@ -69,6 +69,10 @@ export default defineComponent<DataType>({
         this.data.set("maxValue", 1);
         return;
       }
+      this.data.set(
+        "value",
+        currentBookmark.parserWrapperInfo.parserInterface.nowPageNo()
+      );
       currentBookmark.parserWrapperInfo.parserInterface.addListener(
         "pageNoChange",
         this.events.pageNoChange

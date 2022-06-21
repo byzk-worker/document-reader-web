@@ -1,6 +1,11 @@
 import { AppInterface } from "./app";
-import { Component } from "san";
 import { ReaderInterface } from "./reader";
+import {
+  SealDragResult,
+  SealDrgaOption,
+  SealInfo,
+  SealVerifyResult,
+} from "./seal";
 
 /**
  * 要解析的文件信息
@@ -39,10 +44,26 @@ export declare interface ReaderParserSupport {
    */
   scale: boolean;
   /**
+   * 是否支持旋转
+   */
+  rotation: boolean;
+  /**
    * 是否支持此文件的加载
    * @param file 要加载的文件
    */
   isSupportFile(file: FileInfo): boolean;
+  /**
+   * 是否支持缩率图
+   */
+  thumbnail: boolean;
+  /**
+   * 是否支持导航
+   */
+  outline: boolean;
+  /**
+   * 是否支持注释
+   */
+  annotations: boolean;
   /**
    * 是否支持全屏
    */
@@ -91,6 +112,25 @@ export declare interface ReaderParserSupport {
         showPageNo: boolean;
       };
   /**
+   * 印章相关配置
+   */
+  seal:
+    | false
+    | {
+        /**
+         * 是否支持获取印章列表
+         */
+        sealList: boolean;
+        /**
+         * 是否支持坐标签章
+         */
+        positionSeal: boolean;
+        /**
+         * 是否支持验章
+         */
+        verifySeal: boolean;
+      };
+  /**
    * 是否支持事件监听
    */
   listener:
@@ -122,6 +162,62 @@ export declare interface ReaderParserConstructor {
  */
 export interface ReaderParserInterface {
   /**
+   * 获取印章列表
+   */
+  sealList?(): Promise<SealInfo[] | undefined>;
+  /**
+   * 拖拽一个印章
+   * @param sealInfo 要拖拽的印章信息
+   * @param options 选项
+   */
+  sealDragOne?(
+    sealInfo: SealInfo,
+    options?: SealDrgaOption
+  ): Promise<SealDragResult>;
+  /**
+   * 位置签章
+   * @param sealInfo 印章信息
+   * @param position 坐标信息
+   * @throws Error 签章添加失败抛出异常
+   */
+  sealPositionAdd?(
+    sealInfo: SealInfo,
+    position: { x: number; y: number }
+  ): Promise<void>;
+  /**
+   * 验证印章通过表单名称
+   * @param sealFieldName 印章表单名称
+   */
+  sealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  /**
+   * 验证全文印章
+   */
+  sealVerifyAll?(): Promise<SealVerifyResult[]>;
+  /**
+   * 渲染注释
+   * @param domEle 要加载到的dom元素
+   */
+  renderAnnotations?(domEle: HTMLElement): Promise<void> | void;
+  /**
+   * 渲染导航菜单
+   * @param domEle 目标元素
+   */
+  renderOutline?(domEle: HTMLElement): Promise<void> | void;
+  /**
+   * 渲染缩略图
+   * @param domEle dom元素
+   * @param options 选项
+   */
+  renderThumbnail?(
+    domEle: HTMLElement,
+    options?: {
+      width?: number;
+      height?: number;
+      widthUnit?: "px" | "%";
+      heightUnit?: "px" | "%";
+    }
+  ): Promise<void> | void;
+  /**
    * 将阅读器内容附加到dom元素
    * @param domEle dom元素节点
    */
@@ -140,6 +236,15 @@ export interface ReaderParserInterface {
    * 设置缩放
    */
   setScale?(scale: number): void;
+  /**
+   * 获取旋转的角度
+   */
+  getRotation?(): number;
+  /**
+   * 设置旋转角度
+   * @param deg 角度
+   */
+  setRotation?(deg: number): void;
   /**
    * 获取当前模式
    * @returns 模式
@@ -235,6 +340,10 @@ export interface ReaderParserInterface {
     callback: (mode: "move" | "select") => void
   );
   /**
+   * 当前页码
+   */
+  nowPageNo?(): number;
+  /**
    * 显示页码
    * 需要pages.showPageNo为true生效
    */
@@ -287,6 +396,69 @@ export declare abstract class ReaderParserAbstract
   protected fire(eventName: "moduleSwitchChange", mode: "move" | "select");
 
   /**
+   * 获取印章列表
+   */
+  public sealList(): Promise<SealInfo[] | undefined>;
+
+  /**
+   * 拖拽一个印章
+   * @param sealInfo 要拖拽的印章信息
+   * @param options 选项
+   */
+  public sealDragOne(
+    sealInfo: SealInfo,
+    options?: SealDrgaOption
+  ): Promise<SealDragResult>;
+
+  /**
+   * 位置签章
+   * @param sealInfo 印章信息
+   * @param position 坐标信息
+   * @throws Error 签章添加失败抛出异常
+   */
+  public sealPositionAdd(
+    sealInfo: SealInfo,
+    position: { x: number; y: number }
+  ): Promise<void>;
+
+  /**
+   * 验证印章通过表单名称
+   * @param sealFieldName 印章表单名称
+   */
+  public sealVerify(sealFieldName: string): Promise<SealVerifyResult>;
+
+  /**
+   * 验证全文印章
+   */
+  public sealVerifyAll(): Promise<SealVerifyResult[]>;
+
+  /**
+   * 渲染注释
+   * @param domEle 要加载到的dom元素
+   */
+  public renderAnnotations(domEle: HTMLElement): Promise<void> | void;
+
+  /**
+   * 渲染目录导航
+   * @param domEle 目标元素
+   */
+  public renderOutline(domEle: HTMLElement): void | Promise<void>;
+
+  /**
+   * 渲染缩略图
+   * @param domEle dom元素
+   * @param options 选项
+   */
+  public renderThumbnail(
+    domEle: HTMLElement,
+    options?: {
+      width?: number;
+      height?: number;
+      widthUnit?: "px" | "%";
+      heightUnit?: "px" | "%";
+    }
+  ): Promise<void> | void;
+  /**
    * 获取当前缩放值
    */
   public getScale(): number;
@@ -295,6 +467,15 @@ export declare abstract class ReaderParserAbstract
    * @param scale 缩放比率
    */
   public setScale(scale: number): void;
+  /**
+   * 获取旋转的角度
+   */
+  public getRotation(): number;
+  /**
+   * 设置旋转角度
+   * @param deg 角度
+   */
+  public setRotation(deg: number): void;
   /**
    * 获取当前模式
    * @returns 模式
@@ -399,6 +580,10 @@ export declare abstract class ReaderParserAbstract
     eventName: "moduleSwitchChange",
     callback: (mode: "move" | "select") => void
   );
+  /**
+   * 当前页码
+   */
+  public nowPageNo(): number;
   /**
    * 显示页码
    * 需要pages.showPageNo为true生效

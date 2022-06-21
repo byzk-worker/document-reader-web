@@ -6,6 +6,7 @@ export * from "./types/slidebar";
 export * from "./types/reader";
 export * from "./types/parser";
 export * from "./types/common";
+export * from "./types/seal";
 export * as ieUtil from "./types/ieUtil";
 
 export * from "./types/errors";
