@@ -1,4 +1,10 @@
-var process={env:{NODE_ENV: 'development'}};
+var process = {
+  env: {
+    NODE_ENV: 'development'
+  }
+};
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
 var bkDocReader = (function (exports) {
     'use strict';
 
@@ -23517,11 +23523,11 @@ var bkDocReader = (function (exports) {
       }
     }
 
-    var css_248z$f = ".index-module_common_font__kzEJV{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__8S-Xs{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_header__bANPo{min-height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX{background:#2752e7;height:40px;overflow:hidden;position:relative;width:100%}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE{color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;position:absolute;right:13px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabFold__y-rrE>span{font-size:24px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{color:#fff;cursor:pointer;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:40px;text-align:center;width:98px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_fileBtn__ws1VT>span,.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH>span{font-size:12px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB{float:left}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH{transition:all .3s;width:50px}.index-module_header__bANPo>.index-module_tollbar__GkMcX>.index-module_tabs__9LWcB>.index-module_tab__RiFFH.index-module_active__a-6ac{background-color:#fff;color:#333}.index-module_header__bANPo>.index-module_tabPanels__FVo0y{background-color:#fff;box-shadow:0 4px 6px -5px rgba(11,20,54,.5);height:0;overflow:hidden;position:relative;transition:all .3s;width:100%;z-index:2}.index-module_header__bANPo>.index-module_tabPanels__FVo0y.index-module_active__a-6ac{height:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{background-color:#888;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;line-height:50px;position:absolute;text-align:center;top:0;width:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq>span,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp>span{font-size:14px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_prevTool__ac9hp{left:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_nextTool__6W3wq{right:0}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u{height:100%;overflow:auto;overflow:hidden;padding:0 24px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2{float:left;height:100%;margin-right:16px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN{height:100%;width:2px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_separate__rpKpN>div{background-color:#888;height:42px;margin-top:4px;width:100%}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-{cursor:pointer;height:100%;overflow:hidden;width:50px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_icon__MnfZO,.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f-:hover .index-module_text__XqzxF{color:#2752e7}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_text__XqzxF{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_header__bANPo>.index-module_tabPanels__FVo0y>.index-module_tabPanel__aeg7u>.index-module_wrapper__alOl2>.index-module_tool__nu8f- .index-module_icon__MnfZO>span{font-size:24px}";
-    var styles$d = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-    styleInject(css_248z$f);
+    var css_248z$g = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);\n  z-index: 2;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_icon__MnfZO,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO {\n  color: #2752e7;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
+    var styles$e = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+    styleInject(css_248z$g);
 
-    var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+    var htmlTemplate$1 = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\r\n    <div class=\"<%= styles.tollbar %>\">\r\n        <div class=\"<%= styles.fileBtn %>\">\r\n            <span class=\"iconfont\">&#xe655;\r\n                <span>文件</span>\r\n            </span>\r\n        </div>\r\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\r\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\r\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\r\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\r\n                    <span>{{toolbarConfig.text}}</span>\r\n                </div>\r\n            </div>\r\n        </fragment>\r\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\r\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\r\n        </div>\r\n    </div>\r\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\r\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\r\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\r\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\r\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\r\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\r\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\r\n                            {{events.handleRender(toolInfo, i, index)}}\r\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\r\n                        </div>\r\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\r\n                            <div></div>\r\n                        </div>\r\n                    </div>\r\n                </fragment>\r\n            </fragment>\r\n            \r\n        </div>\r\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\r\n    </div>\r\n</div>";
 
     var lodash = {exports: {}};
 
@@ -40727,14 +40733,14 @@ var bkDocReader = (function (exports) {
     var headerToolMarginRight = 16;
     var headerToolPanelHeight = 50;
 
-    var html$b = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
+    var html$b = "<fragment>\r\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\r\n        <span class=\"iconfont\">{{html | raw}}</span>\r\n    </div>\r\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\r\n        <span>{{text}}</span>\r\n    </div>\r\n</fragment>";
 
     var ToolBtn = dist.exports.defineComponent({
-        template: lodash.exports.template(html$b)({ styles: styles$d })
+        template: lodash.exports.template(html$b)({ styles: styles$e })
     });
 
-    var template$5 = lodash.exports.template(htmlTemplate)({
-        styles: styles$d
+    var template$5 = lodash.exports.template(htmlTemplate$1)({
+        styles: styles$e
     });
     var Header = dist.exports.defineComponent({
         template: template$5,
@@ -40986,27 +40992,27 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$a = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
+    var html$a = "<div class=\"<%= styles.reader %>\">\r\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\r\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\r\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\r\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\r\n        </div>\r\n    </fragment> -->\r\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\r\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\r\n        <h3>{{errMsg}}</h3>\r\n    </div>\r\n</div>";
 
-    var css_248z$e = ".index-module_reader__8JtQW{bottom:16px;left:16px;overflow:hidden;position:absolute;right:16px;top:16px}.index-module_reader__8JtQW>.index-module_tempContent__lb78H{bottom:0;left:0;position:absolute;right:0;top:0;z-index:9}.index-module_reader__8JtQW .index-module_error__updK0{color:red;font-weight:700;margin:98px auto 0}.index-module_reader__8JtQW .index-module_error__updK0>h3{font-weight:bolder;text-align:center}.index-module_reader__8JtQW .index-module_readerContent__5qVGr{height:100%;overflow:hidden;position:absolute;width:100%}";
-    var styles$c = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+    var css_248z$f = ".index-module_reader__8JtQW {\n  position: absolute;\n  top: 16px;\n  bottom: 16px;\n  left: 16px;\n  right: 16px;\n  overflow: hidden;\n}\n.index-module_reader__8JtQW > .index-module_tempContent__lb78H {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  z-index: 9;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 {\n  margin: 0 auto;\n  margin-top: 98px;\n  color: red;\n  font-weight: bold;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 > h3 {\n  text-align: center;\n  font-weight: bolder;\n}\n.index-module_reader__8JtQW .index-module_readerContent__5qVGr {\n  position: absolute;\n  overflow: hidden;\n  width: 100%;\n  height: 100%;\n}\n";
+    var styles$d = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+    styleInject(css_248z$f);
+
+    var css_248z$e = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n  color: #444c5e;\n  transition: all 0.3s;\n}\n.index-module_toolIconBtn__99EQS:hover {\n  color: #2752e7;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7 {\n  transition: all 0.3s;\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n.index-module_active__SH6e7 {\n  color: #2752e7;\n}\n";
+    var styles$c = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
     styleInject(css_248z$e);
 
-    var css_248z$d = ".index-module_common_font__1JO7K{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__5IRoi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_toolJump__1AnPZ{height:100%;line-height:50px;text-align:center}.index-module_toolJump__1AnPZ>span{color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center;transition:all .3s}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed}.index-module_toolJump__1AnPZ>span.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolJump__1AnPZ>span:hover{color:#2752e7}.index-module_toolJump__1AnPZ>input{width:30px}.index-module_toolIconBtn__99EQS{color:#444c5e;height:100%;line-height:50px;transition:all .3s}.index-module_toolIconBtn__99EQS:hover{color:#2752e7}.index-module_toolIconBtn__99EQS>span{font-size:24px}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7{color:#888;cursor:not-allowed;transition:all .3s}.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover{color:#888}.index-module_toolScale__GZ9IV{height:100%;padding-top:10px;width:100%}.index-module_active__SH6e7{color:#2752e7}";
-    var styles$b = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
-    styleInject(css_248z$d);
-
-    var html$9 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
+    var html$9 = "<div class=\"<%= styles.toolJump %>\">\r\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\r\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\r\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\r\n</div>";
 
     var html$8 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-    var css_248z$c = "";
-    var styles$a = {};
-    styleInject(css_248z$c);
+    var css_248z$d = "";
+    var styles$b = {};
+    styleInject(css_248z$d);
 
     var allowKeys = [8, 37, 39, 46];
     var InputNumber = dist.exports.defineComponent({
-        template: lodash.exports.template(html$8)(styles$a),
+        template: lodash.exports.template(html$8)(styles$b),
         initData: function () {
             return {
                 value: "1",
@@ -41106,7 +41112,7 @@ var bkDocReader = (function (exports) {
         components: {
             "input-number": InputNumber
         },
-        template: lodash.exports.template(html$9)({ styles: styles$b }),
+        template: lodash.exports.template(html$9)({ styles: styles$c }),
         initData: function () {
             return {
                 maxValue: undefined,
@@ -41125,14 +41131,14 @@ var bkDocReader = (function (exports) {
             prevDisableClass: function () {
                 var val = this.data.get("value");
                 if (val == 1) {
-                    return styles$b.disabled;
+                    return styles$c.disabled;
                 }
             },
             nextDisableClass: function () {
                 var val = this.data.get("value");
                 var maxVal = this.data.get("maxValue");
                 if (val >= maxVal) {
-                    return styles$b.disabled;
+                    return styles$c.disabled;
                 }
             }
         },
@@ -41179,22 +41185,22 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
+    var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\r\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\r\n</div>";
 
-    var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
+    var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\r\n    <div class=\"<%= styles.value %>\">\r\n        <!-- <span>{{activeText}}</span> -->\r\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\r\n        </input-number>\r\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\r\n    </div>\r\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\r\n    <span class=\"iconfont\">{{suffix|raw}}</span>\r\n</div>";
 
-    var css_248z$b = ".index-module_common_font__niHsZ{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__COYLB{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_select__2NwCG{border:1px solid #888;border-radius:4px;height:28px;line-height:28px;margin:0 auto;position:relative;transition:all .3s;width:100%}.index-module_select__2NwCG>.index-module_value__4778I{bottom:0;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:6px;overflow:hidden;position:absolute;right:21px;text-align:center;text-align:left;text-overflow:ellipsis;top:0;white-space:nowrap;z-index:2}.index-module_select__2NwCG>.index-module_value__4778I>.index-module_suffix__bXZSl{height:28px;line-height:28px;position:absolute;right:16px;top:0;z-index:1}.index-module_select__2NwCG.index-module_active__zruap,.index-module_select__2NwCG:hover{border:1px solid #40a9ff}.index-module_select__2NwCG>span{display:block;font-size:12px;height:28px;line-height:28px;position:absolute;right:9px;top:0;width:12px}";
-    var styles$9 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+    var css_248z$c = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n  position: relative;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  position: absolute;\n  left: 6px;\n  right: 21px;\n  top: 0;\n  bottom: 0;\n  height: 100%;\n  color: #333;\n  text-align: left;\n  z-index: 2;\n}\n.index-module_select__2NwCG > .index-module_value__4778I > .index-module_suffix__bXZSl {\n  position: absolute;\n  height: 28px;\n  line-height: 28px;\n  top: 0;\n  right: 16px;\n  z-index: 1;\n}\n.index-module_select__2NwCG:hover,\n.index-module_select__2NwCG.index-module_active__zruap {\n  border: 1px solid #40a9ff;\n}\n.index-module_select__2NwCG > span {\n  display: block;\n  position: absolute;\n  top: 0;\n  right: 9px;\n  font-size: 12px;\n  width: 12px;\n  height: 28px;\n  line-height: 28px;\n}\n";
+    var styles$a = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+    styleInject(css_248z$c);
+
+    var html$5 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\r\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\r\n</div>";
+
+    var css_248z$b = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  z-index: 99;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  transition: all 0.3s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
+    var styles$9 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
     styleInject(css_248z$b);
 
-    var html$5 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
-
-    var css_248z$a = ".index-module_common_font__Sz-yv{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__MHvJv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_options__BzSRC{background-color:#fff;box-shadow:2px 0 7px -1px rgba(0,0,0,.25);color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;left:100px;overflow:hidden;position:absolute;text-align:center;text-align:left;text-overflow:ellipsis;top:28px;transition:all .3s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;white-space:nowrap;width:86px;z-index:99}.index-module_options__BzSRC>.index-module_option__7PE8z{cursor:pointer;height:28px;line-height:28px;padding-left:6px;transition:all .2s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_options__BzSRC>.index-module_option__7PE8z:hover{background-color:#f5f5f5}.index-module_options__BzSRC>.index-module_option__7PE8z.index-module_active__Xn-PG{background-color:#e9f6fe;font-weight:400}";
-    var styles$8 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
-    styleInject(css_248z$a);
-
     var Options = dist.exports.defineComponent({
-        template: lodash.exports.template(html$5)({ styles: styles$8 }),
+        template: lodash.exports.template(html$5)({ styles: styles$9 }),
         attached: function () {
             this.events.documentClick = this.events.documentClick.bind(this);
             eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
@@ -41288,7 +41294,7 @@ var bkDocReader = (function (exports) {
     });
 
     var Select = dist.exports.defineComponent({
-        template: lodash.exports.template(html$6)({ styles: styles$9 }),
+        template: lodash.exports.template(html$6)({ styles: styles$a }),
         components: {
             "input-number": InputNumber
         },
@@ -41344,7 +41350,7 @@ var bkDocReader = (function (exports) {
         components: {
             "c-select": Select
         },
-        template: lodash.exports.template(html$7)({ styles: styles$b }),
+        template: lodash.exports.template(html$7)({ styles: styles$c }),
         attached: function () {
             this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
             this.events.scalChange = this.events.scalChange.bind(this);
@@ -41397,14 +41403,14 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$4 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
+    var html$4 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\r\n    <img src=\"data:image/png;base64,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\">\r\n</div>";
 
-    var css_248z$9 = ".index-module_content__2P82G{border:1px solid #999;border-radius:20px 20px 20px 20px;cursor:pointer;height:363px;left:50%;margin-left:-146px;margin-top:-181.5px;position:absolute;top:50%;width:292px}.index-module_content__2P82G:hover{background:#fff}.index-module_content__2P82G>img{display:block;height:90px;left:50%;margin-left:-45px;margin-top:-45px;position:absolute;top:50%;width:90px}";
-    var styles$7 = {"content":"index-module_content__2P82G"};
-    styleInject(css_248z$9);
+    var css_248z$a = ".index-module_content__2P82G {\n  width: 292px;\n  height: 363px;\n  border-radius: 20px 20px 20px 20px;\n  border: 1px solid #999999;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-left: -146px;\n  margin-top: -181.5px;\n  cursor: pointer;\n}\n.index-module_content__2P82G:hover {\n  background: #ffffff;\n}\n.index-module_content__2P82G > img {\n  width: 90px;\n  height: 90px;\n  display: block;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-top: -45px;\n  margin-left: -45px;\n}\n";
+    var styles$8 = {"content":"index-module_content__2P82G"};
+    styleInject(css_248z$a);
 
     var TempReaderContent = dist.exports.defineComponent({
-        template: lodash.exports.template(html$4)({ styles: styles$7 }),
+        template: lodash.exports.template(html$4)({ styles: styles$8 }),
         openFile: function () {
             return __awaiter(this, void 0, void 0, function () {
                 var result;
@@ -41554,17 +41560,17 @@ var bkDocReader = (function (exports) {
         var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
         var numPages = parserInterface.getNumPages();
         var nowPageNo = parserInterface.nowPageNo();
-        var haveDisabled = this.className.includes(" " + styles$b.disabled);
+        var haveDisabled = this.className.includes(" " + styles$c.disabled);
         if (this.title === "跳转到首页" || this.title === "上一页") {
             if (nowPageNo <= 1) {
                 if (haveDisabled) {
                     return;
                 }
-                this.className += " " + styles$b.disabled;
+                this.className += " " + styles$c.disabled;
                 this.update();
             }
             else if (haveDisabled) {
-                this.className = this.className.split(" " + styles$b.disabled).join("");
+                this.className = this.className.split(" " + styles$c.disabled).join("");
                 this.update();
             }
             return;
@@ -41574,11 +41580,11 @@ var bkDocReader = (function (exports) {
                 if (haveDisabled) {
                     return;
                 }
-                this.className += " " + styles$b.disabled;
+                this.className += " " + styles$c.disabled;
                 this.update();
             }
             else if (haveDisabled) {
-                this.className = this.className.split(" " + styles$b.disabled).join("");
+                this.className = this.className.split(" " + styles$c.disabled).join("");
                 this.update();
             }
             return;
@@ -41604,19 +41610,19 @@ var bkDocReader = (function (exports) {
         return supportPages && supportPages.jump;
     }
 
-    var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n        <div class=\"<%= styles.title %>\">\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n        </div>\n        <div class=\"<%= styles.contents %>\">\n            <div class=\"<%= styles.label %>\">\n                印章选择\n            </div>\n            <div class=\"<%= styles.sealContent %>\">\n                <fragment s-for=\"sealInfo in sealList\">\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n                    </div>\n                </fragment>\n            </div>\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n                页面选项设置\n            </div>\n        </div>\n        <div class=\"<%= styles.btnGroup %>\">\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\n        </div>\n    </div>\n</div>";
+    var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\r\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\r\n        <div class=\"<%= styles.title %>\">\r\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\r\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\r\n        </div>\r\n        <div class=\"<%= styles.contents %>\">\r\n            <div class=\"<%= styles.label %>\">\r\n                印章选择\r\n            </div>\r\n            <div class=\"<%= styles.sealContent %>\">\r\n                <fragment s-for=\"sealInfo in sealList\">\r\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\r\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\r\n                    </div>\r\n                </fragment>\r\n            </div>\r\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\r\n                页面选项设置\r\n            </div>\r\n        </div>\r\n        <div class=\"<%= styles.btnGroup %>\">\r\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\r\n        </div>\r\n    </div>\r\n</div>";
 
-    var css_248z$8 = ".index-module_sealSelectMask__vmm9t{background-color:rgba(0,0,0,.2);bottom:0;left:0;overflow:hidden;position:absolute;right:0;top:0;z-index:999}.index-module_sealSelectMask__vmm9t.index-module_hide__mFEJS{display:none}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o{background-color:#fff;left:50%;margin-left:-230.5px;position:absolute;top:50%;width:461px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx{background:#2752e7;height:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx>.index-module_close__5YfKo{color:#fff;cursor:pointer;display:block;float:right;height:40px;line-height:40px;margin-right:20px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_title__9-hxx>.index-module_text__fZ6fQ{color:#fff;float:left;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:14px;font-weight:400;height:40px;line-height:40px;padding-left:16px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8{padding:14px 31px 0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_label__5Byyv{color:#333;font-family:Microsoft YaHei UI-Bold,Microsoft YaHei UI;font-size:12px;font-weight:700;height:30px;line-height:30px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre{border:1px solid #e6e6e6;height:180px;margin-bottom:14px;overflow-x:hidden;overflow-y:auto;width:391px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL{border:1px dashed transparent;border-radius:9px 9px 9px 9px;cursor:pointer;float:left;font-size:0;margin-left:18px;margin-top:9px;padding:4px;transition:all .3s;width:150px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL.index-module_active__DHS0n,.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_contents__BtrD8>.index-module_sealContent__JKVre>.index-module_seal__961BL:hover{border:1px dashed #2752e7}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV{bottom:30px;overflow:hidden;position:absolute;width:100%}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV>.index-module_okBtn__WDAew{background:#2752e7;border-radius:4px 4px 4px 4px;color:#fff;cursor:pointer;float:right;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:14px;font-weight:400;height:34px;line-height:34px;margin-right:31px;text-align:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:99px}.index-module_sealSelectMask__vmm9t>.index-module_sealSelect__ne38o>.index-module_btnGroup__I02WV>.index-module_okBtn__WDAew.index-module_disabled__CjHxO{background-color:#444c5e;cursor:not-allowed}";
-    var styles$6 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
-    styleInject(css_248z$8);
+    var css_248z$9 = ".index-module_sealSelectMask__vmm9t {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n  z-index: 999;\n  overflow: hidden;\n}\n.index-module_sealSelectMask__vmm9t.index-module_hide__mFEJS {\n  display: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o {\n  position: absolute;\n  width: 461px;\n  left: 50%;\n  top: 50%;\n  margin-left: calc(-461px / 2);\n  background-color: #ffffff;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_close__5YfKo {\n  float: right;\n  color: #ffffff;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-right: 20px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_text__fZ6fQ {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  float: left;\n  color: #ffffff;\n  padding-left: 16px;\n  height: 40px;\n  line-height: 40px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 {\n  width: 100%;\n  padding: 14px 31px 0;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_label__5Byyv {\n  color: #333333;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  height: 30px;\n  line-height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre {\n  width: 391px;\n  height: 180px;\n  border: 1px solid #e6e6e6;\n  margin-bottom: 14px;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL {\n  width: 150px;\n  float: left;\n  margin-left: 18px;\n  margin-top: 9px;\n  cursor: pointer;\n  transition: all 0.3s;\n  border: 1px dashed transparent;\n  padding: 4px;\n  border-radius: 9px 9px 9px 9px;\n  font-size: 0;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL:hover,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL.index-module_active__DHS0n {\n  border: 1px dashed #2752e7;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV {\n  width: 100%;\n  overflow: hidden;\n  position: absolute;\n  bottom: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew {\n  width: 99px;\n  height: 34px;\n  background: #2752e7;\n  border-radius: 4px 4px 4px 4px;\n  line-height: 34px;\n  font-size: 14px;\n  text-align: center;\n  color: #ffffff;\n  font-weight: 400;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  float: right;\n  margin-right: 31px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew.index-module_disabled__CjHxO {\n  background-color: #444c5e;\n  cursor: not-allowed;\n}\n";
+    var styles$7 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+    styleInject(css_248z$9);
 
     var SealSelect = dist.exports.defineComponent({
-        template: lodash.exports.template(html$3)({ styles: styles$6 }),
+        template: lodash.exports.template(html$3)({ styles: styles$7 }),
         initData: function () {
             return {
                 mode: "seal",
                 sealList: [],
-                maskHideClassName: styles$6.hide
+                maskHideClassName: styles$7.hide
             };
         },
         attached: function () {
@@ -41624,7 +41630,7 @@ var bkDocReader = (function (exports) {
         },
         computed: {
             disabled: function () {
-                return !this.data.get("activeSeal") ? styles$6.disabled : "";
+                return !this.data.get("activeSeal") ? styles$7.disabled : "";
             },
             sealSelectStyles: function () {
                 var height = 601;
@@ -41649,7 +41655,7 @@ var bkDocReader = (function (exports) {
         selectSeal: function (sealList, mode) {
             var _this = this;
             mode = mode || "seal";
-            if (this.data.get("maskHideClassName") !== styles$6.hide) {
+            if (this.data.get("maskHideClassName") !== styles$7.hide) {
                 throw new Error("选择器被锁定");
             }
             var res = new Promise(function (resolve, reject) {
@@ -41671,7 +41677,7 @@ var bkDocReader = (function (exports) {
                     return;
                 }
                 this.data.set("sealList", []);
-                this.data.set("maskHideClassName", styles$6.hide);
+                this.data.set("maskHideClassName", styles$7.hide);
                 this.data.set("activeSeal", undefined);
                 this._waitResult &&
                     this._waitResult.resolve &&
@@ -41679,7 +41685,7 @@ var bkDocReader = (function (exports) {
             },
             closeClick: function () {
                 this.data.set("sealList", []);
-                this.data.set("maskHideClassName", styles$6.hide);
+                this.data.set("maskHideClassName", styles$7.hide);
                 this.data.set("activeSeal", undefined);
                 this._waitResult &&
                     this._waitResult.resolve &&
@@ -42028,11 +42034,11 @@ var bkDocReader = (function (exports) {
         catch (e) {
             isDisabled = false;
         }
-        if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
-            this.className += " " + styles$b.disabled;
+        if (isDisabled && !this.className.includes("  " + styles$c.disabled)) {
+            this.className += " " + styles$c.disabled;
             this.update(this);
         }
-        else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+        else if (!isDisabled && this.className.includes(" " + styles$c.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42051,11 +42057,11 @@ var bkDocReader = (function (exports) {
         catch (e) {
             isDisabled = false;
         }
-        if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
-            this.className += " " + styles$b.disabled;
+        if (isDisabled && !this.className.includes("  " + styles$c.disabled)) {
+            this.className += " " + styles$c.disabled;
             this.update(this);
         }
-        else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+        else if (!isDisabled && this.className.includes(" " + styles$c.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42066,12 +42072,12 @@ var bkDocReader = (function (exports) {
         var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
         var isDisabled = isNarrow ? scale <= val : scale >= val;
         if (isDisabled) {
-            if (!this.className.includes(" " + styles$b.disabled)) {
-                this.className += " " + styles$b.disabled;
+            if (!this.className.includes(" " + styles$c.disabled)) {
+                this.className += " " + styles$c.disabled;
                 this.update(this);
             }
         }
-        else if (this.className.includes(" " + styles$b.disabled)) {
+        else if (this.className.includes(" " + styles$c.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42287,7 +42293,7 @@ var bkDocReader = (function (exports) {
                 needReader: true,
                 title: "缩小",
                 width: 24,
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 isShow: showSupportScale,
                 attached: function (app) {
                     var self = this;
@@ -42307,11 +42313,11 @@ var bkDocReader = (function (exports) {
                 click: function (app) {
                     try {
                         var nextNodeInfo = this.selector.next();
-                        if (nextNodeInfo.className.includes(" " + styles$b.disabled)) {
+                        if (nextNodeInfo.className.includes(" " + styles$c.disabled)) {
                             nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
                             nextNodeInfo.update(nextNodeInfo);
                         }
-                        if (this.className.includes(" " + styles$b.disabled)) {
+                        if (this.className.includes(" " + styles$c.disabled)) {
                             return;
                         }
                         var parserInterface = app.currentBookmark().parserWrapperInfo
@@ -42331,16 +42337,16 @@ var bkDocReader = (function (exports) {
                             index -= 1;
                         }
                         if (index <= 0) {
-                            if (this.className.includes(" " + styles$b.disabled)) {
+                            if (this.className.includes(" " + styles$c.disabled)) {
                                 return;
                             }
-                            this.className += " " + styles$b.disabled;
+                            this.className += " " + styles$c.disabled;
                             this.update(this);
                             if (index === -1) {
                                 return;
                             }
                         }
-                        else if (this.className.includes(" " + styles$b.disabled)) {
+                        else if (this.className.includes(" " + styles$c.disabled)) {
                             this.className = this.className.split(" ")[0];
                             this.update(this);
                         }
@@ -42379,7 +42385,7 @@ var bkDocReader = (function (exports) {
                 html: "&#xe671;",
                 title: "放大",
                 width: 24,
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 isShow: showSupportScale,
                 attached: function (app) {
                     var self = this;
@@ -42398,11 +42404,11 @@ var bkDocReader = (function (exports) {
                 },
                 click: function (app) {
                     var prevNodeInfo = this.selector.prev();
-                    if (prevNodeInfo.className.includes(" " + styles$b.disabled)) {
+                    if (prevNodeInfo.className.includes(" " + styles$c.disabled)) {
                         prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
                         prevNodeInfo.update(prevNodeInfo);
                     }
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     try {
@@ -42423,16 +42429,16 @@ var bkDocReader = (function (exports) {
                             index += 1;
                         }
                         if (index >= scaleVals.length - 1 || index === -1) {
-                            if (this.className.includes(" " + styles$b.disabled)) {
+                            if (this.className.includes(" " + styles$c.disabled)) {
                                 return;
                             }
-                            this.className += " " + styles$b.disabled;
+                            this.className += " " + styles$c.disabled;
                             this.update(this);
                             if (index >= scaleVals.length) {
                                 return;
                             }
                         }
-                        else if (this.className.includes(" " + styles$b.disabled)) {
+                        else if (this.className.includes(" " + styles$c.disabled)) {
                             this.className = this.className.split(" ")[0];
                             this.update(this);
                         }
@@ -42530,7 +42536,7 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe667;",
                 title: "顺时针旋转",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 isShow: function (app) {
                     return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -42554,7 +42560,7 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe669;",
                 title: "逆时针旋转",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 isShow: function (app) {
                     return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -42578,20 +42584,20 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe719;",
                 title: "跳转到首页",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
                     if (!currentBookmark || !currentBookmark.id) {
                         return;
                     }
-                    if (!this.className.includes(" " + styles$b.disabled)) {
-                        this.className += " " + styles$b.disabled;
+                    if (!this.className.includes(" " + styles$c.disabled)) {
+                        this.className += " " + styles$c.disabled;
                         this.update();
                     }
                     currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
@@ -42604,12 +42610,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe615;",
                 title: "上一页",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -42617,8 +42623,8 @@ var bkDocReader = (function (exports) {
                         return;
                     }
                     var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
-                    if (nowPageNo <= 1 && this.className.includes(" " + styles$b.disabled)) {
-                        this.className += " " + styles$b.disabled;
+                    if (nowPageNo <= 1 && this.className.includes(" " + styles$c.disabled)) {
+                        this.className += " " + styles$c.disabled;
                         this.update();
                     }
                     if (nowPageNo >= 1) {
@@ -42633,12 +42639,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe718;",
                 title: "下一页",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app, event) {
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -42648,8 +42654,8 @@ var bkDocReader = (function (exports) {
                     var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
                     var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
                     if (nowPageNo >= numPages &&
-                        this.className.includes(" " + styles$b.disabled)) {
-                        this.className += " " + styles$b.disabled;
+                        this.className.includes(" " + styles$c.disabled)) {
+                        this.className += " " + styles$c.disabled;
                         this.update();
                     }
                     if (nowPageNo <= numPages) {
@@ -42664,12 +42670,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe690;",
                 title: "跳转到尾页",
-                className: styles$b.toolIconBtn,
+                className: styles$c.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -42677,8 +42683,8 @@ var bkDocReader = (function (exports) {
                         return;
                     }
                     var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
-                    if (!this.className.includes(" " + styles$b.disabled)) {
-                        this.className += " " + styles$b.disabled;
+                    if (!this.className.includes(" " + styles$c.disabled)) {
+                        this.className += " " + styles$c.disabled;
                         this.update();
                     }
                     currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
@@ -42860,7 +42866,7 @@ var bkDocReader = (function (exports) {
 
     new asyncLock();
     var Reader = dist.exports.defineComponent({
-        template: lodash.exports.template(html$a)({ styles: styles$c }),
+        template: lodash.exports.template(html$a)({ styles: styles$d }),
         initData: function () {
             return {
                 bookmarkLoadErrors: { __length: 0 }
@@ -42960,7 +42966,7 @@ var bkDocReader = (function (exports) {
                                 throw new Error("解析器未实现渲染方法");
                             }
                             readerEle = createElement("div");
-                            readerEle.className = styles$c.readerContent;
+                            readerEle.className = styles$d.readerContent;
                             this.readerEleList[bookmark.id] = readerEle;
                             rootEle.appendChild(readerEle);
                             res = parserInterface.render(readerEle);
@@ -43040,15 +43046,15 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" s-ref=\"ref-pannelWrapper\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}\">\n        <fragment s-for=\"toolbar, toolbarIndex in toolbars\">\n            <div class=\"<%= styles.content %>\" s-show=\"activeKey === toolbarIndex\">\n                <div s-ref=\"ref-pannelContent-{{toolbarIndex}}\" class=\"<%= styles.content %>\" _r=\"{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}\"></div>\n                <div s-if=\"toolbarChildrenRenderErrors[toolbarIndex].error\" class=\"<%= styles.error %>\">\n                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>\n                </div>\n                <div class=\"<%= styles.tools %>\" s-if=\"{{toolbar.tools && toolbar.tools.length > 0}}\">\n                    <fragment s-for=\"tool, index in toolbar.tools\">\n                        <div s-if=\"tool.type !== 'separate'\" s-ref=\"ref-tool-{{index}}\" _r=\"{{fns.handleNodeRender(tool, index)}}\" class=\"<%= styles.tool %>\">\n                            <div s-if=\"tool.nodeInfo.html\" class=\"{{tool.nodeInfo.className || '<%= styles.icon %>'}}\">\n                                <span class=\"iconfont\">{{tool.nodeInfo.html | raw}}</span>\n                            </div>\n                            <div s-if=\"tool.nodeInfo.text\" class=\"{{tool.nodeInfo.className || '<%= styles.text %>'}}\">\n                                <span>{{tool.nodeInfo.text}}</span>\n                            </div>\n                        </div>\n                    </fragment>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n            <div></div>\n        </div>\n        <div on-mousedown=\"events.drageDown($event)\" s-show=\"expand\" class=\"<%= styles.drag %>\"></div>\n    </div>\n</div>";
+    var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\r\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\r\n        <div class=\"<%= styles.comment %>\">\r\n            <span>缩图</span>\r\n        </div>\r\n        <div class=\"<%= styles.tabs %>\">\r\n            <fragment s-for=\"toolbar, index in toolbars\">\r\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\r\n                    <div class=\"<%= styles.icon %>\">\r\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\r\n                    </div>\r\n                    <div class=\"<%= styles.desc %>\">\r\n                        <span>{{toolbar.text}}</span>\r\n                    </div>\r\n                </div>\r\n            </fragment>\r\n        </div>\r\n    </div>\r\n    <div s-show=\"{{activeKey >= 0}}\" s-ref=\"ref-pannelWrapper\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}\">\r\n        <fragment s-for=\"toolbar, toolbarIndex in toolbars\">\r\n            <div class=\"<%= styles.content %>\" s-show=\"activeKey === toolbarIndex\">\r\n                <div s-ref=\"ref-pannelContent-{{toolbarIndex}}\" class=\"<%= styles.content %>\" _r=\"{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}\"></div>\r\n                <div s-if=\"toolbarChildrenRenderErrors[toolbarIndex].error\" class=\"<%= styles.error %>\">\r\n                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>\r\n                </div>\r\n                <div class=\"<%= styles.tools %>\" s-if=\"{{toolbar.tools && toolbar.tools.length > 0}}\">\r\n                    <fragment s-for=\"tool, index in toolbar.tools\">\r\n                        <div s-if=\"tool.type !== 'separate'\" s-ref=\"ref-tool-{{index}}\" _r=\"{{fns.handleNodeRender(tool, index)}}\" class=\"<%= styles.tool %>\">\r\n                            <div s-if=\"tool.nodeInfo.html\" class=\"{{tool.nodeInfo.className || '<%= styles.icon %>'}}\">\r\n                                <span class=\"iconfont\">{{tool.nodeInfo.html | raw}}</span>\r\n                            </div>\r\n                            <div s-if=\"tool.nodeInfo.text\" class=\"{{tool.nodeInfo.className || '<%= styles.text %>'}}\">\r\n                                <span>{{tool.nodeInfo.text}}</span>\r\n                            </div>\r\n                        </div>\r\n                    </fragment>\r\n                </div>\r\n            </div>\r\n        </fragment>\r\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\r\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\r\n            <div></div>\r\n        </div>\r\n        <div on-mousedown=\"events.drageDown($event)\" s-show=\"expand\" class=\"<%= styles.drag %>\"></div>\r\n    </div>\r\n</div>";
 
-    var css_248z$7 = ".index-module_common_font__rsmEw{color:#fff;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_text_overflow__p5aoa{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.index-module_slidebarLeft__higRK{background:#fff;height:100%;overflow:hidden;position:relative;transition:all .3;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA{float:left;height:100%;position:relative;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_comment__h9Ykh{border-bottom:2px solid #e6e6e6;color:#fff;color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:25px;left:0;line-height:25px;margin-bottom:2px;position:absolute;text-align:center;top:0;width:40px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6{bottom:0;left:0;overflow-x:hidden;overflow-y:auto;position:absolute;top:44px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2{border:none;color:#fff;cursor:pointer;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:45px;margin-bottom:17px;padding-top:5px;text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_disabled__Ptq3y{cursor:not-allowed}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{text-align:center;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e{height:20px;line-height:20px;margin-bottom:4px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2>.index-module_icon__Zsx8e>span{font-size:20px}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc{background:#e3e4e4}.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_desc__MkXk0>span,.index-module_slidebarLeft__higRK>.index-module_tabsWrapper__oMxJA>.index-module_tabs__YSKU6>.index-module_tab__F6hp2.index-module_active__ZtWjc>.index-module_icon__Zsx8e>span{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1{background-color:#e3e4e4;float:left;height:100%;min-width:16px;overflow:hidden;position:relative;transition:all .3s}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_fold__Hp4cY{width:16px!important}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1.index-module_expand__RCTjV{width:160px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_drag__WvhVF{bottom:0;cursor:col-resize;position:absolute;right:0;top:0;width:2px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco{bottom:0;left:0;overflow:auto;position:absolute;right:16px;top:0}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_content__UdWco{bottom:0;left:0;overflow:auto;position:absolute;right:0;top:0}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_error__lEXU4{padding-top:28px;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_error__lEXU4>h3{color:red;display:block;font-weight:bolder;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM{overflow:auto;padding-top:18px;position:relative}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4{cursor:pointer;height:50px;margin:0 auto 18px;width:50px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4.index-module_active__ZtWjc>.index-module_icon__Zsx8e,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4.index-module_active__ZtWjc>.index-module_text__TXr-l,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4:hover>.index-module_icon__Zsx8e,.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4:hover>.index-module_text__TXr-l{color:#2752e7}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_text__TXr-l{color:#fff;color:#444c5e;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;text-align:center}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_icon__Zsx8e{border-radius:24px;color:#444c5e;height:24px;margin:4px auto 2px;text-align:center;width:24px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_content__UdWco>.index-module_tools__IV9iM>.index-module_tool__c1cQ4>.index-module_icon__Zsx8e>span{font-size:24px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV{cursor:pointer;height:100%;position:absolute;right:0;text-align:left;top:0;width:16px}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>span{color:#fff;color:#333;display:block;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;position:absolute;text-align:center;text-align:left;top:50%;width:100%}.index-module_slidebarLeft__higRK>.index-module_tabPannel__NJDF1>.index-module_expand__RCTjV>div{background:#d9d9d9;height:20px;position:absolute;right:0;top:calc(50% - 3px);width:6px}";
-    var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
-    styleInject(css_248z$7);
+    var css_248z$8 = ".index-module_common_font__rsmEw {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__p5aoa {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_slidebarLeft__higRK {\n  position: relative;\n  height: 100%;\n  overflow: hidden;\n  background: #ffffff;\n  transition: all 0.3;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA {\n  width: 40px;\n  height: 100%;\n  position: relative;\n  float: left;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_comment__h9Ykh {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  position: absolute;\n  top: 0;\n  left: 0;\n  line-height: 25px;\n  width: 40px;\n  height: 25px;\n  color: #333;\n  margin-bottom: 2px;\n  border-bottom: 2px solid #e6e6e6;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 {\n  position: absolute;\n  top: 44px;\n  width: 100%;\n  bottom: 0;\n  left: 0;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 100%;\n  height: 45px;\n  padding-top: 5px;\n  cursor: pointer;\n  margin-bottom: 17px;\n  border: none;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_disabled__Ptq3y {\n  cursor: not-allowed;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 {\n  width: 100%;\n  text-align: center;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_desc__MkXk0 > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444c5e;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e {\n  height: 20px;\n  line-height: 20px;\n  margin-bottom: 4px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2 > .index-module_icon__Zsx8e > span {\n  font-size: 20px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc {\n  background: #e3e4e4;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_icon__Zsx8e > span,\n.index-module_slidebarLeft__higRK > .index-module_tabsWrapper__oMxJA > .index-module_tabs__YSKU6 > .index-module_tab__F6hp2.index-module_active__ZtWjc > .index-module_desc__MkXk0 > span {\n  color: #2752e7;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 {\n  min-width: 16px;\n  height: 100%;\n  overflow: hidden;\n  background-color: #e3e4e4;\n  float: left;\n  position: relative;\n  transition: all 0.3s;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1.index-module_fold__Hp4cY {\n  width: 16px !important;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1.index-module_expand__RCTjV {\n  width: 160px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_drag__WvhVF {\n  position: absolute;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 2px;\n  cursor: col-resize;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  top: 0;\n  right: 16px;\n  overflow: auto;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_content__UdWco {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  top: 0;\n  right: 0;\n  overflow: auto;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_error__lEXU4 {\n  width: 100%;\n  padding-top: 28px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_error__lEXU4 > h3 {\n  display: block;\n  text-align: center;\n  color: red;\n  font-weight: bolder;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM {\n  position: relative;\n  overflow: auto;\n  padding-top: 18px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4 {\n  width: 50px;\n  height: 50px;\n  margin: 0 auto;\n  margin-bottom: 18px;\n  cursor: pointer;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4:hover > .index-module_text__TXr-l,\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4.index-module_active__ZtWjc > .index-module_text__TXr-l,\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4:hover > .index-module_icon__Zsx8e,\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4.index-module_active__ZtWjc > .index-module_icon__Zsx8e {\n  color: #2752e7;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4 > .index-module_text__TXr-l {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444c5e;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4 > .index-module_icon__Zsx8e {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_content__UdWco > .index-module_tools__IV9iM > .index-module_tool__c1cQ4 > .index-module_icon__Zsx8e > span {\n  font-size: 24px;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV {\n  width: 16px;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-align: left;\n  cursor: pointer;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  display: block;\n  width: 100%;\n  text-align: left;\n  position: absolute;\n  top: 50%;\n}\n.index-module_slidebarLeft__higRK > .index-module_tabPannel__NJDF1 > .index-module_expand__RCTjV > div {\n  position: absolute;\n  width: 6px;\n  height: 20px;\n  background: #d9d9d9;\n  right: 0;\n  top: calc(50% - 3px);\n}\n";
+    var styles$6 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
+    styleInject(css_248z$8);
 
     var SlidebarLeft = dist.exports.defineComponent({
         components: {},
-        template: lodash.exports.template(html$2)({ styles: styles$5 }),
+        template: lodash.exports.template(html$2)({ styles: styles$6 }),
         initData: function () {
             return {
                 expand: false,
@@ -43216,7 +43222,7 @@ var bkDocReader = (function (exports) {
             },
             disabled: function (disabled) {
                 if (typeof disabled === "boolean") {
-                    return disabled ? styles$5.disabled : "";
+                    return disabled ? styles$6.disabled : "";
                 }
                 else if (typeof disabled !== "string") {
                     return "";
@@ -43224,7 +43230,7 @@ var bkDocReader = (function (exports) {
                 var appInterface = getApp(this.data.get("appId"));
                 var datas = getAppDataStore(this.data.get("appId"));
                 var fn = datas.get(disabled);
-                return fn(appInterface) ? styles$5.disabled : "";
+                return fn(appInterface) ? styles$6.disabled : "";
             },
             showTab: function (toolbar) {
                 if (!toolbar.needLoadFileOK) {
@@ -43247,17 +43253,17 @@ var bkDocReader = (function (exports) {
 
     var html$1 = "<div>右侧</div>";
 
-    var css_248z$6 = "";
-    var styles$4 = {};
-    styleInject(css_248z$6);
+    var css_248z$7 = "";
+    var styles$5 = {};
+    styleInject(css_248z$7);
 
     var SlidebarRight = dist.exports.defineComponent({
-        template: lodash.exports.template(html$1)({ styles: styles$4 })
+        template: lodash.exports.template(html$1)({ styles: styles$5 })
     });
 
-    var css_248z$5 = "#index-module_app__DAOOy{background:#eff1f3;height:100%;overflow:hidden;position:relative;width:100%}#index-module_header__NtWW5{max-height:120px;width:100%}#index-module_sidebarLeft__MA3wh{float:left;height:100%}#index-module_sidebarRight__2F13Z{float:right;height:100%}#index-module_content__m20ZT{width:100%}#index-module_reader__xIj2-{height:100%;overflow:hidden;position:relative}";
-    var styles$3 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
-    styleInject(css_248z$5);
+    var css_248z$6 = "#index-module_app__DAOOy {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: #eff1f3;\n  overflow: hidden;\n}\n#index-module_header__NtWW5 {\n  width: 100%;\n  max-height: 120px;\n}\n#index-module_sidebarLeft__MA3wh {\n  height: 100%;\n  float: left;\n}\n#index-module_sidebarRight__2F13Z {\n  height: 100%;\n  float: right;\n}\n#index-module_content__m20ZT {\n  width: 100%;\n}\n#index-module_reader__xIj2- {\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n";
+    var styles$4 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
+    styleInject(css_248z$6);
 
     var classnames = {exports: {}};
 
@@ -43319,15 +43325,15 @@ var bkDocReader = (function (exports) {
 
     var classNames = classnames.exports;
 
-    var css_248z$4 = ".index-module_bookmark__1nGVp{background:#e6e6e6;height:30px;overflow:hidden;position:relative;transition:all .5s;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;width:100%}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F,.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{display:inline-block;font-size:0;height:100%;position:absolute}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy{height:100%;left:0;padding:0 4px}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0{float:left;height:100%;overflow:auto}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabs__P0lJ0>div{height:100%}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabAdd__uIR8p{cursor:pointer;float:left;font-size:8px;height:100%;line-height:30px;width:16px}.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy>.index-module_tabAdd__uIR8p>span{cursor:pointer}.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F{height:100%;overflow:hidden;padding-right:1px;right:0}";
-    var styles$2 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
+    var css_248z$5 = ".index-module_bookmark__1nGVp {\n  width: 100%;\n  height: 30px;\n  background: #e6e6e6;\n  position: relative;\n  overflow: hidden;\n  transition: all 0.5s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy,\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  height: 100%;\n  display: inline-block;\n  font-size: 0;\n  position: absolute;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy {\n  left: 0;\n  height: 100%;\n  padding: 0 4px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 {\n  float: left;\n  height: 100%;\n  overflow: auto;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabs__P0lJ0 > div {\n  height: 100%;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p {\n  cursor: pointer;\n  float: left;\n  width: 16px;\n  height: 100%;\n  font-size: 8px;\n  line-height: 30px;\n}\n.index-module_bookmark__1nGVp .index-module_tabGroup__0ZnGy > .index-module_tabAdd__uIR8p > span {\n  cursor: pointer;\n}\n.index-module_bookmark__1nGVp .index-module_btnGroup__7TZ-F {\n  right: 0;\n  padding-right: 1px;\n  overflow: hidden;\n  height: 100%;\n}\n";
+    var styles$3 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
+    styleInject(css_248z$5);
+
+    var css_248z$4 = ".index-module_tab__nriyF {\n  width: 166px;\n  height: 100%;\n  position: relative;\n  float: left;\n  margin-right: 6px;\n  cursor: pointer;\n  transition: all 0.3s;\n}\n.index-module_tab__nriyF.index-module_active__6hZmf,\n.index-module_tab__nriyF:hover {\n  background: #ffffff;\n}\n.index-module_tab__nriyF .index-module_fileName__A6hsy {\n  position: absolute;\n  left: 21px;\n  height: 100%;\n  width: 97px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  text-align: center;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM {\n  font-size: 0px;\n  position: absolute;\n  right: 21px;\n  line-height: 30px;\n}\n.index-module_tab__nriyF .index-module_closeBtn__MTrBM > span {\n  cursor: pointer;\n  font-size: 8px;\n}\n";
+    var styles$2 = {"tab":"index-module_tab__nriyF","active":"index-module_active__6hZmf","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
     styleInject(css_248z$4);
 
-    var css_248z$3 = ".index-module_tab__nriyF{cursor:pointer;float:left;height:100%;margin-right:6px;position:relative;transition:all .3s;width:166px}.index-module_tab__nriyF.index-module_active__6hZmf,.index-module_tab__nriyF:hover{background:#fff}.index-module_tab__nriyF .index-module_fileName__A6hsy{color:#333;font-family:Microsoft YaHei UI-Regular,Microsoft YaHei UI;font-size:12px;font-weight:400;height:100%;left:21px;line-height:30px;overflow:hidden;position:absolute;text-align:center;text-overflow:ellipsis;white-space:nowrap;width:97px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM{font-size:0;line-height:30px;position:absolute;right:21px}.index-module_tab__nriyF .index-module_closeBtn__MTrBM>span{cursor:pointer;font-size:8px}";
-    var styles$1 = {"tab":"index-module_tab__nriyF","active":"index-module_active__6hZmf","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
-    styleInject(css_248z$3);
-
-    var template$4 = "\n    <div on-click=\"events.tabClick()\" class=\"".concat(styles$1.tab, " {{active?'").concat(styles$1.active, "':''}}\">\n      <div title=\"{{name}}\" class=\"").concat(styles$1.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div on-click=\"events.tabClose()\" class=\"").concat(styles$1.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
+    var template$4 = "\n    <div on-click=\"events.tabClick()\" class=\"".concat(styles$2.tab, " {{active?'").concat(styles$2.active, "':''}}\">\n      <div title=\"{{name}}\" class=\"").concat(styles$2.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div on-click=\"events.tabClose()\" class=\"").concat(styles$2.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
     var BookmarkTab = dist.exports.defineComponent({
         template: template$4,
         events: {
@@ -43353,11 +43359,11 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var css_248z$2 = ".index-module_btn__Z99v5{display:block;float:left;height:30px;line-height:30px;overflow:hidden;text-align:center;width:30px}.index-module_btn__Z99v5>span{cursor:pointer;display:block;height:24px;line-height:24px;margin-top:3px;text-align:center;width:24px}";
-    var styles = {"btn":"index-module_btn__Z99v5"};
-    styleInject(css_248z$2);
+    var css_248z$3 = ".index-module_btn__Z99v5 {\n  display: block;\n  width: 30px;\n  height: 30px;\n  overflow: hidden;\n  line-height: 30px;\n  text-align: center;\n  float: left;\n}\n.index-module_btn__Z99v5 > span {\n  display: block;\n  width: 24px;\n  height: 24px;\n  text-align: center;\n  line-height: 24px;\n  cursor: pointer;\n  margin-top: 3px;\n}\n";
+    var styles$1 = {"btn":"index-module_btn__Z99v5"};
+    styleInject(css_248z$3);
 
-    var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
+    var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles$1.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
     var TabBtn = dist.exports.defineComponent({
         template: template$3,
         attached: function () {
@@ -43388,10 +43394,10 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var html = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"b, i in bookmarks\" appId=\"{{appId}}\" active=\"{{currentIndex === i}}\" id=\"{{b.id}}\" name=\"{{b.name}}\"></h-tab>\n            </div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\"></tab-btn>\n    </div>\n</div>";
+    var html = "<div class=\"<%= styles.bookmark %>\">\r\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\r\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\r\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\r\n                <h-tab s-for=\"b, i in bookmarks\" appId=\"{{appId}}\" active=\"{{currentIndex === i}}\" id=\"{{b.id}}\" name=\"{{b.name}}\"></h-tab>\r\n            </div>\r\n        </div>\r\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\r\n            <span class=\"iconfont\">&#xe64d;</span>\r\n        </div>\r\n    </div>\r\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\r\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\"></tab-btn>\r\n    </div>\r\n</div>";
 
     var template$2 = lodash.exports.template(html)({
-        styles: styles$2
+        styles: styles$3
     });
     var Bookmark = dist.exports.defineComponent({
         components: {
@@ -43521,7 +43527,7 @@ var bkDocReader = (function (exports) {
     });
 
     var isFirst = true;
-    var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+    var template = "\n<div id=\"".concat(styles$4.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$4.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$4.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$4.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$4.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$4.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$4.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
     var AppUi = dist.exports.defineComponent({
         components: {
             "ui-tabs": TabPages,
@@ -43774,6 +43780,96 @@ var bkDocReader = (function (exports) {
     var ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
     var ErrLackOfParser = new Error("缺失解析器信息");
     var ErrNoSupportFunction = new Error("未实现的方法");
+
+    var css_248z$2 = ".index-module_messageContainer__RU62A {\n  position: fixed;\n  top: 20px;\n  left: 40.55%;\n  z-index: 1000;\n}\n.index-module_messageBoxBackground__r6MJO {\n  background-color: white;\n  border-radius: 2px 2px 2px 2px;\n}\n.index-module_messageBox__bhmnA {\n  width: 342px;\n  border-radius: 2px 2px 2px 2px;\n  opacity: 1;\n  padding-top: 5px;\n  padding-left: 8px;\n  padding-right: 8px;\n  margin-bottom: 20px;\n}\n.index-module_success__5o4-F {\n  background: rgba(47, 255, 120, 0.1);\n  border: 1px solid #38B865;\n  color: #38B865;\n}\n.index-module_warn__KeMOh {\n  background: rgba(255, 186, 47, 0.1);\n  border: 1px solid #FAAD14;\n  color: #FAAD14;\n}\n.index-module_error__OjKmd {\n  background: rgba(255, 120, 47, 0.1);\n  border: 1px solid #EB5E12;\n  color: #EB5E12;\n}\n.index-module_title__kJZwQ {\n  width: 344px;\n  height: 20px;\n  margin-bottom: 9px;\n}\n.index-module_titleTip__dk1qQ {\n  font-size: 14px;\n}\n.index-module_titleLeft__Xtxc9 {\n  float: left;\n}\n.index-module_titleRight__ExJhx {\n  float: right;\n  padding-right: 5px;\n}\n.index-module_titleIcon__s2oeu img {\n  width: 14px;\n  height: 14px;\n  position: relative;\n  top: 2px;\n}\n.index-module_closeIcon__Uwa5G {\n  cursor: pointer;\n  font-size: 12px;\n  margin-left: 6px;\n}\n.index-module_exBtn__Hfvbr span {\n  margin-left: 14px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  color: #2F51FF;\n  cursor: pointer;\n}\n.index-module_content__fkr7p {\n  clear: both;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  line-height: 1.33;\n  margin-top: 15px;\n  margin-left: 19px;\n  margin-right: 13px;\n  word-break: break-all;\n  margin-bottom: 4px;\n}\n";
+    var styles = {"messageContainer":"index-module_messageContainer__RU62A","messageBoxBackground":"index-module_messageBoxBackground__r6MJO","messageBox":"index-module_messageBox__bhmnA","success":"index-module_success__5o4-F","warn":"index-module_warn__KeMOh","error":"index-module_error__OjKmd","title":"index-module_title__kJZwQ","titleTip":"index-module_titleTip__dk1qQ","titleLeft":"index-module_titleLeft__Xtxc9","titleRight":"index-module_titleRight__ExJhx","titleIcon":"index-module_titleIcon__s2oeu","closeIcon":"index-module_closeIcon__Uwa5G","exBtn":"index-module_exBtn__Hfvbr","content":"index-module_content__fkr7p"};
+    styleInject(css_248z$2);
+
+    function htmlTemplate(htmlStr) {
+        var template = document.createElement("template");
+        template.innerHTML = htmlStr;
+        return template.content.children[0];
+    }
+    function newGuid() {
+        var curguid = "";
+        for (var i = 1; i <= 32; i++) {
+            var id = Math.floor(Math.random() * 16.0).toString(16);
+            curguid += id;
+            if (i === 8 || i === 12 || i === 16 || i === 20)
+                curguid += "";
+        }
+        return "a".concat(curguid);
+    }
+    function successIcon() {
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAE2SURBVHgBzZG/SsNgFMXPjRVqQQiIg5PxDboIURATFNTRydEgCG7pILjo5AvUQRH/gPUFOvgnYz8ENZt5gUIWFQTBqUYUr0lMTWLSrHqmm5tzfuf7EuCvRb8XWrMme+VODcTTwWNkcpiobs8dNAoBqrWmgD5bACvI73PBkm4v7LvdjZR+XxQOxGGB1jTkDEC1Vo3icAzxKiUzAyAJZq/IyMAQTie2Eozvb5MCMKPaK7w7vo6j9lliS1lAUkHb0ugMBkuVMHxxf42rJyfPmgKI7rDh7PmAWTQmN8Pwcfs8FWLiH1opPhUJ/x5aMD6+PmP5dhtTw1VcPtxkWglcj+dIWsuQvbf+O39UUCzXnj8cy1xB6Ccv4Hc9MBSFI0/iNDlSrRWDpD4z/jMsfKcodz52xKJf9K/0BXb1ZOFZYiDgAAAAAElFTkSuQmCC";
+    }
+    function warnIcon() {
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAENSURBVHgBxZI9isJQFIXvfQkO0wyBYWCqIQNTD+5AXYJa2GqjZVyEC9AViK0gLkEba11CCgtBhGih8GJyvf6EhLzHK/VAmvPO+W7eD8CrhXmDpo4jY7srEEpEUL6bsAKB/UJtOzICTtNv16JoBkQuaESIfoxW5b268RNPZAOm8m0arwnO0NBxFICcfDXzZfHX4a+tQM4ftqcAEMnLT6RwD9qtJGeTBbBZ1IbDg2piCrDBpGtZBsaIyFDnyup2AXBcq63rteYBqAGI/x7gTwM0hH46N7H4AYWxtWTLBYMIyH+r737VP6gGQSSjCkd8Uzm+ZVKhLijHn01+uh6vFh/NOfEWC4fzAFuB+VSfrgvnD2Y2iCUvwQAAAABJRU5ErkJggg==";
+    }
+    function errorIcon() {
+        return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAErSURBVHgBzVI7TsNAEJ1ZUoEA8y0jpweJG5BcAzDyDUILffr4BmBEj7gA3IAUHMCiDIJYEBpwdpix8Xpho23hrVay3r735q3WAH8N/E1M4iAotDoBxH0g6lYqGiGp4Wb6fOENYHM40+qWAEKYPy1bULq3dp5nNadsgc8skDPRSEsnYBxtxLV59fQGWu0dY2y1d0uuDik09J0ARDLk+9UZLPcvyxAxr/C3cE0V7FrXqvB0vE52XTFLCPJ6TY6geHywj2ErfcEfDVxguQgIfFBWrbtmelVbJr8lkbmOkQKNnACFZAKWDgemtmwJWTwYWFNp2PT8hjzNp8Z7rh2CBzw9204nHacB/xz57IN6IvCZRWNzOE84joIYEflZca9y8vV4T6eQdK7zHP4VvgA2L3yQzd3WcgAAAABJRU5ErkJggg==";
+    }
+    function getIcon(type) {
+        switch (type) {
+            case 'success':
+                return successIcon();
+            case 'warn':
+                return warnIcon();
+            case 'error':
+                return errorIcon();
+        }
+    }
+    function getClassName(type) {
+        switch (type) {
+            case 'success':
+                return styles.success;
+            case 'warn':
+                return styles.warn;
+            case 'error':
+                return styles.error;
+        }
+    }
+    var MessageImpl = /** @class */ (function () {
+        function MessageImpl(_app) {
+            this._app = _app;
+            this.msgRoot = document.createElement('div');
+            this.msgRoot.className = styles.messageContainer;
+            _app.getRootEle().appendChild(this.msgRoot);
+        }
+        MessageImpl.prototype.show = function (type, opt) {
+            var _a, _b;
+            var elementGuid = newGuid();
+            var exBtns = (opt.exBtn || []).map(function (m) { return __assign(__assign({}, m), { guid: newGuid() }); });
+            var showIconFlag = (_a = opt.showIcon) !== null && _a !== void 0 ? _a : true;
+            var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles.messageBoxBackground, "\" >\n                <div class=\"").concat(styles.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles.title, "\" >\n                        <div class=\"").concat(styles.titleLeft, "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles.titleTip, "\" >").concat(opt.title, "</span>\n                        </div>\n                        <div class=\"").concat(styles.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat((opt.hideTime && opt.hideTime <= 0) ? "<span class=\"".concat(styles.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    ").concat(opt.content ? "<div class='".concat(styles.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
+            if (exBtns && exBtns.length > 0) {
+                exBtns.forEach(function (btn) {
+                    if (!btn.callback) {
+                        return;
+                    }
+                    var ele = element.querySelector("#".concat(btn.guid));
+                    ele.onclick = btn.callback;
+                });
+            }
+            var hideTimeFlag = (_b = opt.hideTime) !== null && _b !== void 0 ? _b : 5000;
+            if (hideTimeFlag > 0) {
+                setTimeout(function () {
+                    document.getElementById(elementGuid).remove();
+                }, hideTimeFlag);
+            }
+            this.msgRoot.appendChild(element);
+        };
+        MessageImpl.prototype.success = function (opt) {
+            this.show('success', opt);
+        };
+        MessageImpl.prototype.warn = function (opt) {
+            this.show('warn', opt);
+        };
+        MessageImpl.prototype.error = function (opt) {
+            this.show('error', opt);
+        };
+        return MessageImpl;
+    }());
 
     var appEventBookmarkChange = "bookmarkChange";
     var fontfaceStyleId = new Date().getTime() + "";
@@ -44108,6 +44204,7 @@ var bkDocReader = (function (exports) {
             this._currentBookmarkId = "";
             this._bookmarkMap = {};
             this._datastore = new DataStore();
+            this._messageUtils = new MessageImpl(this);
             this._pathJoin = function () {
                 var p = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -44334,6 +44431,7 @@ var bkDocReader = (function (exports) {
                 _this._isShow = false;
                 _this._updateShow();
             };
+            this.message = this._messageUtils;
             this._fontConfig =
                 (this._initOptions && this._initOptions.fontConfig) || defaultFontConfig;
             if (this._initOptions && this._initOptions.fontConfig) {
@@ -44547,10 +44645,10 @@ var bkDocReader = (function (exports) {
         return AppImpl;
     }());
 
-    var css_248z$1 = ".iconfont{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:iconfont!important;font-size:16px;font-style:normal}";
+    var css_248z$1 = ".iconfont {\r\n  font-family: \"iconfont\" !important;\r\n  font-size: 16px;\r\n  font-style: normal;\r\n  -webkit-font-smoothing: antialiased;\r\n  -moz-osx-font-smoothing: grayscale;\r\n}\r\n";
     styleInject(css_248z$1);
 
-    var css_248z = ".clearfix:after{clear:both;content:\".\";display:block;height:0;visibility:hidden}.clearfix{*zoom:1}";
+    var css_248z = ".clearfix:after {\r\n  content: \".\";\r\n  display: block;\r\n  height: 0;\r\n  clear: both;\r\n  visibility: hidden;\r\n}\r\n.clearfix {\r\n  *zoom: 1;\r\n}\r\n";
     styleInject(css_248z);
 
     // (() => {
@@ -44579,3 +44677,4 @@ var bkDocReader = (function (exports) {
     return exports;
 
 })({});
+//# sourceMappingURL=bkDocReader.js.map
