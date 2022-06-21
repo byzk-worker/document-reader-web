@@ -203,3 +203,74 @@ export declare interface ToolbarConfigActiveChangeEvent {
    */
   update: (newInfo: ToolbarConfig) => void;
 }
+
+/**
+ * 消息按钮
+ */
+export interface MessageExBtn {
+  /**
+   * 按钮名
+   */
+  title: string;
+  /**
+   * 点击事件
+   */
+  callback?: (event: any) => void;
+  /**
+   * 样式名
+   */
+  className?: string;
+}
+
+/**
+ * 消息选项
+ */
+export interface MessageOption {
+  /**
+   * 提示标题
+   */
+  title: string;
+  /**
+   * 额外按钮
+   */
+  exBtn?: MessageExBtn[];
+  /**
+   * 提示主体 字符串 如果想传入html，也是字符串
+   */
+  content?: string;
+  /**
+   * 毫秒，关闭时间，默认为 5000，传入小于等于0的值，不自动关闭
+   */
+  hideTime?: number;
+  /**
+   * 是否展示提示图标，默认为true
+   */
+  showIcon?: boolean;
+}
+
+/**
+ * 消息弹窗类型
+ */
+export interface MessageInterface {
+  /**
+   * 正确消息
+   * @param opt 选项
+   */
+  success(opt: MessageOption): void;
+  /**
+   * 警告消息
+   * @param opt 选项
+   */
+  warn(opt: MessageOption): void;
+  /**
+   * 错误消息
+   * @param opt 选项
+   */
+  error(opt: MessageOption): void;
+  /**
+   * 展示消息
+   * @param type 消息类型
+   * @param opt 选项
+   */
+  show(type: "success" | "warn" | "error", opt: MessageOption): void;
+}

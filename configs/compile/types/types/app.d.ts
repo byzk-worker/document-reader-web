@@ -1,7 +1,7 @@
 import { TabPagesConfig, TabBtnGroupConfig } from "./tabPages";
 import { HeaderConfig } from "./header";
 import { SlidebarLeftConfig } from "./slidebar";
-import { NodeInfo, ToolbarConfig } from "./common";
+import { MessageInterface, NodeInfo, ToolbarConfig } from "./common";
 import { ReaderInterface } from "./reader";
 import {
   FileInfo,
@@ -240,6 +240,8 @@ export declare interface AppInterface {
       currentBookmark: AppBookmarkInfoWithIndex
     ) => void
   );
+
+  message: MessageInterface,
 }
 
 /**

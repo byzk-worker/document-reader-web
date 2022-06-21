@@ -37,7 +37,10 @@
                 svgFile: "iconfont.svg",
             },
         });
-        window.app.show()
+        window.app.show();
+        window.app.message.success({ title: '成功提示文字', hideTime: -1, });
+        window.app.message.warn({ title: '警告提示文字', hideTime: -1 });
+        window.app.message.error({ title: '失败提示文字', hideTime: -1 });
     }
 </script>
 

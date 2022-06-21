@@ -706,9 +706,9 @@ var dom = /*#__PURE__*/Object.freeze({
     nodeEventDestroy: nodeEventDestroy
 });
 
-var styles$d = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+var styles$e = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
 
-var htmlTemplate = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
+var htmlTemplate$1 = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
 var headerToolMarginRight = 16;
 var headerToolPanelHeight = 50;
@@ -716,11 +716,11 @@ var headerToolPanelHeight = 50;
 var html$b = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
 
 var ToolBtn = defineComponent({
-    template: template$6(html$b)({ styles: styles$d })
+    template: template$6(html$b)({ styles: styles$e })
 });
 
-var template$5 = template$6(htmlTemplate)({
-    styles: styles$d
+var template$5 = template$6(htmlTemplate$1)({
+    styles: styles$e
 });
 var Header = defineComponent({
     template: template$5,
@@ -974,19 +974,19 @@ var Header = defineComponent({
 
 var html$a = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
 
-var styles$c = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+var styles$d = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
 
-var styles$b = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+var styles$c = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
 
 var html$9 = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
 var html$8 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-var styles$a = {};
+var styles$b = {};
 
 var allowKeys = [8, 37, 39, 46];
 var InputNumber = defineComponent({
-    template: template$6(html$8)(styles$a),
+    template: template$6(html$8)(styles$b),
     initData: function () {
         return {
             value: "1",
@@ -1086,7 +1086,7 @@ var ToolJump = defineComponent({
     components: {
         "input-number": InputNumber
     },
-    template: template$6(html$9)({ styles: styles$b }),
+    template: template$6(html$9)({ styles: styles$c }),
     initData: function () {
         return {
             maxValue: undefined,
@@ -1105,14 +1105,14 @@ var ToolJump = defineComponent({
         prevDisableClass: function () {
             var val = this.data.get("value");
             if (val == 1) {
-                return styles$b.disabled;
+                return styles$c.disabled;
             }
         },
         nextDisableClass: function () {
             var val = this.data.get("value");
             var maxVal = this.data.get("maxValue");
             if (val >= maxVal) {
-                return styles$b.disabled;
+                return styles$c.disabled;
             }
         }
     },
@@ -1163,14 +1163,14 @@ var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n   
 
 var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
-var styles$9 = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+var styles$a = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
 
 var html$5 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
-var styles$8 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
+var styles$9 = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 
 var Options = defineComponent({
-    template: template$6(html$5)({ styles: styles$8 }),
+    template: template$6(html$5)({ styles: styles$9 }),
     attached: function () {
         this.events.documentClick = this.events.documentClick.bind(this);
         eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
@@ -1264,7 +1264,7 @@ var Options = defineComponent({
 });
 
 var Select = defineComponent({
-    template: template$6(html$6)({ styles: styles$9 }),
+    template: template$6(html$6)({ styles: styles$a }),
     components: {
         "input-number": InputNumber
     },
@@ -1320,7 +1320,7 @@ var ToolScale = defineComponent({
     components: {
         "c-select": Select
     },
-    template: template$6(html$7)({ styles: styles$b }),
+    template: template$6(html$7)({ styles: styles$c }),
     attached: function () {
         this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
         this.events.scalChange = this.events.scalChange.bind(this);
@@ -1375,10 +1375,10 @@ var ToolScale = defineComponent({
 
 var html$4 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
 
-var styles$7 = {"content":"index-module_content__2P82G"};
+var styles$8 = {"content":"index-module_content__2P82G"};
 
 var TempReaderContent = defineComponent({
-    template: template$6(html$4)({ styles: styles$7 }),
+    template: template$6(html$4)({ styles: styles$8 }),
     openFile: function () {
         return __awaiter(this, void 0, void 0, function () {
             var result;
@@ -1528,17 +1528,17 @@ function jumpBtnGroupCheckFn(app, currentBookmark) {
     var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
     var numPages = parserInterface.getNumPages();
     var nowPageNo = parserInterface.nowPageNo();
-    var haveDisabled = this.className.includes(" " + styles$b.disabled);
+    var haveDisabled = this.className.includes(" " + styles$c.disabled);
     if (this.title === "跳转到首页" || this.title === "上一页") {
         if (nowPageNo <= 1) {
             if (haveDisabled) {
                 return;
             }
-            this.className += " " + styles$b.disabled;
+            this.className += " " + styles$c.disabled;
             this.update();
         }
         else if (haveDisabled) {
-            this.className = this.className.split(" " + styles$b.disabled).join("");
+            this.className = this.className.split(" " + styles$c.disabled).join("");
             this.update();
         }
         return;
@@ -1548,11 +1548,11 @@ function jumpBtnGroupCheckFn(app, currentBookmark) {
             if (haveDisabled) {
                 return;
             }
-            this.className += " " + styles$b.disabled;
+            this.className += " " + styles$c.disabled;
             this.update();
         }
         else if (haveDisabled) {
-            this.className = this.className.split(" " + styles$b.disabled).join("");
+            this.className = this.className.split(" " + styles$c.disabled).join("");
             this.update();
         }
         return;
@@ -1580,15 +1580,15 @@ function supportJumpPage(app) {
 
 var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n        <div class=\"<%= styles.title %>\">\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n        </div>\n        <div class=\"<%= styles.contents %>\">\n            <div class=\"<%= styles.label %>\">\n                印章选择\n            </div>\n            <div class=\"<%= styles.sealContent %>\">\n                <fragment s-for=\"sealInfo in sealList\">\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n                    </div>\n                </fragment>\n            </div>\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n                页面选项设置\n            </div>\n        </div>\n        <div class=\"<%= styles.btnGroup %>\">\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\n        </div>\n    </div>\n</div>";
 
-var styles$6 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+var styles$7 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
 
 var SealSelect = defineComponent({
-    template: template$6(html$3)({ styles: styles$6 }),
+    template: template$6(html$3)({ styles: styles$7 }),
     initData: function () {
         return {
             mode: "seal",
             sealList: [],
-            maskHideClassName: styles$6.hide
+            maskHideClassName: styles$7.hide
         };
     },
     attached: function () {
@@ -1596,7 +1596,7 @@ var SealSelect = defineComponent({
     },
     computed: {
         disabled: function () {
-            return !this.data.get("activeSeal") ? styles$6.disabled : "";
+            return !this.data.get("activeSeal") ? styles$7.disabled : "";
         },
         sealSelectStyles: function () {
             var height = 601;
@@ -1621,7 +1621,7 @@ var SealSelect = defineComponent({
     selectSeal: function (sealList, mode) {
         var _this = this;
         mode = mode || "seal";
-        if (this.data.get("maskHideClassName") !== styles$6.hide) {
+        if (this.data.get("maskHideClassName") !== styles$7.hide) {
             throw new Error("选择器被锁定");
         }
         var res = new Promise(function (resolve, reject) {
@@ -1643,7 +1643,7 @@ var SealSelect = defineComponent({
                 return;
             }
             this.data.set("sealList", []);
-            this.data.set("maskHideClassName", styles$6.hide);
+            this.data.set("maskHideClassName", styles$7.hide);
             this.data.set("activeSeal", undefined);
             this._waitResult &&
                 this._waitResult.resolve &&
@@ -1651,7 +1651,7 @@ var SealSelect = defineComponent({
         },
         closeClick: function () {
             this.data.set("sealList", []);
-            this.data.set("maskHideClassName", styles$6.hide);
+            this.data.set("maskHideClassName", styles$7.hide);
             this.data.set("activeSeal", undefined);
             this._waitResult &&
                 this._waitResult.resolve &&
@@ -1713,11 +1713,11 @@ function narrowDisabledHandler(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
-        this.className += " " + styles$b.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$c.disabled)) {
+        this.className += " " + styles$c.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$c.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -1736,11 +1736,11 @@ function enlargeDisabledHandle(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$b.disabled)) {
-        this.className += " " + styles$b.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$c.disabled)) {
+        this.className += " " + styles$c.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$b.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$c.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -1751,12 +1751,12 @@ function narrowOrEnlargeScaleChange(scale) {
     var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
     var isDisabled = isNarrow ? scale <= val : scale >= val;
     if (isDisabled) {
-        if (!this.className.includes(" " + styles$b.disabled)) {
-            this.className += " " + styles$b.disabled;
+        if (!this.className.includes(" " + styles$c.disabled)) {
+            this.className += " " + styles$c.disabled;
             this.update(this);
         }
     }
-    else if (this.className.includes(" " + styles$b.disabled)) {
+    else if (this.className.includes(" " + styles$c.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -1972,7 +1972,7 @@ var headerTabsBtns = {
             needReader: true,
             title: "缩小",
             width: 24,
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
                 var self = this;
@@ -1992,11 +1992,11 @@ var headerTabsBtns = {
             click: function (app) {
                 try {
                     var nextNodeInfo = this.selector.next();
-                    if (nextNodeInfo.className.includes(" " + styles$b.disabled)) {
+                    if (nextNodeInfo.className.includes(" " + styles$c.disabled)) {
                         nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
                         nextNodeInfo.update(nextNodeInfo);
                     }
-                    if (this.className.includes(" " + styles$b.disabled)) {
+                    if (this.className.includes(" " + styles$c.disabled)) {
                         return;
                     }
                     var parserInterface = app.currentBookmark().parserWrapperInfo
@@ -2016,16 +2016,16 @@ var headerTabsBtns = {
                         index -= 1;
                     }
                     if (index <= 0) {
-                        if (this.className.includes(" " + styles$b.disabled)) {
+                        if (this.className.includes(" " + styles$c.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$b.disabled;
+                        this.className += " " + styles$c.disabled;
                         this.update(this);
                         if (index === -1) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$b.disabled)) {
+                    else if (this.className.includes(" " + styles$c.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -2064,7 +2064,7 @@ var headerTabsBtns = {
             html: "&#xe671;",
             title: "放大",
             width: 24,
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
                 var self = this;
@@ -2083,11 +2083,11 @@ var headerTabsBtns = {
             },
             click: function (app) {
                 var prevNodeInfo = this.selector.prev();
-                if (prevNodeInfo.className.includes(" " + styles$b.disabled)) {
+                if (prevNodeInfo.className.includes(" " + styles$c.disabled)) {
                     prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
                     prevNodeInfo.update(prevNodeInfo);
                 }
-                if (this.className.includes(" " + styles$b.disabled)) {
+                if (this.className.includes(" " + styles$c.disabled)) {
                     return;
                 }
                 try {
@@ -2108,16 +2108,16 @@ var headerTabsBtns = {
                         index += 1;
                     }
                     if (index >= scaleVals.length - 1 || index === -1) {
-                        if (this.className.includes(" " + styles$b.disabled)) {
+                        if (this.className.includes(" " + styles$c.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$b.disabled;
+                        this.className += " " + styles$c.disabled;
                         this.update(this);
                         if (index >= scaleVals.length) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$b.disabled)) {
+                    else if (this.className.includes(" " + styles$c.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -2215,7 +2215,7 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe667;",
             title: "顺时针旋转",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             isShow: function (app) {
                 return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -2239,7 +2239,7 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe669;",
             title: "逆时针旋转",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             isShow: function (app) {
                 return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -2263,20 +2263,20 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe719;",
             title: "跳转到首页",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$b.disabled)) {
+                if (this.className.includes(" " + styles$c.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
                 if (!currentBookmark || !currentBookmark.id) {
                     return;
                 }
-                if (!this.className.includes(" " + styles$b.disabled)) {
-                    this.className += " " + styles$b.disabled;
+                if (!this.className.includes(" " + styles$c.disabled)) {
+                    this.className += " " + styles$c.disabled;
                     this.update();
                 }
                 currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
@@ -2289,12 +2289,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe615;",
             title: "上一页",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$b.disabled)) {
+                if (this.className.includes(" " + styles$c.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2302,8 +2302,8 @@ var headerTabsBtns = {
                     return;
                 }
                 var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
-                if (nowPageNo <= 1 && this.className.includes(" " + styles$b.disabled)) {
-                    this.className += " " + styles$b.disabled;
+                if (nowPageNo <= 1 && this.className.includes(" " + styles$c.disabled)) {
+                    this.className += " " + styles$c.disabled;
                     this.update();
                 }
                 if (nowPageNo >= 1) {
@@ -2318,12 +2318,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe718;",
             title: "下一页",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app, event) {
-                if (this.className.includes(" " + styles$b.disabled)) {
+                if (this.className.includes(" " + styles$c.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2333,8 +2333,8 @@ var headerTabsBtns = {
                 var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
                 var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
                 if (nowPageNo >= numPages &&
-                    this.className.includes(" " + styles$b.disabled)) {
-                    this.className += " " + styles$b.disabled;
+                    this.className.includes(" " + styles$c.disabled)) {
+                    this.className += " " + styles$c.disabled;
                     this.update();
                 }
                 if (nowPageNo <= numPages) {
@@ -2349,12 +2349,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe690;",
             title: "跳转到尾页",
-            className: styles$b.toolIconBtn,
+            className: styles$c.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$b.disabled)) {
+                if (this.className.includes(" " + styles$c.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2362,8 +2362,8 @@ var headerTabsBtns = {
                     return;
                 }
                 var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
-                if (!this.className.includes(" " + styles$b.disabled)) {
-                    this.className += " " + styles$b.disabled;
+                if (!this.className.includes(" " + styles$c.disabled)) {
+                    this.className += " " + styles$c.disabled;
                     this.update();
                 }
                 currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
@@ -2545,7 +2545,7 @@ function slidebarLeftToolbarDisabled(app) {
 
 new AsyncLock();
 var Reader = defineComponent({
-    template: template$6(html$a)({ styles: styles$c }),
+    template: template$6(html$a)({ styles: styles$d }),
     initData: function () {
         return {
             bookmarkLoadErrors: { __length: 0 }
@@ -2645,7 +2645,7 @@ var Reader = defineComponent({
                             throw new Error("解析器未实现渲染方法");
                         }
                         readerEle = createElement("div");
-                        readerEle.className = styles$c.readerContent;
+                        readerEle.className = styles$d.readerContent;
                         this.readerEleList[bookmark.id] = readerEle;
                         rootEle.appendChild(readerEle);
                         res = parserInterface.render(readerEle);
@@ -2727,11 +2727,11 @@ var Reader = defineComponent({
 
 var html$2 = "<div class=\"<%= styles.slidebarLeft %>\" style=\"{{slideWrapperIeStyle}}\">\n    <div class=\"clearfix <%= styles.tabsWrapper %>\">\n        <div class=\"<%= styles.comment %>\">\n            <span>缩图</span>\n        </div>\n        <div class=\"<%= styles.tabs %>\">\n            <fragment s-for=\"toolbar, index in toolbars\">\n                <div s-if=\"fns.showTab(toolbar)\" class=\"<%= styles.tab %> {{fns.disabled(toolbar.disabled, bookmarkInfos.id)}} {{activeKey === index ? '<%= styles.active %>':''}}\" title=\"{{toolbar.text}}\" on-click=\"events.tabClick($event, index, toolbar, fns.disabled(toolbar.disabled, bookmarkInfos.id))\">\n                    <div class=\"<%= styles.icon %>\">\n                        <span class=\"iconfont\">{{toolbar.iconHtml|raw}}</span>\n                    </div>\n                    <div class=\"<%= styles.desc %>\">\n                        <span>{{toolbar.text}}</span>\n                    </div>\n                </div>\n            </fragment>\n        </div>\n    </div>\n    <div s-show=\"{{activeKey >= 0}}\" s-ref=\"ref-pannelWrapper\" class=\"clearfix <%= styles.tabPannel %> {{!expand?'<%= styles.fold %>':'<%= styles.expand %>'}}\">\n        <fragment s-for=\"toolbar, toolbarIndex in toolbars\">\n            <div class=\"<%= styles.content %>\" s-show=\"activeKey === toolbarIndex\">\n                <div s-ref=\"ref-pannelContent-{{toolbarIndex}}\" class=\"<%= styles.content %>\" _r=\"{{fns.handleToolbarRender(toolbar,toolbarIndex, bookmarkInfos.id)}}\"></div>\n                <div s-if=\"toolbarChildrenRenderErrors[toolbarIndex].error\" class=\"<%= styles.error %>\">\n                    <h3>{{toolbarChildrenRenderErrors[toolbarIndex].msg}}</h3>\n                </div>\n                <div class=\"<%= styles.tools %>\" s-if=\"{{toolbar.tools && toolbar.tools.length > 0}}\">\n                    <fragment s-for=\"tool, index in toolbar.tools\">\n                        <div s-if=\"tool.type !== 'separate'\" s-ref=\"ref-tool-{{index}}\" _r=\"{{fns.handleNodeRender(tool, index)}}\" class=\"<%= styles.tool %>\">\n                            <div s-if=\"tool.nodeInfo.html\" class=\"{{tool.nodeInfo.className || '<%= styles.icon %>'}}\">\n                                <span class=\"iconfont\">{{tool.nodeInfo.html | raw}}</span>\n                            </div>\n                            <div s-if=\"tool.nodeInfo.text\" class=\"{{tool.nodeInfo.className || '<%= styles.text %>'}}\">\n                                <span>{{tool.nodeInfo.text}}</span>\n                            </div>\n                        </div>\n                    </fragment>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.expand %>\" on-click=\"events.expandChange()\">\n            <span class=\"iconfont\">{{!expand?'&#xe718;':'&#xe615;'|raw}}</span>\n            <div></div>\n        </div>\n        <div on-mousedown=\"events.drageDown($event)\" s-show=\"expand\" class=\"<%= styles.drag %>\"></div>\n    </div>\n</div>";
 
-var styles$5 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
+var styles$6 = {"common_font":"index-module_common_font__rsmEw","text_overflow":"index-module_text_overflow__p5aoa","slidebarLeft":"index-module_slidebarLeft__higRK","tabsWrapper":"index-module_tabsWrapper__oMxJA","comment":"index-module_comment__h9Ykh","tabs":"index-module_tabs__YSKU6","tab":"index-module_tab__F6hp2","disabled":"index-module_disabled__Ptq3y","icon":"index-module_icon__Zsx8e","desc":"index-module_desc__MkXk0","active":"index-module_active__ZtWjc","tabPannel":"index-module_tabPannel__NJDF1","fold":"index-module_fold__Hp4cY","expand":"index-module_expand__RCTjV","drag":"index-module_drag__WvhVF","content":"index-module_content__UdWco","error":"index-module_error__lEXU4","tools":"index-module_tools__IV9iM","tool":"index-module_tool__c1cQ4","text":"index-module_text__TXr-l"};
 
 var SlidebarLeft = defineComponent({
     components: {},
-    template: template$6(html$2)({ styles: styles$5 }),
+    template: template$6(html$2)({ styles: styles$6 }),
     initData: function () {
         return {
             expand: false,
@@ -2899,7 +2899,7 @@ var SlidebarLeft = defineComponent({
         },
         disabled: function (disabled) {
             if (typeof disabled === "boolean") {
-                return disabled ? styles$5.disabled : "";
+                return disabled ? styles$6.disabled : "";
             }
             else if (typeof disabled !== "string") {
                 return "";
@@ -2907,7 +2907,7 @@ var SlidebarLeft = defineComponent({
             var appInterface = getApp(this.data.get("appId"));
             var datas = getAppDataStore(this.data.get("appId"));
             var fn = datas.get(disabled);
-            return fn(appInterface) ? styles$5.disabled : "";
+            return fn(appInterface) ? styles$6.disabled : "";
         },
         showTab: function (toolbar) {
             if (!toolbar.needLoadFileOK) {
@@ -2930,19 +2930,19 @@ var SlidebarLeft = defineComponent({
 
 var html$1 = "<div>右侧</div>";
 
-var styles$4 = {};
+var styles$5 = {};
 
 var SlidebarRight = defineComponent({
-    template: template$6(html$1)({ styles: styles$4 })
+    template: template$6(html$1)({ styles: styles$5 })
 });
 
-var styles$3 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
+var styles$4 = {"app":"index-module_app__DAOOy","header":"index-module_header__NtWW5","sidebarLeft":"index-module_sidebarLeft__MA3wh","sidebarRight":"index-module_sidebarRight__2F13Z","content":"index-module_content__m20ZT","reader":"index-module_reader__xIj2-"};
 
-var styles$2 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
+var styles$3 = {"bookmark":"index-module_bookmark__1nGVp","tabGroup":"index-module_tabGroup__0ZnGy","btnGroup":"index-module_btnGroup__7TZ-F","tabs":"index-module_tabs__P0lJ0","tabAdd":"index-module_tabAdd__uIR8p"};
 
-var styles$1 = {"tab":"index-module_tab__nriyF","active":"index-module_active__6hZmf","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
+var styles$2 = {"tab":"index-module_tab__nriyF","active":"index-module_active__6hZmf","fileName":"index-module_fileName__A6hsy","closeBtn":"index-module_closeBtn__MTrBM"};
 
-var template$4 = "\n    <div on-click=\"events.tabClick()\" class=\"".concat(styles$1.tab, " {{active?'").concat(styles$1.active, "':''}}\">\n      <div title=\"{{name}}\" class=\"").concat(styles$1.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div on-click=\"events.tabClose()\" class=\"").concat(styles$1.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
+var template$4 = "\n    <div on-click=\"events.tabClick()\" class=\"".concat(styles$2.tab, " {{active?'").concat(styles$2.active, "':''}}\">\n      <div title=\"{{name}}\" class=\"").concat(styles$2.fileName, "\">\n        <sapn>{{name}}</sapn>\n      </div>\n      <div on-click=\"events.tabClose()\" class=\"").concat(styles$2.closeBtn, "\">\n        <span title=\"\u5173\u95ED\" class=\"iconfont\">&#xe600;</span>\n      </div>\n    </div>\n");
 var BookmarkTab = defineComponent({
     template: template$4,
     events: {
@@ -2968,9 +2968,9 @@ var BookmarkTab = defineComponent({
     }
 });
 
-var styles = {"btn":"index-module_btn__Z99v5"};
+var styles$1 = {"btn":"index-module_btn__Z99v5"};
 
-var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
+var template$3 = "<div s-ref=\"btn-wrapper\">\n    <div s-if=\"!eleId\" s-ref=\"btn\" class=\"".concat(styles$1.btn, "\" title=\"{{title}}\">\n        <span class=\"{{className}}\">{{text}}{{(html||\"\") | raw}}</span>\n    </div>\n</div>");
 var TabBtn = defineComponent({
     template: template$3,
     attached: function () {
@@ -3004,7 +3004,7 @@ var TabBtn = defineComponent({
 var html = "<div class=\"<%= styles.bookmark %>\">\n    <div s-ref=\"tab-group\" class=\"<%= styles.tabGroup %>\" style=\"right: {{btnGroupWidth+12}}px\">\n        <div s-ref=\"tab-wrapper-scroll\" class=\"<%= styles.tabs %>\">\n            <div s-ref=\"tab-wrapper\" style=\"overflow: hidden\">\n                <h-tab s-for=\"b, i in bookmarks\" appId=\"{{appId}}\" active=\"{{currentIndex === i}}\" id=\"{{b.id}}\" name=\"{{b.name}}\"></h-tab>\n            </div>\n        </div>\n        <div title=\"打开\" on-click=\"events.add($event)\" class=\"<%= styles.tabAdd %>\">\n            <span class=\"iconfont\">&#xe64d;</span>\n        </div>\n    </div>\n    <div s-if=\"btnGroup && btnGroup.btns && btnGroup.btns.length > 0\" class=\"<%= styles.btnGroup %>\" style=\"width: {{btnGroupWidth}}px\">\n        <tab-btn s-for=\"btn in btnGroup.btns\" s-bind=\"{{{...btn}}}\"></tab-btn>\n    </div>\n</div>";
 
 var template$2 = template$6(html)({
-    styles: styles$2
+    styles: styles$3
 });
 var Bookmark = defineComponent({
     components: {
@@ -3134,7 +3134,7 @@ var TabPages = defineComponent({
 });
 
 var isFirst = true;
-var template = "\n<div id=\"".concat(styles$3.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$3.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$3.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$3.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$3.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$3.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$3.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
+var template = "\n<div id=\"".concat(styles$4.app, "\" on-contextmenu=\"events.contextmenu($event)\">\n    <div id=\"").concat(styles$4.header, "\" s-ref=\"header\">\n        <ui-tabs appSize={{appSize}} appShow=\"{{appShow}}\" s-if={{tabPages!==false}} s-bind={{{...(tabPages||{})}}} bookmarkInfos=\"{{bookmarkInfos}}\" appId=\"{{appId}}\" ></ui-tabs>\n        <ui-header appSize={{appSize}} appShow=\"{{appShow}}\" s-if=\"{{header !== false}}\" s-bind={{{...header}}} appId=\"{{appId}}\" bookmarkInfos=\"{{bookmarkInfos}}\" ></ui-header>\n    </div>\n    <div id=\"").concat(styles$4.content, "\" style=\"height: {{contentHeight}}px\">\n      <div s-if=\"{{!sidebars || sidebars.left !== false}}\" id=\"").concat(styles$4.sidebarLeft, "\">\n        <ui-slide-left appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.left||{})}}}\"></ui-slide-left>\n      </div>\n      <div  s-if=\"{{!sidebars || sidebars.right !== false}}\" id=\"").concat(styles$4.sidebarRight, "\">\n        <ui-slide-right appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" appId=\"{{appId}}\" s-bind=\"{{{...(sidebars.right||{})}}}\"></ui-slide-right>\n      </div>\n      <div id=\"").concat(styles$4.reader, "\">\n        <ui-reader appSize={{appSize}} bookmarkInfos=\"{{bookmarkInfos}}\" appShow=\"{{appShow}}\" s-ref=\"ref-reader\" appId=\"{{appId}}\" s-bind=\"{{{...(content||{})}}}\"></ui-reader>\n      </div>\n    </div>\n    <div id=\"").concat(styles$4.fotter, "\" s-ref=\"fotter\"></div>\n</div>\n");
 var AppUi = defineComponent({
     components: {
         "ui-tabs": TabPages,
@@ -3387,6 +3387,94 @@ var ErrNoSupportFileSuffix = new Error("没有可被解析的文件后缀，请�
 var ErrFeilSelectWait = new Error("文件选择已被锁定，请稍后重试");
 var ErrLackOfParser = new Error("缺失解析器信息");
 var ErrNoSupportFunction = new Error("未实现的方法");
+
+var styles = {"messageContainer":"index-module_messageContainer__RU62A","messageBoxBackground":"index-module_messageBoxBackground__r6MJO","messageBox":"index-module_messageBox__bhmnA","success":"index-module_success__5o4-F","warn":"index-module_warn__KeMOh","error":"index-module_error__OjKmd","title":"index-module_title__kJZwQ","titleTip":"index-module_titleTip__dk1qQ","titleLeft":"index-module_titleLeft__Xtxc9","titleRight":"index-module_titleRight__ExJhx","titleIcon":"index-module_titleIcon__s2oeu","closeIcon":"index-module_closeIcon__Uwa5G","exBtn":"index-module_exBtn__Hfvbr","content":"index-module_content__fkr7p"};
+
+function htmlTemplate(htmlStr) {
+    var template = document.createElement("template");
+    template.innerHTML = htmlStr;
+    return template.content.children[0];
+}
+function newGuid() {
+    var curguid = "";
+    for (var i = 1; i <= 32; i++) {
+        var id = Math.floor(Math.random() * 16.0).toString(16);
+        curguid += id;
+        if (i === 8 || i === 12 || i === 16 || i === 20)
+            curguid += "";
+    }
+    return "a".concat(curguid);
+}
+function successIcon() {
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAE2SURBVHgBzZG/SsNgFMXPjRVqQQiIg5PxDboIURATFNTRydEgCG7pILjo5AvUQRH/gPUFOvgnYz8ENZt5gUIWFQTBqUYUr0lMTWLSrHqmm5tzfuf7EuCvRb8XWrMme+VODcTTwWNkcpiobs8dNAoBqrWmgD5bACvI73PBkm4v7LvdjZR+XxQOxGGB1jTkDEC1Vo3icAzxKiUzAyAJZq/IyMAQTie2Eozvb5MCMKPaK7w7vo6j9lliS1lAUkHb0ugMBkuVMHxxf42rJyfPmgKI7rDh7PmAWTQmN8Pwcfs8FWLiH1opPhUJ/x5aMD6+PmP5dhtTw1VcPtxkWglcj+dIWsuQvbf+O39UUCzXnj8cy1xB6Ccv4Hc9MBSFI0/iNDlSrRWDpD4z/jMsfKcodz52xKJf9K/0BXb1ZOFZYiDgAAAAAElFTkSuQmCC";
+}
+function warnIcon() {
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAENSURBVHgBxZI9isJQFIXvfQkO0wyBYWCqIQNTD+5AXYJa2GqjZVyEC9AViK0gLkEba11CCgtBhGih8GJyvf6EhLzHK/VAmvPO+W7eD8CrhXmDpo4jY7srEEpEUL6bsAKB/UJtOzICTtNv16JoBkQuaESIfoxW5b268RNPZAOm8m0arwnO0NBxFICcfDXzZfHX4a+tQM4ftqcAEMnLT6RwD9qtJGeTBbBZ1IbDg2piCrDBpGtZBsaIyFDnyup2AXBcq63rteYBqAGI/x7gTwM0hH46N7H4AYWxtWTLBYMIyH+r737VP6gGQSSjCkd8Uzm+ZVKhLijHn01+uh6vFh/NOfEWC4fzAFuB+VSfrgvnD2Y2iCUvwQAAAABJRU5ErkJggg==";
+}
+function errorIcon() {
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAErSURBVHgBzVI7TsNAEJ1ZUoEA8y0jpweJG5BcAzDyDUILffr4BmBEj7gA3IAUHMCiDIJYEBpwdpix8Xpho23hrVay3r735q3WAH8N/E1M4iAotDoBxH0g6lYqGiGp4Wb6fOENYHM40+qWAEKYPy1bULq3dp5nNadsgc8skDPRSEsnYBxtxLV59fQGWu0dY2y1d0uuDik09J0ARDLk+9UZLPcvyxAxr/C3cE0V7FrXqvB0vE52XTFLCPJ6TY6geHywj2ErfcEfDVxguQgIfFBWrbtmelVbJr8lkbmOkQKNnACFZAKWDgemtmwJWTwYWFNp2PT8hjzNp8Z7rh2CBzw9204nHacB/xz57IN6IvCZRWNzOE84joIYEflZca9y8vV4T6eQdK7zHP4VvgA2L3yQzd3WcgAAAABJRU5ErkJggg==";
+}
+function getIcon(type) {
+    switch (type) {
+        case 'success':
+            return successIcon();
+        case 'warn':
+            return warnIcon();
+        case 'error':
+            return errorIcon();
+    }
+}
+function getClassName(type) {
+    switch (type) {
+        case 'success':
+            return styles.success;
+        case 'warn':
+            return styles.warn;
+        case 'error':
+            return styles.error;
+    }
+}
+var MessageImpl = /** @class */ (function () {
+    function MessageImpl(_app) {
+        this._app = _app;
+        this.msgRoot = document.createElement('div');
+        this.msgRoot.className = styles.messageContainer;
+        _app.getRootEle().appendChild(this.msgRoot);
+    }
+    MessageImpl.prototype.show = function (type, opt) {
+        var _a, _b;
+        var elementGuid = newGuid();
+        var exBtns = (opt.exBtn || []).map(function (m) { return __assign(__assign({}, m), { guid: newGuid() }); });
+        var showIconFlag = (_a = opt.showIcon) !== null && _a !== void 0 ? _a : true;
+        var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles.messageBoxBackground, "\" >\n                <div class=\"").concat(styles.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles.title, "\" >\n                        <div class=\"").concat(styles.titleLeft, "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles.titleTip, "\" >").concat(opt.title, "</span>\n                        </div>\n                        <div class=\"").concat(styles.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat((opt.hideTime && opt.hideTime <= 0) ? "<span class=\"".concat(styles.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    ").concat(opt.content ? "<div class='".concat(styles.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
+        if (exBtns && exBtns.length > 0) {
+            exBtns.forEach(function (btn) {
+                if (!btn.callback) {
+                    return;
+                }
+                var ele = element.querySelector("#".concat(btn.guid));
+                ele.onclick = btn.callback;
+            });
+        }
+        var hideTimeFlag = (_b = opt.hideTime) !== null && _b !== void 0 ? _b : 5000;
+        if (hideTimeFlag > 0) {
+            setTimeout(function () {
+                document.getElementById(elementGuid).remove();
+            }, hideTimeFlag);
+        }
+        this.msgRoot.appendChild(element);
+    };
+    MessageImpl.prototype.success = function (opt) {
+        this.show('success', opt);
+    };
+    MessageImpl.prototype.warn = function (opt) {
+        this.show('warn', opt);
+    };
+    MessageImpl.prototype.error = function (opt) {
+        this.show('error', opt);
+    };
+    return MessageImpl;
+}());
 
 var appEventBookmarkChange = "bookmarkChange";
 var fontfaceStyleId = new Date().getTime() + "";
@@ -3721,6 +3809,7 @@ var AppImpl = /** @class */ (function () {
         this._currentBookmarkId = "";
         this._bookmarkMap = {};
         this._datastore = new DataStore();
+        this._messageUtils = new MessageImpl(this);
         this._pathJoin = function () {
             var p = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -3947,6 +4036,7 @@ var AppImpl = /** @class */ (function () {
             _this._isShow = false;
             _this._updateShow();
         };
+        this.message = this._messageUtils;
         this._fontConfig =
             (this._initOptions && this._initOptions.fontConfig) || defaultFontConfig;
         if (this._initOptions && this._initOptions.fontConfig) {
