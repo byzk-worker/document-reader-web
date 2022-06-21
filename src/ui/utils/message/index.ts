@@ -54,10 +54,6 @@ function getClassName(type: 'success' | 'warn' | 'error') {
 
 export interface MessageOption {
     /**
-     * 提示标题
-     */
-    title: string;
-    /**
      * 额外按钮
      */
     exBtn?: MessageExBtn[];
@@ -68,7 +64,7 @@ export interface MessageOption {
     /**
      * 毫秒，关闭时间，默认为 5000，传入小于等于0的值，不自动关闭
      */
-    hideTime?: number;
+    timeout?: number;
     /**
      * 是否展示提示图标，默认为true
      */
@@ -91,10 +87,10 @@ export interface MessageExBtn {
 }
 
 export interface MessageInterface {
-    success(opt: MessageOption): void;
-    warn(opt: MessageOption): void;
-    error(opt: MessageOption): void;
-    show(type: 'success' | 'warn' | 'error', opt: MessageOption): void;
+    success(title: string, opt?: MessageOption): void;
+    warn(title: string, opt?: MessageOption): void;
+    error(title: string, opt?: MessageOption): void;
+    // show(type: 'success' | 'warn' | 'error', opt: MessageOption): void;
 }
 
 export class MessageImpl implements MessageInterface {
@@ -104,26 +100,26 @@ export class MessageImpl implements MessageInterface {
         _app.getRootEle().appendChild(this.msgRoot);
     }
     msgRoot: HTMLElement;
-    show(type: 'success' | 'warn' | 'error', opt: MessageOption) {
+    show(title: string, type: 'success' | 'warn' | 'error', opt?: MessageOption) {
         var elementGuid = newGuid();
-        var exBtns = (opt.exBtn || []).map((m) => { return { ...m, guid: newGuid() } });
-        var showIconFlag = opt.showIcon ?? true;
+        var exBtns = (opt?.exBtn || []).map((m) => { return { ...m, guid: newGuid() } });
+        var showIconFlag = opt?.showIcon ?? true;
         var element = htmlTemplate(
             `<div id=${elementGuid} class="${styles.messageBoxBackground}" >
                 <div class="${styles.messageBox} ${getClassName(type)}" >
                     <div class="${styles.title}" >
                         <div class="${styles.titleLeft}" >
                             ${showIconFlag ? `<span class="${styles.titleIcon}" ><img src="${getIcon(type)}" /></span>` : ''}
-                            <span class="${styles.titleTip}" >${opt.title}</span>
+                            <span class="${styles.titleTip}" >${title}</span>
                         </div>
                         <div class="${styles.titleRight}" >
                             ${(exBtns && exBtns.length > 0) ? `<span class="${styles.exBtn}" >
                                 ${exBtns.map(m => `<span id="${m.guid}" class="${m.className ? m.className : ''}" >${m.title}</span>`).join("")}
                             </span>` : ``}
-                            ${(opt.hideTime && opt.hideTime <= 0) ? `<span class="${styles.closeIcon}" onclick="document.getElementById('${elementGuid}').remove()" >×</span>` : ''}
+                            ${(opt?.timeout && opt?.timeout <= 0) ? `<span class="${styles.closeIcon}" onclick="document.getElementById('${elementGuid}').remove()" >×</span>` : ''}
                         </div>
                     </div>
-                    ${opt.content ? `<div class='${styles.content}' > ${opt.content} </div>` : ''}
+                    ${opt?.content ? `<div class='${styles.content}' > ${opt.content} </div>` : ''}
                 </div>
             </div>
             `
@@ -137,7 +133,7 @@ export class MessageImpl implements MessageInterface {
                 ele.onclick = btn.callback;
             })
         }
-        var hideTimeFlag = opt.hideTime ?? 5000;
+        var hideTimeFlag = opt?.timeout ?? 5000;
         if (hideTimeFlag > 0) {
             setTimeout(() => {
                 document.getElementById(elementGuid).remove()
@@ -145,13 +141,13 @@ export class MessageImpl implements MessageInterface {
         }
         this.msgRoot.appendChild(element);
     }
-    success(opt: MessageOption) {
-        this.show('success', opt);
+    success(title: string, opt?: MessageOption) {
+        this.show(title, 'success', opt);
     }
-    warn(opt: MessageOption) {
-        this.show('warn', opt);
+    warn(title: string, opt?: MessageOption) {
+        this.show(title, 'warn', opt);
     }
-    error(opt: MessageOption) {
-        this.show('error', opt);
+    error(title: string, opt?: MessageOption) {
+        this.show(title, 'error', opt);
     }
 }
