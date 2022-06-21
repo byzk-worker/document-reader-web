@@ -42512,7 +42512,7 @@ var bkDocReader = (function (exports) {
                                     if (res.cancel) {
                                         return [2 /*return*/];
                                     }
-                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDragOne(res.sealInfo)];
+                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo)];
                                 case 3:
                                     dragRes = _a.sent();
                                     debugger;
@@ -43712,7 +43712,7 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.getRotation = function () {
             throw ErrNoSupportFunction;
         };
-        ReaderParserAbstract.prototype.sealDragOne = function (sealInfo, options) {
+        ReaderParserAbstract.prototype.sealDrag = function (sealInfo, options) {
             throw ErrNoSupportFunction;
         };
         ReaderParserAbstract.supportAll = {

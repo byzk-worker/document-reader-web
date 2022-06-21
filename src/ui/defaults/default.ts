@@ -555,7 +555,7 @@ const headerTabsBtns = {
         if (res.cancel) {
           return;
         }
-        const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDragOne(
+        const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
           res.sealInfo
         );
         debugger;

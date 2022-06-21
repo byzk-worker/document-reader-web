@@ -644,10 +644,10 @@ export interface ReaderParserInterface {
    * @param sealInfo 要拖拽的印章信息
    * @param options 选项
    */
-  sealDragOne?(
+  sealDrag?(
     sealInfo: SealInfo,
     options?: SealDrgaOption
-  ): Promise<SealDragResult>;
+  ): Promise<SealDragResult[]>;
   /**
    * 坐标签章
    */
@@ -1012,10 +1012,10 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   getRotation(): number {
     throw ErrNoSupportFunction;
   }
-  sealDragOne(
+  sealDrag(
     sealInfo: SealInfo,
     options?: SealDrgaOption
-  ): Promise<SealDragResult> {
+  ): Promise<SealDragResult[]> {
     throw ErrNoSupportFunction;
   }
 }

@@ -170,10 +170,10 @@ export interface ReaderParserInterface {
    * @param sealInfo 要拖拽的印章信息
    * @param options 选项
    */
-  sealDragOne?(
+  sealDrag?(
     sealInfo: SealInfo,
     options?: SealDrgaOption
-  ): Promise<SealDragResult>;
+  ): Promise<SealDragResult[]>;
   /**
    * 位置签章
    * @param sealInfo 印章信息
@@ -401,14 +401,14 @@ export declare abstract class ReaderParserAbstract
   public sealList(): Promise<SealInfo[] | undefined>;
 
   /**
-   * 拖拽一个印章
+   * 拖拽印章
    * @param sealInfo 要拖拽的印章信息
    * @param options 选项
    */
-  public sealDragOne(
+  public sealDrag(
     sealInfo: SealInfo,
     options?: SealDrgaOption
-  ): Promise<SealDragResult>;
+  ): Promise<SealDragResult[]>;
 
   /**
    * 位置签章
