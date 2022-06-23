@@ -227,10 +227,6 @@ export interface MessageExBtn {
  */
 export interface MessageOption {
   /**
-   * 提示标题
-   */
-  title: string;
-  /**
    * 额外按钮
    */
   exBtn?: MessageExBtn[];
@@ -256,21 +252,15 @@ export interface MessageInterface {
    * 正确消息
    * @param opt 选项
    */
-  success(opt: MessageOption): void;
+  success(title: string, opt?: MessageOption): void;
   /**
    * 警告消息
    * @param opt 选项
    */
-  warn(opt: MessageOption): void;
+  warn(title: string, opt?: MessageOption): void;
   /**
    * 错误消息
    * @param opt 选项
    */
-  error(opt: MessageOption): void;
-  /**
-   * 展示消息
-   * @param type 消息类型
-   * @param opt 选项
-   */
-  show(type: "success" | "warn" | "error", opt: MessageOption): void;
+  error(title: string, opt?: MessageOption): void;
 }

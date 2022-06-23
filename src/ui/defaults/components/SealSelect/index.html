@@ -1,26 +1,130 @@
 <div class="<%= styles.sealSelectMask %> {{maskHideClassName}}">
-    <div style="{{sealSelectStyles}}" class="<%= styles.sealSelect %>">
-        <div class="<%= styles.title %>">
-            <div class="<%= styles.text %>">{{titleText}}</div>
-            <span class="iconfont <%= styles.close %>" on-click="events.closeClick()">&#xe600;</span>
-        </div>
-        <div class="<%= styles.contents %>">
-            <div class="<%= styles.label %>">
-                印章选择
-            </div>
-            <div class="<%= styles.sealContent %>">
-                <fragment s-for="sealInfo in sealList">
-                    <div on-click="events.sealClick(sealInfo)" class="<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}">
-                        <img width="150" src="{{sealInfo.imgUrl}}" />
-                    </div>
-                </fragment>
-            </div>
-            <div s-show="isPageSign" class="<%= styles.label %>">
-                页面选项设置
-            </div>
-        </div>
-        <div class="<%= styles.btnGroup %>">
-            <div on-click="events.okClick()" class="<%= styles.okBtn %> {{disabled}}">确定</div>
-        </div>
+  <div style="{{sealSelectStyles}}" class="<%= styles.sealSelect %>">
+    <div class="<%= styles.title %>">
+      <div class="<%= styles.text %>">{{titleText}}</div>
+      <span class="iconfont <%= styles.close %>" on-click="events.closeClick()"
+        >&#xe600;</span
+      >
     </div>
+    <div class="<%= styles.contents %>">
+      <div class="<%= styles.label %>">
+        印章选择
+      </div>
+      <div class="<%= styles.sealContent %>">
+        <fragment s-for="sealInfo in sealList">
+          <div
+            on-click="events.sealClick(sealInfo)"
+            class="<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}"
+          >
+            <img width="150" src="{{sealInfo.imgUrl}}" />
+          </div>
+        </fragment>
+      </div>
+      <div s-show="isPageSign" class="<%= styles.label %>">
+        页面选项设置
+      </div>
+      <div s-show="isPageSign" class="<%= styles.pageConfigSetting %>">
+        <div class="<%= styles.radio %>">
+          <img
+            on-click="events.radioSelectAllPages('allPages')"
+            s-show="{{radioSelectStatus !== 'allPages'}}"
+            src="{{radioSelectNoImg}}"
+            width="14"
+            height="14"
+          />
+          <img
+            s-show="{{radioSelectStatus === 'allPages'}}"
+            src="{{radioSelectImg}}"
+            width="14"
+            height="14"
+          />
+          <label on-click="events.radioSelectAllPages('allPages')"
+            >全部页面</label
+          >
+        </div>
+        <div class="<%= styles.radio %>">
+          <img
+            on-click="events.radioSelectAllPages('custom')"
+            s-show="{{radioSelectStatus !== 'custom'}}"
+            src="{{radioSelectNoImg}}"
+            width="14"
+            height="14"
+          />
+          <img
+            s-show="{{radioSelectStatus === 'custom'}}"
+            src="{{radioSelectImg}}"
+            width="14"
+            height="14"
+          />
+          <label on-click="events.radioSelectAllPages('custom')"
+            >自定义页面设置</label
+          >
+          <input
+            value="{= customPageInputVal =}"
+            on-keydown="events.customPageInputKeyDown($event)"
+            s-show="{{radioSelectStatus === 'custom'}}"
+            class="<%= styles.pageNumSelect %>"
+          />
+          <span
+            s-show="{{radioSelectStatus === 'custom'}}"
+            class="<%= styles.prompt %>"
+            >格式示例：1-2;4;6</span
+          >
+        </div>
+      </div>
+      <div s-show="isPageSign" class="<%= styles.pageConfigSetting %>">
+        <div class="<%= styles.checkbox %>">
+          <img
+            on-click="events.checkboxChange()"
+            s-show="{{checkboxOk}}"
+            width="14"
+            height="14"
+            src="{{selectImg}}"
+          />
+          <img
+            on-click="events.checkboxChange()"
+            s-show="{{!checkboxOk}}"
+            width="14"
+            height="14"
+            src="{{selectNoImg}}"
+          />
+          <label on-click="events.checkboxChange()">需手动对位置再调整</label>
+        </div>
+      </div>
+      <div s-show="isQiFenSign" class="<%= styles.label %>">
+        页面选择
+      </div>
+      <div s-show="isQiFenSign" class="<%= styles.OddChoice %>">
+        <div class="<%= styles.label %>">
+          奇偶选择
+        </div>
+        <ui-select
+          style="width: 249px; float: left;"
+          activeVal="{= qiFenPageSealMode =}"
+          options="{{oddSwitchOption}}"
+        ></ui-select>
+      </div>
+      <div
+        s-show="isQiFenSign"
+        style="margin-top: 90px;"
+        class="<%= styles.label %>"
+      >
+        印章显示设置
+      </div>
+      <div s-show="isQiFenSign" class="<%= styles.sealShow %>">
+        <div class="<%= styles.label %>">
+          多少页显示一个印章
+        </div>
+        <ui-inputNumber
+        value="{= oneSealInPageNumVal =}"
+          style="margin-left: 3px; height: 23px; line-height: 23px;"
+        ></ui-inputNumber>
+      </div>
+    </div>
+    <div class="<%= styles.btnGroup %>">
+      <div on-click="events.okClick()" class="<%= styles.okBtn %> {{disabled}}">
+        确定
+      </div>
+    </div>
+  </div>
 </div>

@@ -11,6 +11,7 @@ interface SelectProps {
   options: OptionInfo[];
   activeVal?: any;
   suffix?: string;
+  isNumber?: number;
   "on-change"?: (val: any) => void;
 }
 interface SelectStates {

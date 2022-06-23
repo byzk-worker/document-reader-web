@@ -1159,9 +1159,9 @@ var ToolJump = defineComponent({
     }
 });
 
-var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width:80px;\">\n    <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" suffix=\"%\"></c-select>\n</div>";
+var html$7 = "<div class=\"<%= styles.toolScale %>\" style=\"width: 80px;\">\n  <c-select on-change=\"events.valChange($event)\" activeVal=\"{= activeVal =}\" options=\"{{options}}\" isNumber=\"{{true}}\" suffix=\"%\"></c-select>\n</div>\n";
 
-var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <!-- <span>{{activeText}}</span> -->\n        <input-number on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
+var html$6 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span s-show=\"!isNumber\">{{activeText}}</span>\n        <input-number s-show=\"isNumber\" on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
 var styles$a = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
 
@@ -1578,21 +1578,52 @@ function supportJumpPage(app) {
     return supportPages && supportPages.jump;
 }
 
-var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n    <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n        <div class=\"<%= styles.title %>\">\n            <div class=\"<%= styles.text %>\">{{titleText}}</div>\n            <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n        </div>\n        <div class=\"<%= styles.contents %>\">\n            <div class=\"<%= styles.label %>\">\n                印章选择\n            </div>\n            <div class=\"<%= styles.sealContent %>\">\n                <fragment s-for=\"sealInfo in sealList\">\n                    <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n                        <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n                    </div>\n                </fragment>\n            </div>\n            <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n                页面选项设置\n            </div>\n        </div>\n        <div class=\"<%= styles.btnGroup %>\">\n            <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">确定</div>\n        </div>\n    </div>\n</div>";
+var html$3 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n  <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n    <div class=\"<%= styles.title %>\">\n      <div class=\"<%= styles.text %>\">{{titleText}}</div>\n      <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n    </div>\n    <div class=\"<%= styles.contents %>\">\n      <div class=\"<%= styles.label %>\">\n        印章选择\n      </div>\n      <div class=\"<%= styles.sealContent %>\">\n        <fragment s-for=\"sealInfo in sealList\">\n          <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n            <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n          </div>\n        </fragment>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n        页面选项设置\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('allPages')\" s-show=\"{{radioSelectStatus !== 'allPages'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'allPages'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('allPages')\">全部页面</label>\n        </div>\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('custom')\" s-show=\"{{radioSelectStatus !== 'custom'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'custom'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('custom')\">自定义页面设置</label>\n          <input value=\"{= customPageInputVal =}\" on-keydown=\"events.customPageInputKeyDown($event)\" s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.pageNumSelect %>\">\n          <span s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.prompt %>\">格式示例：1-2;4;6</span>\n        </div>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.checkbox %>\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectImg}}\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{!checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectNoImg}}\">\n          <label on-click=\"events.checkboxChange()\">需手动对位置再调整</label>\n        </div>\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.label %>\">\n        页面选择\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.OddChoice %>\">\n        <div class=\"<%= styles.label %>\">\n          奇偶选择\n        </div>\n        <ui-select style=\"width: 249px; float: left;\" activeVal=\"{= qiFenPageSealMode =}\" options=\"{{oddSwitchOption}}\"></ui-select>\n      </div>\n      <div s-show=\"isQiFenSign\" style=\"margin-top: 90px;\" class=\"<%= styles.label %>\">\n        印章显示设置\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.sealShow %>\">\n        <div class=\"<%= styles.label %>\">\n          多少页显示一个印章\n        </div>\n        <ui-inputNumber value=\"{= oneSealInPageNumVal =}\" style=\"margin-left: 3px; height: 23px; line-height: 23px;\"></ui-inputNumber>\n      </div>\n    </div>\n    <div class=\"<%= styles.btnGroup %>\">\n      <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">\n        确定\n      </div>\n    </div>\n  </div>\n</div>\n";
 
-var styles$7 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+var styles$7 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+
+function base64ToBlob(base64Data) {
+    var arr = base64Data.split(","), fileType = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), l = bstr.length, u8Arr = new Uint8Array(l);
+    while (l--) {
+        u8Arr[l] = bstr.charCodeAt(l);
+    }
+    return new Blob([u8Arr], {
+        type: fileType
+    });
+}
+var mulSlectNoB64Url = window.URL.createObjectURL(base64ToBlob("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABoSURBVHgB7dKxDYAwDATAx8oAjMAKbESbDiaADSijTMMIrOARMoHhIzGAoUR56Tuf3HyXUppEZAfQwxdlt0C0mtkYY1SP4qOB5kTO+cLLVCP4mAb/A0udkRc8txq404XbOzgjLy7sfAMvcB922fU/cwAAAABJRU5ErkJggg=="));
+var mulSelectB64Url = window.URL.createObjectURL(base64ToBlob("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAzSURBVHgBzc+rEQAwCATRhUpw6Sf9zwSXMvLxMFie3TMnY+4FGJGDaxo/wZRCl4Gn9d28etwHTv9XB30AAAAASUVORK5CYII="));
+var radioSelectNoB64Url = window.URL.createObjectURL(base64ToBlob("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEZSURBVHgBnZLNbYNAEIV3l4hzSnAJuIKQDtJB2BNCHHAHsUvwBQQXSAfpIEoFbAmUkDMINu85uxKylJhkpLGHYb5h/qRYSdu29+M4HmA+Q3f0SSnNsizGWnvKsmzwscobVVUlgHqYFsFJmqaSOk2TVkoJaF+W5cHHS/7UdU1HgcyP66xrQeId4HeYRyR8lc7RA9r/BF3DYRjuVRAEL6j/7RZEcTEdWiruYETzPGuxUVDZB77asj8r/ihklPinEBzQdLwVaJomwp8h2KHmB7FdCgzTKIz2jIeEo75FMAbQE69Iaa0/MakT9/Mb7HcI6Mi1SP/CXc9lp1jPOc9z44AYQCy+7/dyNfTL66zuIDiAyLkHaMeWWJ2P/QLo55PerNdCZgAAAABJRU5ErkJggg=="));
+var radioSelectB64Url = window.URL.createObjectURL(base64ToBlob("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACWSURBVHgBfZBNEcIwEIXf22HawAkcFAdYqAMcgAOQgATqoDioAyzEAZHQY+CQJcv0wPCT77YzX/L2LZFptrelE3dUYGcjFIHEJaZ4DsN6pAkV6yvJDT5QVf/QezubfvgSDHtY0R1kivgLgb28dijTmBSKSi5hcX3RUfSySK6D0v8WcjvETvywGudat5pweosONlt9u9MTLiw67xd19lYAAAAASUVORK5CYII="));
 
 var SealSelect = defineComponent({
+    components: {
+        "ui-select": Select,
+        "ui-inputNumber": InputNumber
+    },
     template: template$6(html$3)({ styles: styles$7 }),
     initData: function () {
         return {
             mode: "seal",
             sealList: [],
-            maskHideClassName: styles$7.hide
+            customPageInputVal: "",
+            maskHideClassName: styles$7.hide,
+            selectImg: mulSelectB64Url,
+            selectNoImg: mulSlectNoB64Url,
+            radioSelectImg: radioSelectB64Url,
+            radioSelectNoImg: radioSelectNoB64Url,
+            radioSelectStatus: "allPages",
+            checkboxOk: false,
+            qiFenPageSealMode: "all",
+            oddSwitchOption: [
+                { val: "all", text: "所有页面" },
+                { val: "odd", text: "奇数页面" },
+                { val: "even", text: "偶数页面" },
+            ]
         };
     },
     attached: function () {
-        console.log("初始化成功...");
+        // console.log("初始化成功...");
     },
     computed: {
         disabled: function () {
@@ -1616,9 +1647,12 @@ var SealSelect = defineComponent({
         },
         isPageSign: function () {
             return this.data.get("mode") === "pages";
+        },
+        isQiFenSign: function () {
+            return this.data.get("mode") === "qiFeng";
         }
     },
-    selectSeal: function (sealList, mode) {
+    _selectSeal: function (sealList, mode) {
         var _this = this;
         mode = mode || "seal";
         if (this.data.get("maskHideClassName") !== styles$7.hide) {
@@ -1627,13 +1661,49 @@ var SealSelect = defineComponent({
         var res = new Promise(function (resolve, reject) {
             _this._waitResult = { resolve: resolve, reject: reject };
         });
+        if (mode === "pages") {
+            this.data.set("radioSelectStatus", "allPages");
+            this.data.set("checkboxOk", false);
+            this.data.set("customPageInputVal", "");
+        }
+        else if (mode === "qiFeng") {
+            this.data.set("qiFenPageSealMode", "all");
+            this.data.set("oneSealInPageNumVal", "");
+        }
         this.data.set("maskHideClassName", undefined);
         this.data.set("activeSeal", undefined);
         this.data.set("sealList", __spreadArray([], sealList, true));
         this.data.set("mode", mode);
         return res;
     },
+    selectSeal: function (sealList) {
+        return this._selectSeal(sealList, "seal");
+    },
+    selectSealMultipage: function (sealList) {
+        return this._selectSeal(sealList, "pages");
+    },
+    selectSealQiFen: function (sealList) {
+        return this._selectSeal(sealList, "qiFeng");
+    },
     events: {
+        customPageInputKeyDown: function (event) {
+            var keyCode = event.keyCode;
+            var allow = (keyCode >= 48 && keyCode <= 57) ||
+                keyCode === 189 ||
+                keyCode === 186 ||
+                keyCode === 8 ||
+                keyCode === 46 ||
+                (keyCode >= 37 && keyCode <= 40);
+            if (!allow) {
+                event.preventDefault();
+            }
+        },
+        checkboxChange: function () {
+            this.data.set("checkboxOk", !this.data.get("checkboxOk"));
+        },
+        radioSelectAllPages: function (active) {
+            this.data.set("radioSelectStatus", active);
+        },
         sealClick: function (sealInfo) {
             this.data.set("activeSeal", sealInfo);
         },
@@ -1642,12 +1712,62 @@ var SealSelect = defineComponent({
             if (!activeSeal) {
                 return;
             }
+            var resultData = {
+                cancel: false,
+                sealInfo: activeSeal
+            };
+            var mode = this.data.get("mode");
+            if (mode === "pages") {
+                resultData.manual = this.data.get("checkboxOk");
+                var selectMode = this.data.get("radioSelectStatus");
+                resultData.selectMode = selectMode;
+                if (selectMode === "custom") {
+                    var customPageInputVal = this.data.get("customPageInputVal");
+                    if (customPageInputVal) {
+                        var customPageNoList = [];
+                        var valList = customPageInputVal.split(";");
+                        for (var i = 0; i < valList.length; i++) {
+                            var val = valList[i];
+                            var numValStr = val.split("-");
+                            for (var j = 0; j < numValStr.length; j++) {
+                                var numVal = parseInt(numValStr[j]);
+                                if (isNaN(numVal)) {
+                                    continue;
+                                }
+                                if (!customPageNoList.includes(numVal)) {
+                                    customPageNoList.push(numVal);
+                                }
+                                var nexVal = parseInt(numValStr[j + 1]);
+                                if (!isNaN(nexVal)) {
+                                    var val_1 = nexVal - numVal;
+                                    if (val_1 > 1) {
+                                        for (var k = 1; k <= val_1; k++) {
+                                            numVal += 1;
+                                            if (customPageNoList.includes(numVal)) {
+                                                continue;
+                                            }
+                                            customPageNoList.push(numVal);
+                                        }
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                        resultData.customPageNos = customPageNoList.sort(function (a, b) { return a - b; });
+                    }
+                }
+            }
+            else if (mode === "qiFeng") {
+                resultData.modSwitch = this.data.get("qiFenPageSealMode");
+                resultData.oneSealInPageNum = parseInt(this.data.get("oneSealInPageNumVal"));
+            }
             this.data.set("sealList", []);
             this.data.set("maskHideClassName", styles$7.hide);
             this.data.set("activeSeal", undefined);
             this._waitResult &&
                 this._waitResult.resolve &&
-                this._waitResult.resolve({ cancel: false, sealInfo: activeSeal });
+                this._waitResult.resolve(resultData);
+            this._waitResult = undefined;
         },
         closeClick: function () {
             this.data.set("sealList", []);
@@ -1656,6 +1776,7 @@ var SealSelect = defineComponent({
             this._waitResult &&
                 this._waitResult.resolve &&
                 this._waitResult.resolve({ cancel: true });
+            this._waitResult = undefined;
         }
     }
 });
@@ -1673,7 +1794,7 @@ window.addEventListener("load", function () { return __awaiter(void 0, void 0, v
                 sealSelectComponent.attach(document.body);
                 sealSelectInterface = sealSelectComponent;
                 // sealSelectInterface
-                //   .selectSeal([
+                //   .selectSealQiFen([
                 //     {
                 //       id: 1,
                 //       imgUrl:
@@ -3449,12 +3570,12 @@ var MessageImpl = /** @class */ (function () {
         this.msgRoot.className = styles.messageContainer;
         _app.getRootEle().appendChild(this.msgRoot);
     }
-    MessageImpl.prototype.show = function (type, opt) {
+    MessageImpl.prototype.show = function (title, type, opt) {
         var _a, _b;
         var elementGuid = newGuid();
-        var exBtns = (opt.exBtn || []).map(function (m) { return __assign(__assign({}, m), { guid: newGuid() }); });
-        var showIconFlag = (_a = opt.showIcon) !== null && _a !== void 0 ? _a : true;
-        var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles.messageBoxBackground, "\" >\n                <div class=\"").concat(styles.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles.title, "\" >\n                        <div class=\"").concat(styles.titleLeft, "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles.titleTip, "\" >").concat(opt.title, "</span>\n                        </div>\n                        <div class=\"").concat(styles.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat((opt.hideTime && opt.hideTime <= 0) ? "<span class=\"".concat(styles.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    ").concat(opt.content ? "<div class='".concat(styles.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
+        var exBtns = ((opt === null || opt === void 0 ? void 0 : opt.exBtn) || []).map(function (m) { return __assign(__assign({}, m), { guid: newGuid() }); });
+        var showIconFlag = (_a = opt === null || opt === void 0 ? void 0 : opt.showIcon) !== null && _a !== void 0 ? _a : true;
+        var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles.messageBoxBackground, "\" >\n                <div class=\"").concat(styles.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles.title, "\" >\n                        <div class=\"").concat(styles.titleLeft, "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles.titleTip, "\" >").concat(title, "</span>\n                        </div>\n                        <div class=\"").concat(styles.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat(((opt === null || opt === void 0 ? void 0 : opt.timeout) && (opt === null || opt === void 0 ? void 0 : opt.timeout) <= 0) ? "<span class=\"".concat(styles.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    ").concat((opt === null || opt === void 0 ? void 0 : opt.content) ? "<div class='".concat(styles.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
         if (exBtns && exBtns.length > 0) {
             exBtns.forEach(function (btn) {
                 if (!btn.callback) {
@@ -3464,7 +3585,7 @@ var MessageImpl = /** @class */ (function () {
                 ele.onclick = btn.callback;
             });
         }
-        var hideTimeFlag = (_b = opt.hideTime) !== null && _b !== void 0 ? _b : 5000;
+        var hideTimeFlag = (_b = opt === null || opt === void 0 ? void 0 : opt.timeout) !== null && _b !== void 0 ? _b : 5000;
         if (hideTimeFlag > 0) {
             setTimeout(function () {
                 document.getElementById(elementGuid).remove();
@@ -3472,14 +3593,14 @@ var MessageImpl = /** @class */ (function () {
         }
         this.msgRoot.appendChild(element);
     };
-    MessageImpl.prototype.success = function (opt) {
-        this.show('success', opt);
+    MessageImpl.prototype.success = function (title, opt) {
+        this.show(title, 'success', opt);
     };
-    MessageImpl.prototype.warn = function (opt) {
-        this.show('warn', opt);
+    MessageImpl.prototype.warn = function (title, opt) {
+        this.show(title, 'warn', opt);
     };
-    MessageImpl.prototype.error = function (opt) {
-        this.show('error', opt);
+    MessageImpl.prototype.error = function (title, opt) {
+        this.show(title, 'error', opt);
     };
     return MessageImpl;
 }());

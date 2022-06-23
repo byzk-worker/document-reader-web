@@ -1,3 +1,9 @@
-<div class="<%= styles.toolScale %>" style='width:80px;'>
-    <c-select on-change="events.valChange($event)" activeVal="{= activeVal =}" options="{{options}}" suffix="%"></c-select>
+<div class="<%= styles.toolScale %>" style="width: 80px;">
+  <c-select
+    on-change="events.valChange($event)"
+    activeVal="{= activeVal =}"
+    options="{{options}}"
+    isNumber="{{true}}"
+    suffix="%"
+  ></c-select>
 </div>

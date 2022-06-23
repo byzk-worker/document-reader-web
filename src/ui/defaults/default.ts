@@ -38,7 +38,7 @@ window.addEventListener("load", async () => {
       sealSelectComponent.attach(document.body);
       sealSelectInterface = sealSelectComponent as any;
       // sealSelectInterface
-      //   .selectSeal([
+      //   .selectSealQiFen([
       //     {
       //       id: 1,
       //       imgUrl:
