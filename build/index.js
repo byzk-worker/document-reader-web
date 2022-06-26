@@ -1808,11 +1808,6 @@ window.addEventListener("load", function () { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         lock.acquire("initSealSelectInterface", function (done) {
             try {
-                // if (!sealSelectInterface) {
-                //   const sealSelectComponent = new SealSelect() as any;
-                //   sealSelectComponent.attach(document.body);
-                //   sealSelectInterface = sealSelectComponent as any;
-                // }
                 // if (!verifySealWindowInterface) {
                 //   const verifySealWindowComponent = new VerifySealWindow();
                 //   verifySealWindowComponent.attach(document.body);
@@ -2323,36 +2318,44 @@ var headerTabsBtns = {
             },
             click: function (app, event) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var currentBookmark, sealList, res, dragRes, e_1;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
+                    var currentBookmark, sealList, res, dragRes, sealPositionList, e_1;
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
                             case 0:
                                 currentBookmark = app.currentBookmark();
                                 if (!currentBookmark || !currentBookmark.id) {
                                     return [2 /*return*/];
                                 }
-                                _a.label = 1;
+                                _b.label = 1;
                             case 1:
-                                _a.trys.push([1, 5, , 6]);
+                                _b.trys.push([1, 5, , 6]);
                                 return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
                             case 2:
-                                sealList = _a.sent();
+                                sealList = _b.sent();
                                 if (!sealList) {
                                     return [2 /*return*/];
                                 }
                                 return [4 /*yield*/, getSealSelectInterface(app).selectSeal(sealList)];
                             case 3:
-                                res = _a.sent();
+                                res = _b.sent();
                                 if (res.cancel) {
                                     return [2 /*return*/];
                                 }
                                 return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo)];
                             case 4:
-                                dragRes = _a.sent();
+                                dragRes = _b.sent();
+                                sealPositionList = dragRes.map(function (res) {
+                                    return {
+                                        sealInfo: res.sealInfo,
+                                        position: { x: res.x, y: res.y }
+                                    };
+                                });
+                                (_a = currentBookmark.parserWrapperInfo.parserInterface).signSealPositionList.apply(_a, sealPositionList);
                                 console.log(dragRes);
                                 return [3 /*break*/, 6];
                             case 5:
-                                e_1 = _a.sent();
+                                e_1 = _b.sent();
                                 debugger;
                                 app.message.error(e_1.message || e_1);
                                 return [3 /*break*/, 6];
@@ -3464,13 +3467,13 @@ var ReaderParserAbstract = /** @class */ (function () {
     ReaderParserAbstract.prototype.sealList = function () {
         throw ErrNoSupportFunction;
     };
-    ReaderParserAbstract.prototype.sealPositionAdd = function (sealInfo, position) {
+    ReaderParserAbstract.prototype.signSealPosition = function (info) {
         throw ErrNoSupportFunction;
     };
-    ReaderParserAbstract.prototype.sealVerify = function (sealFieldName) {
+    ReaderParserAbstract.prototype.signSealVerify = function (sealFieldName) {
         throw ErrNoSupportFunction;
     };
-    ReaderParserAbstract.prototype.sealVerifyAll = function () {
+    ReaderParserAbstract.prototype.signSealVerifyAll = function () {
         throw ErrNoSupportFunction;
     };
     ReaderParserAbstract.prototype.setRotation = function (deg) {
@@ -3480,6 +3483,9 @@ var ReaderParserAbstract = /** @class */ (function () {
         throw ErrNoSupportFunction;
     };
     ReaderParserAbstract.prototype.sealDrag = function (sealInfo, options) {
+        throw ErrNoSupportFunction;
+    };
+    ReaderParserAbstract.prototype.signSealPositionList = function () {
         throw ErrNoSupportFunction;
     };
     ReaderParserAbstract.supportAll = {

@@ -109,3 +109,17 @@ export interface SealDragResult {
    */
   cernterPositionMode?: "center" | "leftBottom";
 }
+
+/**
+ * 签章定位信息
+ */
+export interface SealPositionInfo {
+  /**
+   * 印章信息
+   */
+  sealInfo: SealInfo;
+  /**
+   * 定位信息
+   */
+  position: { x: number; y: number };
+}

@@ -160,17 +160,17 @@ export interface AppUpdateOptions {
    * 侧边栏
    */
   sidebars?:
-  | {
-    /**
-     * 左侧边栏
-     */
-    left?: SlidebarLeftConfig | false;
-    /**
-     * 右侧边栏
-     */
-    right?: any | false;
-  }
-  | false;
+    | {
+        /**
+         * 左侧边栏
+         */
+        left?: SlidebarLeftConfig | false;
+        /**
+         * 右侧边栏
+         */
+        right?: any | false;
+      }
+    | false;
 }
 
 /**
@@ -410,7 +410,7 @@ export interface AppInterface {
     ) => void
   );
 
-  message: MessageInterface,
+  message: MessageInterface;
 }
 
 export interface ReaderInterface {
@@ -509,93 +509,93 @@ export interface ReaderParserSupport {
    * 是否支持全屏
    */
   full:
-  | false
-  | {
-    /**
-     * 内容区域全屏
-     */
-    content: boolean;
-    /**
-     * 宽度撑满内容区,高度自适应
-     */
-    width: boolean;
-  };
+    | false
+    | {
+        /**
+         * 内容区域全屏
+         */
+        content: boolean;
+        /**
+         * 宽度撑满内容区,高度自适应
+         */
+        width: boolean;
+      };
   /**
    * 是否支持页数控制
    */
   pages:
-  | false
-  | {
-    /**
-     * 是否支持跳转页数
-     */
-    jump: boolean;
-    /**
-     * 是否支持模式选择
-     * move: 移动
-     * select: 选择
-     */
-    moduleSwitch:
     | false
     | {
-      select: boolean;
-      move: boolean;
-    };
-    /**
-     * 是否支持查找
-     */
-    find: boolean;
-    /**
-     * 是否支持自适应大小
-     */
-    adaptiveView: boolean;
-    /**
-     * 是否支持页面显示
-     */
-    showPageNo: boolean;
-  };
+        /**
+         * 是否支持跳转页数
+         */
+        jump: boolean;
+        /**
+         * 是否支持模式选择
+         * move: 移动
+         * select: 选择
+         */
+        moduleSwitch:
+          | false
+          | {
+              select: boolean;
+              move: boolean;
+            };
+        /**
+         * 是否支持查找
+         */
+        find: boolean;
+        /**
+         * 是否支持自适应大小
+         */
+        adaptiveView: boolean;
+        /**
+         * 是否支持页面显示
+         */
+        showPageNo: boolean;
+      };
   /**
    * 印章相关配置
    */
   seal:
-  | false
-  | {
-    /**
-     * 是否支持获取印章列表
-     */
-    sealList: boolean;
-    /**
-     * 是否支持坐标签章
-     */
-    positionSeal: boolean;
-    /**
-     * 是否支持验章
-     */
-    verifySeal: boolean;
-  };
+    | false
+    | {
+        /**
+         * 是否支持获取印章列表
+         */
+        sealList: boolean;
+        /**
+         * 是否支持坐标签章
+         */
+        positionSeal: boolean;
+        /**
+         * 是否支持验章
+         */
+        verifySeal: boolean;
+      };
   /**
    * 是否支持事件监听
    */
   listener:
-  | false
-  | {
-    /**
-     * 当前页码变换监听
-     */
-    pageNoChange: boolean;
-    /**
-     * 缩放改变监听
-     */
-    scaleChange: boolean;
-    /**
-     * 模式选择切换
-     */
-    moduleSwitchChange: boolean;
-  };
+    | false
+    | {
+        /**
+         * 当前页码变换监听
+         */
+        pageNoChange: boolean;
+        /**
+         * 缩放改变监听
+         */
+        scaleChange: boolean;
+        /**
+         * 模式选择切换
+         */
+        moduleSwitchChange: boolean;
+      };
 }
 
 export interface ReaderParserConstructor {
-  new(app: AppInterface): ReaderParserInterface;
+  new (app: AppInterface): ReaderParserInterface;
 }
 
 export interface FileInfo {
@@ -637,6 +637,11 @@ export interface SealDragResult {
   cernterPositionMode?: "center" | "leftBottom";
 }
 
+export interface SealPositionInfo {
+  sealInfo: SealInfo;
+  position: { x: number; y: number };
+}
+
 export interface ReaderParserInterface {
   /**
    * 获取印章列表
@@ -654,19 +659,21 @@ export interface ReaderParserInterface {
   /**
    * 坐标签章
    */
-  sealPositionAdd?(
-    sealInfo: SealInfo,
-    position: { x: number; y: number }
-  ): Promise<void>;
+  signSealPosition?(info: SealPositionInfo): Promise<void>;
+  /**
+   * 坐标签章
+   * @param signSeal 签章信息
+   */
+  signSealPositionList?(...signSeal: SealPositionInfo[]): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  sealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  signSealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
   /**
    * 验证全文印章
    */
-  sealVerifyAll?(): Promise<SealVerifyResult[]>;
+  signSealVerifyAll?(): Promise<SealVerifyResult[]>;
   /**
    * 渲染注释
    * @param domEle 要加载到的dom元素
@@ -867,7 +874,7 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
       moduleSwitchChange: true,
     },
   };
-  public constructor(protected app: AppInterface) { }
+  public constructor(protected app: AppInterface) {}
   abstract getNumPages(): number;
   public getScale(): number {
     return this.scale;
@@ -877,8 +884,8 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   setScale(scale?: number): number {
     return (this.scale = scale);
   }
-  adaptiveView(): void { }
-  jumpTo(page: number): void { }
+  adaptiveView(): void {}
+  jumpTo(page: number): void {}
 
   private _getEventList(eventName: string): any[] {
     eventName = "__event_" + eventName;
@@ -956,9 +963,9 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   ): boolean {
     return false;
   }
-  showPageNo(): void { }
-  hidePageNo(): void { }
-  setMode(mode: "move" | "select"): void { }
+  showPageNo(): void {}
+  hidePageNo(): void {}
+  setMode(mode: "move" | "select"): void {}
   getMode(): "select" | "move" {
     return "select";
   }
@@ -974,8 +981,8 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
        */
       timeout?: number;
     }
-  ): void { }
-  contentExitFull(): void { }
+  ): void {}
+  contentExitFull(): void {}
   contentIsFull(): boolean {
     return false;
   }
@@ -987,7 +994,7 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
       widthUnit?: "px" | "%";
       heightUnit?: "px" | "%";
     }
-  ): void | Promise<void> { }
+  ): void | Promise<void> {}
   renderOutline(domEle: HTMLElement): void | Promise<void> {
     throw ErrNoSupportFunction;
   }
@@ -997,16 +1004,13 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   sealList(): Promise<SealInfo[] | undefined> {
     throw ErrNoSupportFunction;
   }
-  sealPositionAdd(
-    sealInfo: SealInfo,
-    position: { x: number; y: number }
-  ): Promise<void> {
+  signSealPosition(info: SealPositionInfo): Promise<void> {
     throw ErrNoSupportFunction;
   }
-  sealVerify(sealFieldName: string): Promise<SealVerifyResult> {
+  signSealVerify(sealFieldName: string): Promise<SealVerifyResult> {
     throw ErrNoSupportFunction;
   }
-  sealVerifyAll(): Promise<SealVerifyResult[]> {
+  signSealVerifyAll(): Promise<SealVerifyResult[]> {
     throw ErrNoSupportFunction;
   }
   setRotation(deg: number): void {
@@ -1019,6 +1023,11 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
     sealInfo: SealInfo,
     options?: SealDrgaOption
   ): Promise<SealDragResult[]> {
+    throw ErrNoSupportFunction;
+  }
+  signSealPositionList(
+    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
+  ): Promise<void> {
     throw ErrNoSupportFunction;
   }
 }
@@ -1066,7 +1075,7 @@ export interface AppConstructor {
   /**
    * 传入参数，返回接口
    */
-  new(attachEle: HTMLElement, options?: AppOptions): AppInterface;
+  new (attachEle: HTMLElement, options?: AppOptions): AppInterface;
 }
 
 export * as ieUtil from "./utils/ie";

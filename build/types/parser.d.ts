@@ -4,6 +4,7 @@ import {
   SealDragResult,
   SealDrgaOption,
   SealInfo,
+  SealPositionInfo,
   SealVerifyResult,
 } from "./seal";
 
@@ -176,23 +177,26 @@ export interface ReaderParserInterface {
   ): Promise<SealDragResult[]>;
   /**
    * 位置签章
-   * @param sealInfo 印章信息
-   * @param position 坐标信息
+   * @param info 签章以及位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  sealPositionAdd?(
-    sealInfo: SealInfo,
-    position: { x: number; y: number }
+  signSealPosition?(info: SealPositionInfo): Promise<void>;
+  /**
+   * 坐标签章
+   * @param signSeal 签章信息
+   */
+  signSealPositionList?(
+    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
   ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  sealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  signSealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
   /**
    * 验证全文印章
    */
-  sealVerifyAll?(): Promise<SealVerifyResult[]>;
+  signSealVerifyAll?(): Promise<SealVerifyResult[]>;
   /**
    * 渲染注释
    * @param domEle 要加载到的dom元素
@@ -412,25 +416,25 @@ export declare abstract class ReaderParserAbstract
 
   /**
    * 位置签章
-   * @param sealInfo 印章信息
-   * @param position 坐标信息
+   * @param info 签章以及位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  public sealPositionAdd(
-    sealInfo: SealInfo,
-    position: { x: number; y: number }
+  public signSealPosition(info: SealPositionInfo): Promise<void>;
+
+  public signSealPositionList(
+    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
   ): Promise<void>;
 
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  public sealVerify(sealFieldName: string): Promise<SealVerifyResult>;
+  public signSealVerify(sealFieldName: string): Promise<SealVerifyResult>;
 
   /**
    * 验证全文印章
    */
-  public sealVerifyAll(): Promise<SealVerifyResult[]>;
+  public signSealVerifyAll(): Promise<SealVerifyResult[]>;
 
   /**
    * 渲染注释

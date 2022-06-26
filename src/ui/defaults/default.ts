@@ -1,3 +1,4 @@
+import { SealPositionInfo } from "./../../../configs/compile/types/types/seal.d";
 import { cloneDeep } from "lodash";
 import {
   AppInterface,
@@ -570,6 +571,15 @@ const headerTabsBtns = {
           }
           const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
             res.sealInfo
+          );
+          const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
+            return {
+              sealInfo: res.sealInfo,
+              position: { x: res.x, y: res.y },
+            };
+          });
+          currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+            ...sealPositionList
           );
           console.log(dragRes);
         } catch (e) {
