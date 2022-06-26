@@ -177,16 +177,23 @@ export interface ReaderParserInterface {
   ): Promise<SealDragResult[]>;
   /**
    * 位置签章
-   * @param info 签章以及位置信息
+   * @param sealInfo 签章信息
+   * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  signSealPosition?(info: SealPositionInfo): Promise<void>;
+  signSealPosition?(
+    sealInfo: SealInfo,
+    positionInfo: SealPositionInfo
+  ): Promise<void>;
   /**
    * 坐标签章
-   * @param signSeal 签章信息
+   * @param sealInfo 签章信息
+   * @param positionInfoList 位置列表信息
+   * @throws Error 签章添加失败抛出异常
    */
   signSealPositionList?(
-    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
+    sealInfo: SealInfo,
+    ...positionInfoList: SealPositionInfo[]
   ): Promise<void>;
   /**
    * 验证印章通过表单名称
@@ -416,15 +423,25 @@ export declare abstract class ReaderParserAbstract
 
   /**
    * 位置签章
-   * @param info 签章以及位置信息
+   * @param sealInfo 签章信息
+   * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  public signSealPosition(info: SealPositionInfo): Promise<void>;
-
-  public signSealPositionList(
-    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
+  public signSealPosition(
+    sealInfo: SealInfo, 
+    positionInfo: SealPositionInfo
   ): Promise<void>;
 
+  /**
+   * 坐标签章
+   * @param sealInfo 签章信息
+   * @param positionInfoList 位置列表信息
+   * @throws Error 签章添加失败抛出异常
+   */
+  public signSealPositionList(
+    sealInfo: SealInfo,
+    ...positionInfoList: SealPositionInfo[]
+  ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称

@@ -637,9 +637,22 @@ export interface SealDragResult {
   cernterPositionMode?: "center" | "leftBottom";
 }
 
+/**
+ * 签章定位信息
+ */
 export interface SealPositionInfo {
-  sealInfo: SealInfo;
-  position: { x: number; y: number };
+  /**
+   * x 位置
+   */
+  x: number;
+  /**
+   * y位置
+   */
+  y: number;
+  /**
+   * 页码
+   */
+  pageNo: number;
 }
 
 export interface ReaderParserInterface {
@@ -657,14 +670,25 @@ export interface ReaderParserInterface {
     options?: SealDrgaOption
   ): Promise<SealDragResult[]>;
   /**
-   * 坐标签章
+   * 位置签章
+   * @param sealInfo 签章信息
+   * @param positionInfo 位置信息
+   * @throws Error 签章添加失败抛出异常
    */
-  signSealPosition?(info: SealPositionInfo): Promise<void>;
+  signSealPosition?(
+    sealInfo: SealInfo,
+    positionInfo: SealPositionInfo
+  ): Promise<void>;
   /**
    * 坐标签章
-   * @param signSeal 签章信息
+   * @param sealInfo 签章信息
+   * @param positionInfoList 位置列表信息
+   * @throws Error 签章添加失败抛出异常
    */
-  signSealPositionList?(...signSeal: SealPositionInfo[]): Promise<void>;
+  signSealPositionList?(
+    sealInfo: SealInfo,
+    ...positionInfoList: SealPositionInfo[]
+  ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
@@ -1004,9 +1028,6 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   sealList(): Promise<SealInfo[] | undefined> {
     throw ErrNoSupportFunction;
   }
-  signSealPosition(info: SealPositionInfo): Promise<void> {
-    throw ErrNoSupportFunction;
-  }
   signSealVerify(sealFieldName: string): Promise<SealVerifyResult> {
     throw ErrNoSupportFunction;
   }
@@ -1025,8 +1046,15 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   ): Promise<SealDragResult[]> {
     throw ErrNoSupportFunction;
   }
+  signSealPosition(
+    sealInfo: SealInfo,
+    positionInfo: SealPositionInfo
+  ): Promise<void> {
+    return this.signSealPositionList(sealInfo, positionInfo);
+  }
   signSealPositionList(
-    ...signSeal: { sealInfo: SealInfo; position: { x: number; y: number } }[]
+    sealInfo: SealInfo,
+    ...positionInfoList: SealPositionInfo[]
   ): Promise<void> {
     throw ErrNoSupportFunction;
   }

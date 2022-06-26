@@ -42662,11 +42662,12 @@ var bkDocReader = (function (exports) {
                                     dragRes = _b.sent();
                                     sealPositionList = dragRes.map(function (res) {
                                         return {
-                                            sealInfo: res.sealInfo,
-                                            position: { x: res.x, y: res.y }
+                                            x: res.x,
+                                            y: res.y,
+                                            pageNo: res.pageNo
                                         };
                                     });
-                                    (_a = currentBookmark.parserWrapperInfo.parserInterface).signSealPositionList.apply(_a, sealPositionList);
+                                    (_a = currentBookmark.parserWrapperInfo.parserInterface).signSealPositionList.apply(_a, __spreadArray([res.sealInfo], sealPositionList, false));
                                     console.log(dragRes);
                                     return [3 /*break*/, 6];
                                 case 5:
@@ -43854,9 +43855,6 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.sealList = function () {
             throw ErrNoSupportFunction;
         };
-        ReaderParserAbstract.prototype.signSealPosition = function (info) {
-            throw ErrNoSupportFunction;
-        };
         ReaderParserAbstract.prototype.signSealVerify = function (sealFieldName) {
             throw ErrNoSupportFunction;
         };
@@ -43872,7 +43870,10 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.sealDrag = function (sealInfo, options) {
             throw ErrNoSupportFunction;
         };
-        ReaderParserAbstract.prototype.signSealPositionList = function () {
+        ReaderParserAbstract.prototype.signSealPosition = function (sealInfo, positionInfo) {
+            return this.signSealPositionList(sealInfo, positionInfo);
+        };
+        ReaderParserAbstract.prototype.signSealPositionList = function (sealInfo) {
             throw ErrNoSupportFunction;
         };
         ReaderParserAbstract.supportAll = {

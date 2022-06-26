@@ -115,11 +115,15 @@ export interface SealDragResult {
  */
 export interface SealPositionInfo {
   /**
-   * 印章信息
+   * x 位置
    */
-  sealInfo: SealInfo;
+  x: number;
   /**
-   * 定位信息
+   * y位置
    */
-  position: { x: number; y: number };
+  y: number;
+  /**
+   * 页码
+   */
+  pageNo: number;
 }
