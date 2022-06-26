@@ -58,6 +58,11 @@ export interface SealSelectInterface {
 }
 type DataType = SealSelectProps & SealSelectStates;
 type SealSelectComponent = Component<DataType> & {
+  events: {
+    documentKeyHandle(event: KeyboardEvent);
+    closeClick();
+    okClick();
+  };
   _waitResult:
     | { resolve: (data: any) => void; reject: (err: any) => void }
     | undefined;
@@ -92,8 +97,10 @@ export default defineComponent<DataType>({
       ],
     };
   },
-  attached() {
-    // console.log("初始化成功...");
+  attached(this: SealSelectComponent) {
+    this.events.documentKeyHandle = this.events.documentKeyHandle.bind(this);
+    this.events.closeClick = this.events.closeClick.bind(this);
+    this.events.okClick = this.events.okClick.bind(this);
   },
   computed: {
     disabled() {
@@ -147,6 +154,7 @@ export default defineComponent<DataType>({
     this.data.set("activeSeal", undefined);
     this.data.set("sealList", [...sealList]);
     this.data.set("mode", mode);
+    document.addEventListener("keydown", this.events.documentKeyHandle);
     return res;
   },
   selectSeal(this: SealSelectComponent, sealList: SealInfo[]) {
@@ -159,6 +167,13 @@ export default defineComponent<DataType>({
     return this._selectSeal(sealList, "qiFeng");
   },
   events: {
+    documentKeyHandle(this: SealSelectComponent, event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        this.events.closeClick();
+      } else if (event.key === "Enter") {
+        this.events.okClick();
+      }
+    },
     customPageInputKeyDown(event: KeyboardEvent) {
       const keyCode = event.keyCode;
       const allow =
@@ -189,6 +204,7 @@ export default defineComponent<DataType>({
       if (!activeSeal) {
         return;
       }
+      document.removeEventListener("keydown", this.events.documentKeyHandle);
       const resultData: any = {
         cancel: false,
         sealInfo: activeSeal,
@@ -249,6 +265,7 @@ export default defineComponent<DataType>({
       this._waitResult = undefined;
     },
     closeClick(this: SealSelectComponent) {
+      document.removeEventListener("keydown", this.events.documentKeyHandle);
       this.data.set("sealList", []);
       this.data.set("maskHideClassName", styles.hide);
       this.data.set("activeSeal", undefined);

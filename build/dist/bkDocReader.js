@@ -41651,7 +41651,9 @@ var bkDocReader = (function (exports) {
             };
         },
         attached: function () {
-            // console.log("初始化成功...");
+            this.events.documentKeyHandle = this.events.documentKeyHandle.bind(this);
+            this.events.closeClick = this.events.closeClick.bind(this);
+            this.events.okClick = this.events.okClick.bind(this);
         },
         computed: {
             disabled: function () {
@@ -41702,6 +41704,7 @@ var bkDocReader = (function (exports) {
             this.data.set("activeSeal", undefined);
             this.data.set("sealList", __spreadArray([], sealList, true));
             this.data.set("mode", mode);
+            document.addEventListener("keydown", this.events.documentKeyHandle);
             return res;
         },
         selectSeal: function (sealList) {
@@ -41714,6 +41717,14 @@ var bkDocReader = (function (exports) {
             return this._selectSeal(sealList, "qiFeng");
         },
         events: {
+            documentKeyHandle: function (event) {
+                if (event.key === "Escape") {
+                    this.events.closeClick();
+                }
+                else if (event.key === "Enter") {
+                    this.events.okClick();
+                }
+            },
             customPageInputKeyDown: function (event) {
                 var keyCode = event.keyCode;
                 var allow = (keyCode >= 48 && keyCode <= 57) ||
@@ -41740,6 +41751,7 @@ var bkDocReader = (function (exports) {
                 if (!activeSeal) {
                     return;
                 }
+                document.removeEventListener("keydown", this.events.documentKeyHandle);
                 var resultData = {
                     cancel: false,
                     sealInfo: activeSeal
@@ -41798,6 +41810,7 @@ var bkDocReader = (function (exports) {
                 this._waitResult = undefined;
             },
             closeClick: function () {
+                document.removeEventListener("keydown", this.events.documentKeyHandle);
                 this.data.set("sealList", []);
                 this.data.set("maskHideClassName", styles$7.hide);
                 this.data.set("activeSeal", undefined);
@@ -42098,16 +42111,28 @@ var bkDocReader = (function (exports) {
 
     var lock = new asyncLock();
     var sealSelectInterface;
+    function getSealSelectInterface(app) {
+        if (!sealSelectInterface) {
+            var sealSelectComponent = new SealSelect();
+            sealSelectComponent.attach(app.getRootEle() || document.body);
+            sealSelectInterface = sealSelectComponent;
+        }
+        return sealSelectInterface;
+    }
     window.addEventListener("load", function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             lock.acquire("initSealSelectInterface", function (done) {
                 try {
-                    if (sealSelectInterface) {
-                        return;
-                    }
-                    var sealSelectComponent = new SealSelect();
-                    sealSelectComponent.attach(document.body);
-                    sealSelectInterface = sealSelectComponent;
+                    // if (!sealSelectInterface) {
+                    //   const sealSelectComponent = new SealSelect() as any;
+                    //   sealSelectComponent.attach(document.body);
+                    //   sealSelectInterface = sealSelectComponent as any;
+                    // }
+                    // if (!verifySealWindowInterface) {
+                    //   const verifySealWindowComponent = new VerifySealWindow();
+                    //   verifySealWindowComponent.attach(document.body);
+                    //   verifySealWindowInterface = verifySealWindowComponent as any;
+                    // }
                     // sealSelectInterface
                     //   .selectSealQiFen([
                     //     {
@@ -42630,7 +42655,7 @@ var bkDocReader = (function (exports) {
                                     if (!sealList) {
                                         return [2 /*return*/];
                                     }
-                                    return [4 /*yield*/, sealSelectInterface.selectSeal(sealList)];
+                                    return [4 /*yield*/, getSealSelectInterface(app).selectSeal(sealList)];
                                 case 3:
                                     res = _a.sent();
                                     if (res.cancel) {

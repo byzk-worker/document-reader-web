@@ -24,19 +24,31 @@ import {
 import SealSelect, { SealSelectInterface } from "./components/SealSelect";
 //@ts-ignore
 import AsyncLock from "async-lock";
+import VerifySealWindow, {
+  VerifySealWindowInterface,
+} from "./components/VerifySealWindow";
 const lock = new AsyncLock();
 
 let sealSelectInterface: SealSelectInterface;
+let verifySealWindowInterface: VerifySealWindowInterface;
+
+function getSealSelectInterface(app: AppInterface): SealSelectInterface {
+  if (!sealSelectInterface) {
+    const sealSelectComponent = new SealSelect() as any;
+    sealSelectComponent.attach(app.getRootEle() || document.body);
+    sealSelectInterface = sealSelectComponent as any;
+  }
+  return sealSelectInterface;
+}
 
 window.addEventListener("load", async () => {
   lock.acquire("initSealSelectInterface", (done) => {
     try {
-      if (sealSelectInterface) {
-        return;
-      }
-      const sealSelectComponent = new SealSelect() as any;
-      sealSelectComponent.attach(document.body);
-      sealSelectInterface = sealSelectComponent as any;
+      // if (!verifySealWindowInterface) {
+      //   const verifySealWindowComponent = new VerifySealWindow();
+      //   verifySealWindowComponent.attach(document.body);
+      //   verifySealWindowInterface = verifySealWindowComponent as any;
+      // }
       // sealSelectInterface
       //   .selectSealQiFen([
       //     {
@@ -552,7 +564,7 @@ const headerTabsBtns = {
           if (!sealList) {
             return;
           }
-          const res = await sealSelectInterface.selectSeal(sealList);
+          const res = await getSealSelectInterface(app).selectSeal(sealList);
           if (res.cancel) {
             return;
           }
