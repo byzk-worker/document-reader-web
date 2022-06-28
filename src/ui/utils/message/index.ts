@@ -108,7 +108,7 @@ export class MessageImpl implements MessageInterface {
             `<div id=${elementGuid} class="${styles.messageBoxBackground}" >
                 <div class="${styles.messageBox} ${getClassName(type)}" >
                     <div class="${styles.title}" >
-                        <div class="${styles.titleLeft}" >
+                        <div class="${styles.titleLeft}" style="${(opt?.timeout && opt?.timeout <= 0) ? "width:313px" : ""}" >
                             ${showIconFlag ? `<span class="${styles.titleIcon}" ><img src="${getIcon(type)}" /></span>` : ''}
                             <span class="${styles.titleTip}" >${title}</span>
                         </div>
@@ -119,6 +119,7 @@ export class MessageImpl implements MessageInterface {
                             ${(opt?.timeout && opt?.timeout <= 0) ? `<span class="${styles.closeIcon}" onclick="document.getElementById('${elementGuid}').remove()" >×</span>` : ''}
                         </div>
                     </div>
+                    <div style="clear:both;" ></div>
                     ${opt?.content ? `<div class='${styles.content}' > ${opt.content} </div>` : ''}
                 </div>
             </div>
