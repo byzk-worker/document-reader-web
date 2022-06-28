@@ -165,3 +165,13 @@ export interface SealListResult {
    */
   sealList: SealInfo[];
 }
+
+/**
+ * 骑缝签章信息
+ */
+export interface SealQiFenInfo extends SealPositionInfo {
+  /**
+   * 切割数量
+   */
+  splitSize: number;
+}

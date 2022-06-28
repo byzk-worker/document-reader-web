@@ -4,6 +4,7 @@ import {
   NodeInfo,
   NodeInfoThis,
   SealPositionInfo,
+  SealQiFenInfo,
   ToolbarConfig,
   ToolInfo,
 } from "../../types";
@@ -30,8 +31,6 @@ import VerifySealWindow, {
 } from "./components/VerifySealWindow";
 import Finder, { FinderInterface } from "./components/Finder";
 import GetKeyword from "./components/GetKeyword";
-
-
 
 const lock = new AsyncLock();
 
@@ -704,7 +703,22 @@ const headerTabsBtns = {
             app.message.success("签章操作已取消!", { timeout: 3000 });
             return;
           }
-          console.log(dragRes);
+
+          app.loading.show("正在签署印章...");
+          const sealPositionList: SealQiFenInfo[] = dragRes.map((r) => {
+            return {
+              x: r.x,
+              y: r.y,
+              pageNo: r.pageNo,
+              splitSize: res.oneSealInPageNum,
+            };
+          });
+          await currentBookmark.parserWrapperInfo.parserInterface.signSealQiFen(
+            res.sealInfo,
+            pwd,
+            ...sealPositionList
+          );
+          app.message.success("骑缝签章成功");
         } catch (e) {
           app.message.error(e.message || e);
         } finally {
@@ -783,7 +797,7 @@ const headerTabsBtns = {
     },
   } as ToolInfo,
   sealKeyword: {
-    type: 'default',
+    type: "default",
     needReader: true,
     nodeInfo: {
       html: "&#xe610;",
@@ -817,21 +831,23 @@ const headerTabsBtns = {
           const pwd = sealListResult.password;
           const sealList = sealListResult.sealList;
           app.loading.hide();
-          const res = await getSealSelectInterface(app).selectSeal(
-            sealList
-          );
+          const res = await getSealSelectInterface(app).selectSeal(sealList);
           if (res.cancel) {
             return;
           }
 
           const keywordRsp = await GetKeyword(app.getRootEle());
           const { opt, keyword } = keywordRsp;
-          if (opt === 'cancel') {
+          if (opt === "cancel") {
             return;
           }
 
           app.loading.show("正在签署印章...");
-          await currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(res.sealInfo.id, pwd, keyword);
+          await currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(
+            res.sealInfo,
+            pwd,
+            keyword
+          );
 
           app.message.success("关键字签章成功!");
         } catch (e) {
@@ -839,8 +855,8 @@ const headerTabsBtns = {
         } finally {
           app.loading.hide();
         }
-      }
-    }
+      },
+    },
   } as ToolInfo,
   rotation: {
     type: "default",
@@ -1121,7 +1137,7 @@ export const defaultData = {
         headerTabsBtns.sealDragAdd,
         headerTabsBtns.sealPagesDragAdd,
         headerTabsBtns.sealQiFenAdd,
-        headerTabsBtns.sealKeyword
+        headerTabsBtns.sealKeyword,
       ],
     } as ToolbarConfig,
     help: {

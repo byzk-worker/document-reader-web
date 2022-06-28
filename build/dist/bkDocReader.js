@@ -42854,54 +42854,68 @@ var bkDocReader = (function (exports) {
                 },
                 click: function (app) {
                     return __awaiter(this, void 0, void 0, function () {
-                        var currentBookmark, sealListResult, sealList, res, dragRes, e_2;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
+                        var currentBookmark, sealListResult, pwd, sealList, res_1, dragRes, sealPositionList, e_2;
+                        var _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
                                 case 0:
                                     currentBookmark = app.currentBookmark();
                                     if (!currentBookmark || !currentBookmark.id) {
                                         return [2 /*return*/];
                                     }
-                                    _a.label = 1;
+                                    _b.label = 1;
                                 case 1:
-                                    _a.trys.push([1, 5, 6, 7]);
+                                    _b.trys.push([1, 6, 7, 8]);
                                     return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
                                 case 2:
-                                    sealListResult = _a.sent();
+                                    sealListResult = _b.sent();
                                     if (!sealListResult) {
                                         return [2 /*return*/];
                                     }
-                                    sealListResult.password;
+                                    pwd = sealListResult.password;
                                     sealList = sealListResult.sealList;
                                     return [4 /*yield*/, getSealSelectInterface(app).selectSealQiFen(sealList)];
                                 case 3:
-                                    res = _a.sent();
-                                    if (res.cancel) {
+                                    res_1 = _b.sent();
+                                    if (res_1.cancel) {
                                         return [2 /*return*/];
                                     }
-                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo, {
+                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res_1.sealInfo, {
                                             mode: "qiFeng",
                                             qiFenConfig: {
-                                                splitPageNum: res.oneSealInPageNum,
-                                                sealMode: res.modSwitch
+                                                splitPageNum: res_1.oneSealInPageNum,
+                                                sealMode: res_1.modSwitch
                                             }
                                         })];
                                 case 4:
-                                    dragRes = _a.sent();
+                                    dragRes = _b.sent();
                                     if (!dragRes || dragRes.length === 0) {
                                         app.message.success("签章操作已取消!", { timeout: 3000 });
                                         return [2 /*return*/];
                                     }
-                                    console.log(dragRes);
-                                    return [3 /*break*/, 7];
+                                    app.loading.show("正在签署印章...");
+                                    sealPositionList = dragRes.map(function (r) {
+                                        return {
+                                            x: r.x,
+                                            y: r.y,
+                                            pageNo: r.pageNo,
+                                            splitSize: res_1.oneSealInPageNum
+                                        };
+                                    });
+                                    return [4 /*yield*/, (_a = currentBookmark.parserWrapperInfo.parserInterface).signSealQiFen.apply(_a, __spreadArray([res_1.sealInfo,
+                                            pwd], sealPositionList, false))];
                                 case 5:
-                                    e_2 = _a.sent();
-                                    app.message.error(e_2.message || e_2);
-                                    return [3 /*break*/, 7];
+                                    _b.sent();
+                                    app.message.success("骑缝签章成功");
+                                    return [3 /*break*/, 8];
                                 case 6:
+                                    e_2 = _b.sent();
+                                    app.message.error(e_2.message || e_2);
+                                    return [3 /*break*/, 8];
+                                case 7:
                                     app.loading.hide();
                                     return [7 /*endfinally*/];
-                                case 7: return [2 /*return*/];
+                                case 8: return [2 /*return*/];
                             }
                         });
                     });
@@ -42989,7 +43003,7 @@ var bkDocReader = (function (exports) {
             }
         },
         sealKeyword: {
-            type: 'default',
+            type: "default",
             needReader: true,
             nodeInfo: {
                 html: "&#xe610;",
@@ -43039,11 +43053,11 @@ var bkDocReader = (function (exports) {
                                 case 4:
                                     keywordRsp = _a.sent();
                                     opt = keywordRsp.opt, keyword = keywordRsp.keyword;
-                                    if (opt === 'cancel') {
+                                    if (opt === "cancel") {
                                         return [2 /*return*/];
                                     }
                                     app.loading.show("正在签署印章...");
-                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(res.sealInfo.id, pwd, keyword)];
+                                    return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(res.sealInfo, pwd, keyword)];
                                 case 5:
                                     _a.sent();
                                     app.message.success("关键字签章成功!");
@@ -43326,7 +43340,7 @@ var bkDocReader = (function (exports) {
                     headerTabsBtns.sealDragAdd,
                     headerTabsBtns.sealPagesDragAdd,
                     headerTabsBtns.sealQiFenAdd,
-                    headerTabsBtns.sealKeyword
+                    headerTabsBtns.sealKeyword,
                 ]
             },
             help: {
@@ -44255,13 +44269,16 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.sealDrag = function (sealInfo, options) {
             throw ErrNoSupportFunction;
         };
-        ReaderParserAbstract.prototype.signSealKeyword = function (sealId, pwd, keyword) {
+        ReaderParserAbstract.prototype.signSealKeyword = function (sealInfo, pwd, keyword) {
             throw ErrNoSupportFunction;
         };
         ReaderParserAbstract.prototype.signSealPosition = function (sealInfo, password, positionInfo) {
             return this.signSealPositionList(sealInfo, password, positionInfo);
         };
         ReaderParserAbstract.prototype.signSealPositionList = function (sealInfo, password) {
+            throw ErrNoSupportFunction;
+        };
+        ReaderParserAbstract.prototype.signSealQiFen = function (sealInfo, pwd) {
             throw ErrNoSupportFunction;
         };
         ReaderParserAbstract.supportAll = {
@@ -44291,6 +44308,7 @@ var bkDocReader = (function (exports) {
             },
             seal: {
                 keywordSeal: true,
+                qiFenSeal: true,
                 sealList: true,
                 positionSeal: true,
                 verifySeal: true
