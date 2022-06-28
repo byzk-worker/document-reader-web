@@ -1,5 +1,6 @@
 import { Component } from "san";
 import { DataStore } from "./dataStore";
+import { LoadingInterface } from "./ui/utils/loading";
 import { MessageInterface } from "./ui/utils/message";
 
 export type Diasble = boolean | ((app: AppInterface) => boolean) | string;
@@ -411,6 +412,7 @@ export interface AppInterface {
   );
 
   message: MessageInterface;
+  loading: LoadingInterface;
 }
 
 export interface ReaderInterface {
@@ -622,10 +624,12 @@ export interface SealVerifyResult {
   signerName?: string;
 }
 
-export interface SealDrgaOption {
+export interface SealDragOption {
   pageNo?: number[];
   maxPageNo?: number;
   minPageNo?: number;
+  mode?: "default" | "multipage" | "qiFeng";
+  allowManualPosition?: boolean;
   cernterPositionMode?: "center" | "leftBottom";
 }
 
@@ -655,11 +659,16 @@ export interface SealPositionInfo {
   pageNo: number;
 }
 
+export interface SealListResult {
+  password?: string;
+  sealList: SealInfo[];
+}
+
 export interface ReaderParserInterface {
   /**
    * 获取印章列表
    */
-  sealList?(): Promise<SealInfo[] | undefined>;
+  sealList?(): Promise<SealListResult | undefined>;
   /**
    * 拖拽一个印章
    * @param sealInfo 要拖拽的印章信息
@@ -667,26 +676,30 @@ export interface ReaderParserInterface {
    */
   sealDrag?(
     sealInfo: SealInfo,
-    options?: SealDrgaOption
+    options?: SealDragOption
   ): Promise<SealDragResult[]>;
   /**
    * 位置签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
   signSealPosition?(
     sealInfo: SealInfo,
+    password: string | undefined,
     positionInfo: SealPositionInfo
   ): Promise<void>;
   /**
    * 坐标签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
   signSealPositionList?(
     sealInfo: SealInfo,
+    password: string | undefined,
     ...positionInfoList: SealPositionInfo[]
   ): Promise<void>;
   /**
@@ -1025,7 +1038,7 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   renderAnnotations(domEle: HTMLElement): void | Promise<void> {
     throw ErrNoSupportFunction;
   }
-  sealList(): Promise<SealInfo[] | undefined> {
+  sealList(): Promise<SealListResult | undefined> {
     throw ErrNoSupportFunction;
   }
   signSealVerify(sealFieldName: string): Promise<SealVerifyResult> {
@@ -1042,18 +1055,20 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   }
   sealDrag(
     sealInfo: SealInfo,
-    options?: SealDrgaOption
+    options?: SealDragOption
   ): Promise<SealDragResult[]> {
     throw ErrNoSupportFunction;
   }
   signSealPosition(
     sealInfo: SealInfo,
+    password: string | undefined,
     positionInfo: SealPositionInfo
   ): Promise<void> {
-    return this.signSealPositionList(sealInfo, positionInfo);
+    return this.signSealPositionList(sealInfo, password, positionInfo);
   }
   signSealPositionList(
     sealInfo: SealInfo,
+    password: string | undefined,
     ...positionInfoList: SealPositionInfo[]
   ): Promise<void> {
     throw ErrNoSupportFunction;

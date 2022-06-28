@@ -1,7 +1,12 @@
 import { TabPagesConfig, TabBtnGroupConfig } from "./tabPages";
 import { HeaderConfig } from "./header";
 import { SlidebarLeftConfig } from "./slidebar";
-import { MessageInterface, NodeInfo, ToolbarConfig } from "./common";
+import {
+  LoadingInterface,
+  MessageInterface,
+  NodeInfo,
+  ToolbarConfig,
+} from "./common";
 import { ReaderInterface } from "./reader";
 import {
   FileInfo,
@@ -241,7 +246,15 @@ export declare interface AppInterface {
     ) => void
   );
 
-  message: MessageInterface,
+  /**
+   * 消息弹窗
+   */
+  message: MessageInterface;
+
+  /**
+   * 等待框
+   */
+  loading: LoadingInterface;
 }
 
 /**

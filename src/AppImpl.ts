@@ -28,6 +28,7 @@ import { app, dom, id, ie } from "./utils";
 import { defaultData } from "./ui/defaults/default";
 import { DataStore } from "./dataStore";
 import { MessageImpl, MessageInterface } from "./ui/utils/message";
+import { Loading, LoadingInterface } from "./ui/utils/loading";
 
 const appEventBookmarkChange = "bookmarkChange";
 
@@ -115,9 +116,9 @@ class ReaderImpl implements ReaderInterface {
   private _fileInputLabel: HTMLLabelElement;
   private _fileInputWait:
     | {
-      resovle: any;
-      reject: any;
-    }
+        resovle: any;
+        reject: any;
+      }
     | undefined;
 
   public constructor(private _app: AppInterface) {
@@ -398,6 +399,7 @@ export class AppImpl implements AppInterface {
   private _bookmarkMap: AppBookmarkIndexMap = {};
   private _datastore: DataStore = new DataStore();
   private _messageUtils: MessageInterface = new MessageImpl(this);
+  private _loading: LoadingInterface = new Loading(this);
 
   //#region 私有方法
 
@@ -924,4 +926,5 @@ export class AppImpl implements AppInterface {
   }
 
   public message = this._messageUtils;
+  public loading = this._loading;
 }

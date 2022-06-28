@@ -264,3 +264,19 @@ export interface MessageInterface {
    */
   error(title: string, opt?: MessageOption): void;
 }
+
+/**
+ * 等待框接口
+ */
+export interface LoadingInterface {
+  /**
+   * 显示等待消息
+   * @param message 要显示的消息
+   * @param parentEle 父元素
+   */
+  show(message: string, parentEle?: HTMLElement): void;
+  /**
+   * 隐藏
+   */
+  hide(): void;
+}

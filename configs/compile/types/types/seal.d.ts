@@ -61,7 +61,7 @@ export interface SealVerifyResult {
 /**
  * 印章拖拽选项
  */
-export interface SealDrgaOption {
+export interface SealDragOption {
   /**
    * 可拖拽的页面
    */
@@ -74,6 +74,14 @@ export interface SealDrgaOption {
    * 可拖拽的最小页码
    */
   minPageNo?: number;
+  /**
+   * 模式
+   */
+  mode?: "default" | "multipage" | "qiFeng";
+  /**
+   * 是否允许手动改变签章位置, 一般在mode==multipage时生效
+   */
+  allowManualPosition?: boolean;
   /**
    * 中心定位模式
    * 1. center: 中心为起点
@@ -126,4 +134,18 @@ export interface SealPositionInfo {
    * 页码
    */
   pageNo: number;
+}
+
+/**
+ * 印章列表结果
+ */
+export interface SealListResult {
+  /**
+   * 密码
+   */
+  password?: string;
+  /**
+   * 印章列表
+   */
+  sealList: SealInfo[];
 }

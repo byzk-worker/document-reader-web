@@ -28,10 +28,12 @@ import AsyncLock from "async-lock";
 import VerifySealWindow, {
   VerifySealWindowInterface,
 } from "./components/VerifySealWindow";
+import Finder, { FinderInterface } from "./components/Finder";
 const lock = new AsyncLock();
 
 let sealSelectInterface: SealSelectInterface;
 let verifySealWindowInterface: VerifySealWindowInterface;
+let finderInterface: FinderInterface;
 
 function getSealSelectInterface(app: AppInterface): SealSelectInterface {
   if (!sealSelectInterface) {
@@ -42,38 +44,48 @@ function getSealSelectInterface(app: AppInterface): SealSelectInterface {
   return sealSelectInterface;
 }
 
-window.addEventListener("load", async () => {
-  lock.acquire("initSealSelectInterface", (done) => {
-    try {
-      // if (!verifySealWindowInterface) {
-      //   const verifySealWindowComponent = new VerifySealWindow();
-      //   verifySealWindowComponent.attach(document.body);
-      //   verifySealWindowInterface = verifySealWindowComponent as any;
-      // }
-      // sealSelectInterface
-      //   .selectSealQiFen([
-      //     {
-      //       id: 1,
-      //       imgUrl:
-      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
-      //     } as any,
-      //     {
-      //       id: 2,
-      //       imgUrl:
-      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
-      //     } as any,
-      //     {
-      //       id: 3,
-      //       imgUrl:
-      //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
-      //     } as any,
-      //   ])
-      //   .then((res) => console.log(res));
-    } finally {
-      done();
-    }
-  });
-});
+function getFinderInterface(app: AppInterface): FinderInterface {
+  if (!finderInterface) {
+    const finderComponent = new Finder();
+    (finderComponent as any).app = app;
+    finderComponent.attach(app.getRootEle() || document.body);
+    finderInterface = finderComponent as any;
+  }
+  return finderInterface;
+}
+
+// window.addEventListener("load", async () => {
+//   lock.acquire("initSealSelectInterface", (done) => {
+//     try {
+//       // if (!verifySealWindowInterface) {
+//       //   const verifySealWindowComponent = new VerifySealWindow();
+//       //   verifySealWindowComponent.attach(document.body);
+//       //   verifySealWindowInterface = verifySealWindowComponent as any;
+//       // }
+//       // sealSelectInterface
+//       //   .selectSealQiFen([
+//       //     {
+//       //       id: 1,
+//       //       imgUrl:
+//       //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//       //     } as any,
+//       //     {
+//       //       id: 2,
+//       //       imgUrl:
+//       //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//       //     } as any,
+//       //     {
+//       //       id: 3,
+//       //       imgUrl:
+//       //         "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//       //     } as any,
+//       //   ])
+//       //   .then((res) => console.log(res));
+//     } finally {
+//       done();
+//     }
+//   });
+// });
 
 const fullBtnId = id.createId();
 
@@ -184,6 +196,8 @@ const headerTabsBtns = {
       html: "&#xe65e;",
       title: "打开文件",
       async click(app) {
+        // const finder = getFinderInterface(app);
+        // finder.show();
         const result = await app.getReader().selectFile();
         if (!result) {
           return;
@@ -514,6 +528,15 @@ const headerTabsBtns = {
       html: "&#xe664;",
       title: "查找",
       text: "查找",
+      isShow(app) {
+        const pagesConfig = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.pages;
+        return pagesConfig && pagesConfig.find;
+      },
+      click(app) {
+        const finder = getFinderInterface(app);
+        finder.show();
+      },
     },
   } as ToolInfo,
   full: {
@@ -550,7 +573,11 @@ const headerTabsBtns = {
       isShow(app) {
         const sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
           .support.seal;
-        if (!sealSupport || !sealSupport.sealList) {
+        if (
+          !sealSupport ||
+          !sealSupport.sealList ||
+          !sealSupport.positionSeal
+        ) {
           return false;
         }
         return true;
@@ -561,10 +588,13 @@ const headerTabsBtns = {
           return;
         }
         try {
-          const sealList = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
-          if (!sealList) {
+          const sealListResult = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
+          if (!sealListResult) {
             return;
           }
+          const pwd = sealListResult.password;
+          const sealList = sealListResult.sealList;
+          app.loading.hide();
           const res = await getSealSelectInterface(app).selectSeal(sealList);
           if (res.cancel) {
             return;
@@ -572,6 +602,11 @@ const headerTabsBtns = {
           const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
             res.sealInfo
           );
+          if (!dragRes || dragRes.length === 0) {
+            app.message.success("签章操作已取消!", { timeout: 3000 });
+            return;
+          }
+          app.loading.show("正在签署印章...");
           const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
             return {
               x: res.x,
@@ -579,14 +614,82 @@ const headerTabsBtns = {
               pageNo: res.pageNo,
             };
           });
-          currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+          await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
             res.sealInfo,
+            pwd,
             ...sealPositionList
           );
-          console.log(dragRes);
+          app.message.success("签章成功!!!");
         } catch (e) {
-          debugger;
           app.message.error(e.message || e);
+        } finally {
+          app.loading.hide();
+        }
+      },
+    },
+  } as ToolInfo,
+  sealPagesDragAdd: {
+    type: "default",
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe677;",
+      title: "多页签章",
+      text: "多页签章",
+      isShow(app) {
+        const sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.seal;
+        if (
+          !sealSupport ||
+          !sealSupport.sealList ||
+          !sealSupport.positionSeal
+        ) {
+          return false;
+        }
+        return true;
+      },
+      async click(app, event) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+
+        try {
+          const sealListResult = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
+          if (!sealListResult) {
+            return;
+          }
+          const pwd = sealListResult.password;
+          const sealList = sealListResult.sealList;
+          app.loading.hide();
+          const res = await getSealSelectInterface(app).selectSealMultipage(
+            sealList
+          );
+          if (res.cancel) {
+            return;
+          }
+          console.log(res);
+          const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
+            res.sealInfo,
+            { pageNo: res.customPageNos, mode: "multipage" }
+          );
+          console.log(dragRes);
+          // app.loading.show("正在签署印章...");
+          // const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
+          //   return {
+          //     x: res.x,
+          //     y: res.y,
+          //     pageNo: res.pageNo,
+          //   };
+          // });
+          // await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+          //   res.sealInfo,
+          //   pwd,
+          //   ...sealPositionList
+          // );
+        } catch (e) {
+          app.message.error(e.message || e);
+        } finally {
+          app.loading.hide();
         }
       },
     },
@@ -866,7 +969,7 @@ export const defaultData = {
     } as ToolbarConfig,
     safety: {
       text: "安全",
-      tools: [headerTabsBtns.sealDragAdd],
+      tools: [headerTabsBtns.sealDragAdd, headerTabsBtns.sealPagesDragAdd],
     } as ToolbarConfig,
     help: {
       text: "帮助",

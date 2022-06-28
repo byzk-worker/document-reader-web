@@ -2,8 +2,9 @@ import { AppInterface } from "./app";
 import { ReaderInterface } from "./reader";
 import {
   SealDragResult,
-  SealDrgaOption,
+  SealDragOption,
   SealInfo,
+  SealListResult,
   SealPositionInfo,
   SealVerifyResult,
 } from "./seal";
@@ -165,7 +166,7 @@ export interface ReaderParserInterface {
   /**
    * 获取印章列表
    */
-  sealList?(): Promise<SealInfo[] | undefined>;
+  sealList?(): Promise<SealListResult | undefined>;
   /**
    * 拖拽一个印章
    * @param sealInfo 要拖拽的印章信息
@@ -173,26 +174,30 @@ export interface ReaderParserInterface {
    */
   sealDrag?(
     sealInfo: SealInfo,
-    options?: SealDrgaOption
+    options?: SealDragOption
   ): Promise<SealDragResult[]>;
   /**
    * 位置签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
   signSealPosition?(
     sealInfo: SealInfo,
+    password: string | undefined,
     positionInfo: SealPositionInfo
   ): Promise<void>;
   /**
    * 坐标签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
   signSealPositionList?(
     sealInfo: SealInfo,
+    password: string | undefined,
     ...positionInfoList: SealPositionInfo[]
   ): Promise<void>;
   /**
@@ -409,7 +414,7 @@ export declare abstract class ReaderParserAbstract
   /**
    * 获取印章列表
    */
-  public sealList(): Promise<SealInfo[] | undefined>;
+  public sealList(): Promise<SealListResult | undefined>;
 
   /**
    * 拖拽印章
@@ -418,28 +423,32 @@ export declare abstract class ReaderParserAbstract
    */
   public sealDrag(
     sealInfo: SealInfo,
-    options?: SealDrgaOption
+    options?: SealDragOption
   ): Promise<SealDragResult[]>;
 
   /**
    * 位置签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
   public signSealPosition(
-    sealInfo: SealInfo, 
+    sealInfo: SealInfo,
+    password: string | undefined,
     positionInfo: SealPositionInfo
   ): Promise<void>;
 
   /**
    * 坐标签章
    * @param sealInfo 签章信息
+   * @param password 密码
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
   public signSealPositionList(
     sealInfo: SealInfo,
+    password: string | undefined,
     ...positionInfoList: SealPositionInfo[]
   ): Promise<void>;
   /**
