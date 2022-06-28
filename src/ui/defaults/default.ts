@@ -29,6 +29,16 @@ import VerifySealWindow, {
   VerifySealWindowInterface,
 } from "./components/VerifySealWindow";
 import Finder, { FinderInterface } from "./components/Finder";
+import BathCheckSealRst from "./components/BathCheckSealRst";
+
+setTimeout(() => {
+  BathCheckSealRst.error([
+    { page: 1, success: false, sealName: '某某公章*', desc: '算法验证失败' },
+  ]);
+}, 200);
+
+
+
 const lock = new AsyncLock();
 
 let sealSelectInterface: SealSelectInterface;
@@ -99,7 +109,7 @@ function narrowDisabledHandler(
   try {
     const scale = parseInt(
       app.currentBookmark().parserWrapperInfo.parserInterface.getScale() * 100 +
-        ""
+      ""
     );
     const scalMinVal = scaleVals[0];
     if (scale <= scalMinVal) {
@@ -423,7 +433,7 @@ const headerTabsBtns = {
             this.update(this);
           }
           parserInterface.setScale(scaleVals[index] / 100);
-        } catch (e) {}
+        } catch (e) { }
       },
     },
   } as ToolInfo,
@@ -517,7 +527,7 @@ const headerTabsBtns = {
           }
 
           parserInterface.setScale(scaleVals[index] / 100);
-        } catch (e) {}
+        } catch (e) { }
       },
     },
   } as ToolInfo,
