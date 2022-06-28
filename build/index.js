@@ -706,7 +706,7 @@ var dom = /*#__PURE__*/Object.freeze({
     nodeEventDestroy: nodeEventDestroy
 });
 
-var styles$g = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+var styles$h = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
 
 var htmlTemplate$1 = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\n    <div class=\"<%= styles.tollbar %>\">\n        <div class=\"<%= styles.fileBtn %>\">\n            <span class=\"iconfont\">&#xe655;\n                <span>文件</span>\n            </span>\n        </div>\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\n                    <span>{{toolbarConfig.text}}</span>\n                </div>\n            </div>\n        </fragment>\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\n        </div>\n    </div>\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\n                            {{events.handleRender(toolInfo, i, index)}}\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\n                        </div>\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\n                            <div></div>\n                        </div>\n                    </div>\n                </fragment>\n            </fragment>\n            \n        </div>\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\n    </div>\n</div>";
 
@@ -716,11 +716,11 @@ var headerToolPanelHeight = 50;
 var html$c = "<fragment>\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\n        <span class=\"iconfont\">{{html | raw}}</span>\n    </div>\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\n        <span>{{text}}</span>\n    </div>\n</fragment>";
 
 var ToolBtn = defineComponent({
-    template: template$6(html$c)({ styles: styles$g })
+    template: template$6(html$c)({ styles: styles$h })
 });
 
 var template$5 = template$6(htmlTemplate$1)({
-    styles: styles$g
+    styles: styles$h
 });
 var Header = defineComponent({
     template: template$5,
@@ -974,19 +974,19 @@ var Header = defineComponent({
 
 var html$b = "<div class=\"<%= styles.reader %>\">\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\n        </div>\n    </fragment> -->\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\n        <h3>{{errMsg}}</h3>\n    </div>\n</div>";
 
-var styles$f = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
+var styles$g = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
 
-var styles$e = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+var styles$f = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
 
 var html$a = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
 var html$9 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">\n";
 
-var styles$d = {};
+var styles$e = {};
 
 var allowKeys = [8, 37, 39, 46];
 var InputNumber = defineComponent({
-    template: template$6(html$9)(styles$d),
+    template: template$6(html$9)(styles$e),
     initData: function () {
         return {
             value: "1",
@@ -1086,7 +1086,7 @@ var ToolJump = defineComponent({
     components: {
         "input-number": InputNumber
     },
-    template: template$6(html$a)({ styles: styles$e }),
+    template: template$6(html$a)({ styles: styles$f }),
     initData: function () {
         return {
             maxValue: undefined,
@@ -1105,14 +1105,14 @@ var ToolJump = defineComponent({
         prevDisableClass: function () {
             var val = this.data.get("value");
             if (val == 1) {
-                return styles$e.disabled;
+                return styles$f.disabled;
             }
         },
         nextDisableClass: function () {
             var val = this.data.get("value");
             var maxVal = this.data.get("maxValue");
             if (val >= maxVal) {
-                return styles$e.disabled;
+                return styles$f.disabled;
             }
         }
     },
@@ -1163,15 +1163,15 @@ var html$8 = "<div class=\"<%= styles.toolScale %>\" style=\"width: 80px;\">\n  
 
 var html$7 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\n    <div class=\"<%= styles.value %>\">\n        <span s-show=\"!isNumber\">{{activeText}}</span>\n        <input-number s-show=\"isNumber\" on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\n        </input-number>\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\n    </div>\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\n    <span class=\"iconfont\">{{suffix|raw}}</span>\n</div>";
 
-var styles$c = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+var styles$d = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
 
 var html$6 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\n</div>";
 
-var styles$b = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
+var styles$c = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 
 var eventMap = {};
 var Options = defineComponent({
-    template: template$6(html$6)({ styles: styles$b }),
+    template: template$6(html$6)({ styles: styles$c }),
     attached: function () {
         var _this = this;
         var id = this.id;
@@ -1275,7 +1275,7 @@ var Options = defineComponent({
 });
 
 var Select = defineComponent({
-    template: template$6(html$7)({ styles: styles$c }),
+    template: template$6(html$7)({ styles: styles$d }),
     components: {
         "input-number": InputNumber
     },
@@ -1332,7 +1332,7 @@ var ToolScale = defineComponent({
     components: {
         "c-select": Select
     },
-    template: template$6(html$8)({ styles: styles$e }),
+    template: template$6(html$8)({ styles: styles$f }),
     attached: function () {
         this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
         this.events.scalChange = this.events.scalChange.bind(this);
@@ -1387,10 +1387,10 @@ var ToolScale = defineComponent({
 
 var html$5 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\n    <img src=\"data:image/png;base64,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\">\n</div>";
 
-var styles$a = {"content":"index-module_content__2P82G"};
+var styles$b = {"content":"index-module_content__2P82G"};
 
 var TempReaderContent = defineComponent({
-    template: template$6(html$5)({ styles: styles$a }),
+    template: template$6(html$5)({ styles: styles$b }),
     openFile: function () {
         return __awaiter(this, void 0, void 0, function () {
             var result;
@@ -1540,17 +1540,17 @@ function jumpBtnGroupCheckFn(app, currentBookmark) {
     var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
     var numPages = parserInterface.getNumPages();
     var nowPageNo = parserInterface.nowPageNo();
-    var haveDisabled = this.className.includes(" " + styles$e.disabled);
+    var haveDisabled = this.className.includes(" " + styles$f.disabled);
     if (this.title === "跳转到首页" || this.title === "上一页") {
         if (nowPageNo <= 1) {
             if (haveDisabled) {
                 return;
             }
-            this.className += " " + styles$e.disabled;
+            this.className += " " + styles$f.disabled;
             this.update();
         }
         else if (haveDisabled) {
-            this.className = this.className.split(" " + styles$e.disabled).join("");
+            this.className = this.className.split(" " + styles$f.disabled).join("");
             this.update();
         }
         return;
@@ -1560,11 +1560,11 @@ function jumpBtnGroupCheckFn(app, currentBookmark) {
             if (haveDisabled) {
                 return;
             }
-            this.className += " " + styles$e.disabled;
+            this.className += " " + styles$f.disabled;
             this.update();
         }
         else if (haveDisabled) {
-            this.className = this.className.split(" " + styles$e.disabled).join("");
+            this.className = this.className.split(" " + styles$f.disabled).join("");
             this.update();
         }
         return;
@@ -1592,7 +1592,7 @@ function supportJumpPage(app) {
 
 var html$4 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n  <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n    <div class=\"<%= styles.title %>\">\n      <div class=\"<%= styles.text %>\">{{titleText}}</div>\n      <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n    </div>\n    <div class=\"<%= styles.contents %>\">\n      <div class=\"<%= styles.label %>\">\n        印章选择\n      </div>\n      <div class=\"<%= styles.sealContent %>\">\n        <fragment s-for=\"sealInfo in sealList\">\n          <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n            <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n          </div>\n        </fragment>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n        页面选项设置\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('allPages')\" s-show=\"{{radioSelectStatus !== 'allPages'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'allPages'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('allPages')\">全部页面</label>\n        </div>\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('custom')\" s-show=\"{{radioSelectStatus !== 'custom'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'custom'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('custom')\">自定义页面设置</label>\n          <input value=\"{= customPageInputVal =}\" on-keydown=\"events.customPageInputKeyDown($event)\" s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.pageNumSelect %>\">\n          <span s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.prompt %>\">格式示例：1-2;4;6</span>\n        </div>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.checkbox %>\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectImg}}\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{!checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectNoImg}}\">\n          <label on-click=\"events.checkboxChange()\">需手动对位置再调整</label>\n        </div>\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.label %>\">\n        页面选择\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.OddChoice %>\">\n        <div class=\"<%= styles.label %>\">\n          奇偶选择\n        </div>\n        <ui-select style=\"width: 249px; float: left;\" activeVal=\"{= qiFenPageSealMode =}\" options=\"{{oddSwitchOption}}\" optionsStyle=\"width: 249px;\"></ui-select>\n      </div>\n      <div s-show=\"isQiFenSign\" style=\"margin-top: 90px;\" class=\"<%= styles.label %>\">\n        印章显示设置\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.sealShow %>\">\n        <div class=\"<%= styles.label %>\">\n          多少页显示一个印章\n        </div>\n        <ui-inputNumber defaultValue=\"{{1}}\" minValue=\"{{1}}\" maxValue=\"{{4}}\" value=\"{= oneSealInPageNumVal =}\" style=\"margin-left: 3px; height: 23px; line-height: 23px;\"></ui-inputNumber>\n      </div>\n    </div>\n    <div class=\"<%= styles.btnGroup %>\">\n      <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">\n        确定\n      </div>\n    </div>\n  </div>\n</div>\n";
 
-var styles$9 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+var styles$a = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
 
 function base64ToBlob(base64Data) {
     var arr = base64Data.split(","), fileType = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), l = bstr.length, u8Arr = new Uint8Array(l);
@@ -1613,13 +1613,13 @@ var SealSelect = defineComponent({
         "ui-select": Select,
         "ui-inputNumber": InputNumber
     },
-    template: template$6(html$4)({ styles: styles$9 }),
+    template: template$6(html$4)({ styles: styles$a }),
     initData: function () {
         return {
             mode: "seal",
             sealList: [],
             customPageInputVal: "",
-            maskHideClassName: styles$9.hide,
+            maskHideClassName: styles$a.hide,
             selectImg: mulSelectB64Url,
             selectNoImg: mulSlectNoB64Url,
             radioSelectImg: radioSelectB64Url,
@@ -1642,7 +1642,7 @@ var SealSelect = defineComponent({
     },
     computed: {
         disabled: function () {
-            return !this.data.get("activeSeal") ? styles$9.disabled : "";
+            return !this.data.get("activeSeal") ? styles$a.disabled : "";
         },
         sealSelectStyles: function () {
             var height = 601;
@@ -1670,7 +1670,7 @@ var SealSelect = defineComponent({
     _selectSeal: function (sealList, mode) {
         var _this = this;
         mode = mode || "seal";
-        if (this.data.get("maskHideClassName") !== styles$9.hide) {
+        if (this.data.get("maskHideClassName") !== styles$a.hide) {
             throw new Error("选择器被锁定");
         }
         var res = new Promise(function (resolve, reject) {
@@ -1787,7 +1787,7 @@ var SealSelect = defineComponent({
                 resultData.oneSealInPageNum = parseInt(this.data.get("oneSealInPageNumVal"));
             }
             this.data.set("sealList", []);
-            this.data.set("maskHideClassName", styles$9.hide);
+            this.data.set("maskHideClassName", styles$a.hide);
             this.data.set("activeSeal", undefined);
             this._waitResult &&
                 this._waitResult.resolve &&
@@ -1797,7 +1797,7 @@ var SealSelect = defineComponent({
         closeClick: function () {
             document.removeEventListener("keydown", this.events.documentKeyHandle);
             this.data.set("sealList", []);
-            this.data.set("maskHideClassName", styles$9.hide);
+            this.data.set("maskHideClassName", styles$a.hide);
             this.data.set("activeSeal", undefined);
             this._waitResult &&
                 this._waitResult.resolve &&
@@ -1809,10 +1809,10 @@ var SealSelect = defineComponent({
 
 var html$3 = "<div style=\"display: {{show?'block':'none'}}\" class=\"<%= styles.finder %>\">\n  <div s-ref=\"ref-title\" class=\"<%= styles.title %>\" on-mousedown=\"events.titleMouseDown($event)\" on-mouseup=\"events.titleMouseUp($event)\">\n    <span class=\"<%= styles.text %>\">PIN码</span>\n    <img on-click=\"hide()\" id=\"<%= styles.close %>\" title=\"关闭\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAACZ1JREFUeF7tnc+rdWUVx79rHgqOdNBYEJGyBhYEhuhr816FomEgTQTLwH+gwB8QTYRqWEHqOBOlogYWIaHoxEEDZw7LP+CRbefq9fWee/Zee6199vOsz4U722udZ32+z+c+55597rkmviAAgaMEDDYQgMBxAgjC7oDANQQQhO0BAQRhD0DAR4ATxMeNqiIEEKRI0IzpI4AgPm5UFSGAIEWCZkwfAQTxcaOqCAEEKRI0Y/oIIIiPG1VFCCBIkaAZ00cAQXzcqCpCAEGKBM2YPgII4uNGVRECCFIkaMb0EUAQHzeqihBAkCJBM6aPAIL4uFFVhACCFAmaMX0EEMTHjaoiBBCkSNCM6SOAID5uVBUhgCBFgmZMHwEE8XGjqggBBCkSNGP6CCCIjxtVRQggSJGgGdNHAEF83KgqQgBBigTNmD4CCOLjRlURAghSJGjG9BFAEB83qooQQJAiQTOmjwCC+LhRVYQAghQJmjF9BBDEx42qIgQQpEjQjOkjgCA+blQVIYAgRYJmTB8BBPFxo6oIAQQpEjRj+gggiI8bVUUIIEiRoBnTRwBBfNyoKkIAQYoEzZg+Agji40ZVEQIIUiRoxvQRQBAfN6qKEECQIkEzpo8Agvi4UVWEwNCCtNbul/QjSQ9I+rKkNyW9I+kFM/uwSMYhY7bW7pT0lKT7JH1D0n8k/UPSy2b255AH2WGTYQVprT0q6dUjzN+W9LSZvb7DTHa3pNbaw5KeP8hx1fqeNLNf7m7hAQsaUpDW2pOSfnGCT5P0uJm9HMBx2BattZuS/iDp1F551MxeGw3EqaG7m7e19pCkN2YuHEmuAbVAjosu95vZv2ey7+KyEQV5UdITC+gjyRWwHHJMXX5jZj9cwH73l44oyPQT7CsLySPJJWBOOaYO75nZvQvZ7/ryEQX5r6TbHNSRRNIKOSbk/zOz2x3sd1syoiB/knTDSby0JCvlmJC/ZmbTq4fDfI0oyLPTS7grEiopSYAcE/LnzOynK9jvrnREQaYbWtPLjdMNLe9XKUmC5JjuLd0Y7QbscIJMRrTWHjlI4hXkkzYV7pMEyTGxmuQY7sbrkIIcJJlucL20xpDRJQmU4zEze2Ul612WDysIkly/35Bjno9DC4IkV28C5Jgnx3TV8IIgyec3A3LMl6OMIEjy/02BHMvkKCVIdUmQY7kc5QSpKgly+OQoKUg1SZDDL0dZQapIghzr5CgtyOiSIMd6OcoLMqokyBEjB4IcOB421BBvS0GOODkQ5BLLESQJnGHY91Yt1afEnfS5UAI32OaflhK4duS4tGEQ5BZ7AjfaZpIErhk5btkPCHLF8RK44dIlCVwrclyxFxDkyPOvwI2XJkngGpHjyD5AkGt+QQncgOGSBK4NOa7ZAwhy4jf4wI0YJkngmpDjRP4IMuMlrsANuVqSwLUgx4zsEWQGpL3ccQ+SYxrn5qh/Qz4zztmXIchsVJ/+wdFZ7rgjx4KgAi9FkIUwgzbqoo8UCnpMTo6FWfNWEwewrZ9uIYczpKAyThAnyKCNe+1JEvQYnBzOjDlBVoDLPkmQY2U4QeWcICtBBm3kz50kQT2nyaaXcvkXcysyRpAV8C5Kgzb0J5Iceq59pQw5AnLlKVYQxOCnWxE/tDg5grKNCCNoKf23CTpJ1oJAjrUEL9UjSCDMwJPEuyrk8JI7UocgwUDPKAlyJGSJIAlQzyAJciTliCBJYDeUBDkSM0SQRLgbSIIcyfkhSDLgREmQY4PsEGQDyAmSIMdGuSHIRqAD75Eseqv8RuMN+zAIskG0gXJcrBZJNshteggESQadIAeSJGd2uT2CJMJOlANJEnNDkA3gbiAHkmyQIydIAuQN5UCShPw4QRKhnkEOJEnMkxMkEO4Z5UCSwBw5QRJg7kAOJEnIlRMkAGqgHI8dlrP2T265TxKQK/dBAiBGynHxAQtBPZEkIF9OkBUQgzbytIIvvLcqqPckCR9SvSJjBHHCC9rAV8rx6S8Trd2UFPF0C0mcOSOIA9wWciCJI5iEEgRZCHVLOZBkYTgJlyPIAqjnkANJFgSUcCmCzIR6TjmQZGZICZchyAyoe5ADSWYElXAJgpyAuic5kCTBgBMtEeQaQHuUA0m2lQRBjvDesxxIsp0kCHIF6x7kQJJtJEGQWzj3JAeS5EuCIJcY9ygHkuRKgiAHvj3LgSR5kiCIpBHkQJIcScoLMpIcSBIvSWlBRpQDSWIlKSvIyHIgSZwkJQWpIAeSxEhSTpBKciDJeklKCVJRDiRZJ0kZQSrLgSR+SUoIghyfbZAgFmU+LWV4QYI2xLTDhvm3Z0FMSkgytCBBG2EoOXi6tezp1rCCIMfpjRDEaOiTZEhBWmvfkvS301vk5BXDPK06NmmgJDfM7PWTRDu7YFRB/ijpOyuzGF6O4Kdbb0uaJPlwJfddlQ8nSNBPxDJyBEvygpn9ZFc7fOViRhTkeUk/XsGlnByBkvzVzL69gv3uSkcU5C+SHnSSLitHkCQfmdltTva7LBtRkJ9JesZBu7wcAZK8b2Z3O9jvtmREQb4n6XcLiSPHLcCcv8v93sy+v5D9ri8fUZA7JL0r6a6Z5JHjCCiHJD8ws9/O5N7FZcMJMlFvrU0/xeYEhRwntukCSV4ys8e72PULFjmkIAdJvinp15LuuYLHq5J+bmZ/X8Cq7KWttUckPSfpviMQ3jKzr48IaFhBDpJ8SdJ3JX31EO5bkv558c8yRww0a6bW2p2SpnscXzt8fyDpX5LeNLNfZT3uufsOLci54fL4/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAgiSCJfW/RNAkP4zZIJEAh8D3gPK9jeZ3z0AAAAASUVORK5CYII=\">\n  </div>\n  <div class=\"<%= styles.content %>\">\n    <div class=\"<%= styles.form %>\">\n      <label for=\"<%= styles.keyword %>\">关键字:</label>\n      <input id=\"<%= styles.keyword %>\" type=\"text\">\n    </div>\n    <div class=\"<%= styles.btnGroup %>\">\n      <div class=\"<%= styles.nexBtn %>\">下一个</div>\n      <div>上一个</div>\n    </div>\n  </div>\n</div>\n";
 
-var styles$8 = {"finder":"index-module_finder__xACI2","title":"index-module_title__ZtCSw","text":"index-module_text__1MAXO","close":"index-module_close__ljqi8","content":"index-module_content__rurra","form":"index-module_form__ySfkk","keyword":"index-module_keyword__nrmX8","btnGroup":"index-module_btnGroup__9X1C-","nexBtn":"index-module_nexBtn__K5uoa"};
+var styles$9 = {"finder":"index-module_finder__xACI2","title":"index-module_title__ZtCSw","text":"index-module_text__1MAXO","close":"index-module_close__ljqi8","content":"index-module_content__rurra","form":"index-module_form__ySfkk","keyword":"index-module_keyword__nrmX8","btnGroup":"index-module_btnGroup__9X1C-","nexBtn":"index-module_nexBtn__K5uoa"};
 
 var Finder = defineComponent({
-    template: template$6(html$3)({ styles: styles$8 }),
+    template: template$6(html$3)({ styles: styles$9 }),
     initData: function () {
         return {
             show: false
@@ -1848,6 +1848,53 @@ var Finder = defineComponent({
         }
     }
 });
+
+var styles$8 = {"maskContainer":"index-module_maskContainer__UnC16","modalContainer":"index-module_modalContainer__ce5hx","modalTitle":"index-module_modalTitle__9fvly","modalBody":"index-module_modalBody__mRzSv","inputBox":"index-module_inputBox__d9QST","btnBox":"index-module_btnBox__gofu2","btnActive":"index-module_btnActive__0lQeF","btnDisable":"index-module_btnDisable__qUjRs"};
+
+function newGuid$1() {
+    var curguid = "";
+    for (var i = 1; i <= 32; i++) {
+        var id = Math.floor(Math.random() * 16.0).toString(16);
+        curguid += id;
+        if (i === 8 || i === 12 || i === 16 || i === 20)
+            curguid += "";
+    }
+    return "a".concat(curguid);
+}
+function GetKeyword(root) {
+    return new Promise(function (resolve) {
+        var elementGuid = newGuid$1();
+        var closeBtnId = newGuid$1();
+        var confirmBtnId = newGuid$1();
+        var inputId = newGuid$1();
+        var element = "\n            <div id=\"".concat(elementGuid, "\" class=\"").concat(styles$8.maskContainer, "\" >\n                <div class=\"").concat(styles$8.modalContainer, "\" >\n                    <div class=\"").concat(styles$8.modalTitle, "\" >\n                        <div style=\"float:left;\" >\u67E5\u627E</div>\n                        <div style=\"float:right;cursor:pointer;\" id=\"").concat(closeBtnId, "\" >\u00D7</div>\n                    </div>\n                    <div class=\"").concat(styles$8.modalBody, "\" >\n                        <div class=\"").concat(styles$8.inputBox, "\" >\n                            <div style=\"width:61px;\" >\u5173\u952E\u5B57:</div>\n                            <div style=\"width:100%\" ><Input id=\"").concat(inputId, "\" /></div>\n                        </div>\n                        <div class=\"").concat(styles$8.btnBox, "\" >\n                            <button id=\"").concat(confirmBtnId, "\" class=\"").concat(styles$8.btnDisable, "\" >\u786E\u8BA4</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        ");
+        var div = document.createElement('div');
+        div.innerHTML = element;
+        var closeBtn = div.querySelector("#".concat(closeBtnId));
+        closeBtn.onclick = function () {
+            document.getElementById(elementGuid).remove();
+            resolve({ opt: 'cancel' });
+        };
+        var input = div.querySelector("#".concat(inputId));
+        var btn = div.querySelector("#".concat(confirmBtnId));
+        input.onkeydown = function (ev) {
+            if (input.value === undefined || input.value === null || input.value === '') {
+                btn.className = styles$8.btnDisable;
+            }
+            else {
+                btn.className = styles$8.btnActive;
+            }
+        };
+        btn.onclick = function () {
+            if (input.value === undefined || input.value === null || input.value === '') {
+                return;
+            }
+            document.getElementById(elementGuid).remove();
+            resolve({ opt: 'confirm', keyword: input.value });
+        };
+        (root || document.body).appendChild(div);
+    });
+}
 
 new AsyncLock();
 var sealSelectInterface;
@@ -1932,11 +1979,11 @@ function narrowDisabledHandler(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$e.disabled)) {
-        this.className += " " + styles$e.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$f.disabled)) {
+        this.className += " " + styles$f.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$e.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$f.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -1955,11 +2002,11 @@ function enlargeDisabledHandle(app) {
     catch (e) {
         isDisabled = false;
     }
-    if (isDisabled && !this.className.includes("  " + styles$e.disabled)) {
-        this.className += " " + styles$e.disabled;
+    if (isDisabled && !this.className.includes("  " + styles$f.disabled)) {
+        this.className += " " + styles$f.disabled;
         this.update(this);
     }
-    else if (!isDisabled && this.className.includes(" " + styles$e.disabled)) {
+    else if (!isDisabled && this.className.includes(" " + styles$f.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -1970,12 +2017,12 @@ function narrowOrEnlargeScaleChange(scale) {
     var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
     var isDisabled = isNarrow ? scale <= val : scale >= val;
     if (isDisabled) {
-        if (!this.className.includes(" " + styles$e.disabled)) {
-            this.className += " " + styles$e.disabled;
+        if (!this.className.includes(" " + styles$f.disabled)) {
+            this.className += " " + styles$f.disabled;
             this.update(this);
         }
     }
-    else if (this.className.includes(" " + styles$e.disabled)) {
+    else if (this.className.includes(" " + styles$f.disabled)) {
         this.className = this.className.split(" ")[0];
         this.update(this);
     }
@@ -2191,7 +2238,7 @@ var headerTabsBtns = {
             needReader: true,
             title: "缩小",
             width: 24,
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
                 var self = this;
@@ -2211,11 +2258,11 @@ var headerTabsBtns = {
             click: function (app) {
                 try {
                     var nextNodeInfo = this.selector.next();
-                    if (nextNodeInfo.className.includes(" " + styles$e.disabled)) {
+                    if (nextNodeInfo.className.includes(" " + styles$f.disabled)) {
                         nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
                         nextNodeInfo.update(nextNodeInfo);
                     }
-                    if (this.className.includes(" " + styles$e.disabled)) {
+                    if (this.className.includes(" " + styles$f.disabled)) {
                         return;
                     }
                     var parserInterface = app.currentBookmark().parserWrapperInfo
@@ -2235,16 +2282,16 @@ var headerTabsBtns = {
                         index -= 1;
                     }
                     if (index <= 0) {
-                        if (this.className.includes(" " + styles$e.disabled)) {
+                        if (this.className.includes(" " + styles$f.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$e.disabled;
+                        this.className += " " + styles$f.disabled;
                         this.update(this);
                         if (index === -1) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$e.disabled)) {
+                    else if (this.className.includes(" " + styles$f.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -2283,7 +2330,7 @@ var headerTabsBtns = {
             html: "&#xe671;",
             title: "放大",
             width: 24,
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             isShow: showSupportScale,
             attached: function (app) {
                 var self = this;
@@ -2302,11 +2349,11 @@ var headerTabsBtns = {
             },
             click: function (app) {
                 var prevNodeInfo = this.selector.prev();
-                if (prevNodeInfo.className.includes(" " + styles$e.disabled)) {
+                if (prevNodeInfo.className.includes(" " + styles$f.disabled)) {
                     prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
                     prevNodeInfo.update(prevNodeInfo);
                 }
-                if (this.className.includes(" " + styles$e.disabled)) {
+                if (this.className.includes(" " + styles$f.disabled)) {
                     return;
                 }
                 try {
@@ -2327,16 +2374,16 @@ var headerTabsBtns = {
                         index += 1;
                     }
                     if (index >= scaleVals.length - 1 || index === -1) {
-                        if (this.className.includes(" " + styles$e.disabled)) {
+                        if (this.className.includes(" " + styles$f.disabled)) {
                             return;
                         }
-                        this.className += " " + styles$e.disabled;
+                        this.className += " " + styles$f.disabled;
                         this.update(this);
                         if (index >= scaleVals.length) {
                             return;
                         }
                     }
-                    else if (this.className.includes(" " + styles$e.disabled)) {
+                    else if (this.className.includes(" " + styles$f.disabled)) {
                         this.className = this.className.split(" ")[0];
                         this.update(this);
                     }
@@ -2622,13 +2669,87 @@ var headerTabsBtns = {
             }
         }
     },
+    sealKeyword: {
+        type: 'default',
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe610;",
+            title: "关键字签章",
+            text: "关键字签章",
+            width: 60,
+            isShow: function (app) {
+                var sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.seal;
+                if (!sealSupport ||
+                    !sealSupport.sealList ||
+                    !sealSupport.positionSeal ||
+                    !sealSupport.keywordSeal) {
+                    return false;
+                }
+                return true;
+            },
+            click: function (app, event) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var currentBookmark, sealListResult, pwd, sealList, res, keywordRsp, opt, keyword, e_4;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                currentBookmark = app.currentBookmark();
+                                if (!currentBookmark || !currentBookmark.id) {
+                                    return [2 /*return*/];
+                                }
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 6, 7, 8]);
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                            case 2:
+                                sealListResult = _a.sent();
+                                if (!sealListResult) {
+                                    return [2 /*return*/];
+                                }
+                                pwd = sealListResult.password;
+                                sealList = sealListResult.sealList;
+                                app.loading.hide();
+                                return [4 /*yield*/, getSealSelectInterface(app).selectSeal(sealList)];
+                            case 3:
+                                res = _a.sent();
+                                if (res.cancel) {
+                                    return [2 /*return*/];
+                                }
+                                return [4 /*yield*/, GetKeyword(app.getRootEle())];
+                            case 4:
+                                keywordRsp = _a.sent();
+                                opt = keywordRsp.opt, keyword = keywordRsp.keyword;
+                                if (opt === 'cancel') {
+                                    return [2 /*return*/];
+                                }
+                                app.loading.show("正在签署印章...");
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(res.sealInfo.id, pwd, keyword)];
+                            case 5:
+                                _a.sent();
+                                app.message.success("关键字签章成功!");
+                                return [3 /*break*/, 8];
+                            case 6:
+                                e_4 = _a.sent();
+                                app.message.error(e_4.message || e_4);
+                                return [3 /*break*/, 8];
+                            case 7:
+                                app.loading.hide();
+                                return [7 /*endfinally*/];
+                            case 8: return [2 /*return*/];
+                        }
+                    });
+                });
+            }
+        }
+    },
     rotation: {
         type: "default",
         needReader: true,
         nodeInfo: {
             html: "&#xe667;",
             title: "顺时针旋转",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             isShow: function (app) {
                 return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -2652,7 +2773,7 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe669;",
             title: "逆时针旋转",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             isShow: function (app) {
                 return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -2676,20 +2797,20 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe719;",
             title: "跳转到首页",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$e.disabled)) {
+                if (this.className.includes(" " + styles$f.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
                 if (!currentBookmark || !currentBookmark.id) {
                     return;
                 }
-                if (!this.className.includes(" " + styles$e.disabled)) {
-                    this.className += " " + styles$e.disabled;
+                if (!this.className.includes(" " + styles$f.disabled)) {
+                    this.className += " " + styles$f.disabled;
                     this.update();
                 }
                 currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
@@ -2702,12 +2823,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe615;",
             title: "上一页",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$e.disabled)) {
+                if (this.className.includes(" " + styles$f.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2715,8 +2836,8 @@ var headerTabsBtns = {
                     return;
                 }
                 var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
-                if (nowPageNo <= 1 && this.className.includes(" " + styles$e.disabled)) {
-                    this.className += " " + styles$e.disabled;
+                if (nowPageNo <= 1 && this.className.includes(" " + styles$f.disabled)) {
+                    this.className += " " + styles$f.disabled;
                     this.update();
                 }
                 if (nowPageNo >= 1) {
@@ -2731,12 +2852,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe718;",
             title: "下一页",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app, event) {
-                if (this.className.includes(" " + styles$e.disabled)) {
+                if (this.className.includes(" " + styles$f.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2746,8 +2867,8 @@ var headerTabsBtns = {
                 var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
                 var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
                 if (nowPageNo >= numPages &&
-                    this.className.includes(" " + styles$e.disabled)) {
-                    this.className += " " + styles$e.disabled;
+                    this.className.includes(" " + styles$f.disabled)) {
+                    this.className += " " + styles$f.disabled;
                     this.update();
                 }
                 if (nowPageNo <= numPages) {
@@ -2762,12 +2883,12 @@ var headerTabsBtns = {
         nodeInfo: {
             html: "&#xe690;",
             title: "跳转到尾页",
-            className: styles$e.toolIconBtn,
+            className: styles$f.toolIconBtn,
             width: 24,
             attached: jumpBtnGroupCheckAttached,
             isShow: supportJumpPage,
             click: function (app) {
-                if (this.className.includes(" " + styles$e.disabled)) {
+                if (this.className.includes(" " + styles$f.disabled)) {
                     return;
                 }
                 var currentBookmark = app.currentBookmark();
@@ -2775,8 +2896,8 @@ var headerTabsBtns = {
                     return;
                 }
                 var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
-                if (!this.className.includes(" " + styles$e.disabled)) {
-                    this.className += " " + styles$e.disabled;
+                if (!this.className.includes(" " + styles$f.disabled)) {
+                    this.className += " " + styles$f.disabled;
                     this.update();
                 }
                 currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
@@ -2886,6 +3007,7 @@ var defaultData = {
                 headerTabsBtns.sealDragAdd,
                 headerTabsBtns.sealPagesDragAdd,
                 headerTabsBtns.sealQiFenAdd,
+                headerTabsBtns.sealKeyword
             ]
         },
         help: {
@@ -2962,7 +3084,7 @@ function slidebarLeftToolbarDisabled(app) {
 
 new AsyncLock();
 var Reader = defineComponent({
-    template: template$6(html$b)({ styles: styles$f }),
+    template: template$6(html$b)({ styles: styles$g }),
     initData: function () {
         return {
             bookmarkLoadErrors: { __length: 0 }
@@ -3062,7 +3184,7 @@ var Reader = defineComponent({
                             throw new Error("解析器未实现渲染方法");
                         }
                         readerEle = createElement("div");
-                        readerEle.className = styles$f.readerContent;
+                        readerEle.className = styles$g.readerContent;
                         this.readerEleList[bookmark.id] = readerEle;
                         rootEle.appendChild(readerEle);
                         res = parserInterface.render(readerEle);
@@ -3742,6 +3864,9 @@ var ReaderParserAbstract = /** @class */ (function () {
     ReaderParserAbstract.prototype.sealDrag = function (sealInfo, options) {
         throw ErrNoSupportFunction;
     };
+    ReaderParserAbstract.prototype.signSealKeyword = function (sealId, pwd, keyword) {
+        throw ErrNoSupportFunction;
+    };
     ReaderParserAbstract.prototype.signSealPosition = function (sealInfo, password, positionInfo) {
         return this.signSealPositionList(sealInfo, password, positionInfo);
     };
@@ -3774,6 +3899,7 @@ var ReaderParserAbstract = /** @class */ (function () {
             showPageNo: true
         },
         seal: {
+            keywordSeal: true,
             sealList: true,
             positionSeal: true,
             verifySeal: true

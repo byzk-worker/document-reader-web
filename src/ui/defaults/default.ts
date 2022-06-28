@@ -29,6 +29,9 @@ import VerifySealWindow, {
   VerifySealWindowInterface,
 } from "./components/VerifySealWindow";
 import Finder, { FinderInterface } from "./components/Finder";
+import GetKeyword from "./components/GetKeyword";
+
+
 
 const lock = new AsyncLock();
 
@@ -779,6 +782,66 @@ const headerTabsBtns = {
       },
     },
   } as ToolInfo,
+  sealKeyword: {
+    type: 'default',
+    needReader: true,
+    nodeInfo: {
+      html: "&#xe610;",
+      title: "关键字签章",
+      text: "关键字签章",
+      width: 60,
+      isShow(app) {
+        const sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+          .support.seal;
+        if (
+          !sealSupport ||
+          !sealSupport.sealList ||
+          !sealSupport.positionSeal ||
+          !sealSupport.keywordSeal
+        ) {
+          return false;
+        }
+        return true;
+      },
+      async click(app, event) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+
+        try {
+          const sealListResult = await currentBookmark.parserWrapperInfo.parserInterface.sealList();
+          if (!sealListResult) {
+            return;
+          }
+          const pwd = sealListResult.password;
+          const sealList = sealListResult.sealList;
+          app.loading.hide();
+          const res = await getSealSelectInterface(app).selectSeal(
+            sealList
+          );
+          if (res.cancel) {
+            return;
+          }
+
+          const keywordRsp = await GetKeyword(app.getRootEle());
+          const { opt, keyword } = keywordRsp;
+          if (opt === 'cancel') {
+            return;
+          }
+
+          app.loading.show("正在签署印章...");
+          await currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(res.sealInfo.id, pwd, keyword);
+
+          app.message.success("关键字签章成功!");
+        } catch (e) {
+          app.message.error(e.message || e);
+        } finally {
+          app.loading.hide();
+        }
+      }
+    }
+  } as ToolInfo,
   rotation: {
     type: "default",
     needReader: true,
@@ -1058,6 +1121,7 @@ export const defaultData = {
         headerTabsBtns.sealDragAdd,
         headerTabsBtns.sealPagesDragAdd,
         headerTabsBtns.sealQiFenAdd,
+        headerTabsBtns.sealKeyword
       ],
     } as ToolbarConfig,
     help: {
