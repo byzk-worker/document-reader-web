@@ -2423,7 +2423,7 @@ var headerTabsBtns = {
                                         pwd], sealPositionList, false))];
                             case 5:
                                 _b.sent();
-                                app.message.success("签章成功!!!");
+                                app.message.success("手动签章成功");
                                 return [3 /*break*/, 8];
                             case 6:
                                 e_1 = _b.sent();
@@ -2458,46 +2458,62 @@ var headerTabsBtns = {
             },
             click: function (app, event) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var currentBookmark, sealListResult, sealList, res, dragRes, e_2;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
+                    var currentBookmark, sealListResult, pwd, sealList, res, dragRes, sealPositionList, e_2;
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
                             case 0:
                                 currentBookmark = app.currentBookmark();
                                 if (!currentBookmark || !currentBookmark.id) {
                                     return [2 /*return*/];
                                 }
-                                _a.label = 1;
+                                _b.label = 1;
                             case 1:
-                                _a.trys.push([1, 5, 6, 7]);
+                                _b.trys.push([1, 6, 7, 8]);
                                 return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
                             case 2:
-                                sealListResult = _a.sent();
+                                sealListResult = _b.sent();
                                 if (!sealListResult) {
                                     return [2 /*return*/];
                                 }
-                                sealListResult.password;
+                                pwd = sealListResult.password;
                                 sealList = sealListResult.sealList;
                                 app.loading.hide();
                                 return [4 /*yield*/, getSealSelectInterface(app).selectSealMultipage(sealList)];
                             case 3:
-                                res = _a.sent();
+                                res = _b.sent();
                                 if (res.cancel) {
                                     return [2 /*return*/];
                                 }
-                                console.log(res);
-                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo, { pageNo: res.customPageNos, mode: "multipage" })];
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo, {
+                                        pageNo: res.customPageNos,
+                                        mode: "multipage",
+                                        allowManualPosition: res.manual
+                                    })];
                             case 4:
-                                dragRes = _a.sent();
-                                console.log(dragRes);
-                                return [3 /*break*/, 7];
+                                dragRes = _b.sent();
+                                app.loading.show("正在签署印章...");
+                                sealPositionList = dragRes.map(function (res) {
+                                    return {
+                                        x: res.x,
+                                        y: res.y,
+                                        pageNo: res.pageNo
+                                    };
+                                });
+                                return [4 /*yield*/, (_a = currentBookmark.parserWrapperInfo.parserInterface).signSealPositionList.apply(_a, __spreadArray([res.sealInfo,
+                                        pwd], sealPositionList, false))];
                             case 5:
-                                e_2 = _a.sent();
-                                app.message.error(e_2.message || e_2);
-                                return [3 /*break*/, 7];
+                                _b.sent();
+                                app.message.success("多页签章成功!");
+                                return [3 /*break*/, 8];
                             case 6:
+                                e_2 = _b.sent();
+                                app.message.error(e_2.message || e_2);
+                                return [3 /*break*/, 8];
+                            case 7:
                                 app.loading.hide();
                                 return [7 /*endfinally*/];
-                            case 7: return [2 /*return*/];
+                            case 8: return [2 /*return*/];
                         }
                     });
                 });

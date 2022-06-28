@@ -622,7 +622,7 @@ const headerTabsBtns = {
             pwd,
             ...sealPositionList
           );
-          app.message.success("签章成功!!!");
+          app.message.success("手动签章成功");
         } catch (e) {
           app.message.error(e.message || e);
         } finally {
@@ -670,25 +670,29 @@ const headerTabsBtns = {
           if (res.cancel) {
             return;
           }
-          console.log(res);
+
           const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
             res.sealInfo,
-            { pageNo: res.customPageNos, mode: "multipage" }
+            {
+              pageNo: res.customPageNos,
+              mode: "multipage",
+              allowManualPosition: res.manual,
+            }
           );
-          console.log(dragRes);
-          // app.loading.show("正在签署印章...");
-          // const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
-          //   return {
-          //     x: res.x,
-          //     y: res.y,
-          //     pageNo: res.pageNo,
-          //   };
-          // });
-          // await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
-          //   res.sealInfo,
-          //   pwd,
-          //   ...sealPositionList
-          // );
+          app.loading.show("正在签署印章...");
+          const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
+            return {
+              x: res.x,
+              y: res.y,
+              pageNo: res.pageNo,
+            };
+          });
+          await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+            res.sealInfo,
+            pwd,
+            ...sealPositionList
+          );
+          app.message.success("多页签章成功!");
         } catch (e) {
           app.message.error(e.message || e);
         } finally {
