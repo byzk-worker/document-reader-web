@@ -70,83 +70,87 @@ export declare interface ReaderParserSupport {
    * 是否支持全屏
    */
   full:
-    | false
-    | {
-        /**
-         * 内容区域全屏
-         */
-        content: boolean;
-        /**
-         * 宽度撑满内容区,高度自适应
-         */
-        width: boolean;
-      };
+  | false
+  | {
+    /**
+     * 内容区域全屏
+     */
+    content: boolean;
+    /**
+     * 宽度撑满内容区,高度自适应
+     */
+    width: boolean;
+  };
   /**
    * 是否支持页数控制
    */
   pages:
-    | false
-    | {
-        /**
-         * 是否支持跳转页数
-         */
-        jump: boolean;
-        /**
-         * 是否支持模式选择
-         * move: 移动
-         * select: 选择
-         */
-        moduleSwitch: {
-          select: boolean;
-          move: boolean;
-        };
-        /**
-         * 是否支持查找
-         */
-        find: boolean;
-        /**
-         * 是否支持自适应页面
-         */
-        adaptiveView: boolean;
-        /**
-         * 是否支持页码显示
-         */
-        showPageNo: boolean;
-      };
+  | false
+  | {
+    /**
+     * 是否支持跳转页数
+     */
+    jump: boolean;
+    /**
+     * 是否支持模式选择
+     * move: 移动
+     * select: 选择
+     */
+    moduleSwitch: {
+      select: boolean;
+      move: boolean;
+    };
+    /**
+     * 是否支持查找
+     */
+    find: boolean;
+    /**
+     * 是否支持自适应页面
+     */
+    adaptiveView: boolean;
+    /**
+     * 是否支持页码显示
+     */
+    showPageNo: boolean;
+  };
   /**
    * 印章相关配置
    */
   seal:
-    | false
-    | {
-        /**
-         * 是否支持获取印章列表
-         */
-        sealList: boolean;
-        /**
-         * 是否支持坐标签章
-         */
-        positionSeal: boolean;
-        /**
-         * 是否支持验章
-         */
-        verifySeal: boolean;
-      };
+  | false
+  | {
+    /**
+     * 是否支持获取印章列表
+     */
+    sealList: boolean;
+    /**
+     * 关键字签章
+     */
+    keywordSeal: boolean
+    /**
+     * 是否支持坐标签章
+     */
+    positionSeal: boolean;
+    /**
+     * 是否支持验章
+     */
+    verifySeal: boolean;
+  };
   /**
    * 是否支持事件监听
    */
   listener:
-    | false
-    | {
-        /**
-         * 当前页码变换监听
-         */
-        pageNoChange: boolean;
-        /**
-         * 缩放改变监听
-         */
-        scaleChange: boolean;
-      };
+  | false
+  | {
+    /**
+     * 当前页码变换监听
+     */
+    pageNoChange: boolean;
+    /**
+     * 缩放改变监听
+     */
+    scaleChange: boolean;
+  };
 }
 
 /**
@@ -156,7 +160,7 @@ export declare interface ReaderParserConstructor {
   /**
    * 实例化方法约束
    */
-  new (app: AppInterface): ReaderInterface;
+  new(app: AppInterface): ReaderInterface;
 }
 
 /**
@@ -176,6 +180,12 @@ export interface ReaderParserInterface {
     sealInfo: SealInfo,
     options?: SealDragOption
   ): Promise<SealDragResult[]>;
+
+  signSealKeyword?(
+    sealId: string,
+    pwd: string,
+    keyword: string
+  ): Promise<void>;
   /**
    * 位置签章
    * @param sealInfo 签章信息
@@ -426,6 +436,11 @@ export declare abstract class ReaderParserAbstract
     options?: SealDragOption
   ): Promise<SealDragResult[]>;
 
+  public signSealKeyword(
+    sealId: string,
+    pwd: string,
+    keyword: string
+  ): Promise<void>;
   /**
    * 位置签章
    * @param sealInfo 签章信息

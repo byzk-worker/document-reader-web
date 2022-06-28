@@ -60,7 +60,8 @@ function GetKeyword(root?: HTMLElement): Promise<IGetKeywordRsp> {
             if (input.value === undefined || input.value === null || input.value === '') {
                 return;
             }
-            resolve({ opt: 'confirm', keyword: input.value })
+            document.getElementById(elementGuid).remove();
+            resolve({ opt: 'confirm', keyword: input.value });
         }
         (root || document.body).appendChild(div);
     });
