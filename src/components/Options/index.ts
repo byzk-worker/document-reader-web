@@ -9,6 +9,8 @@ export interface OptionInfo {
   text: string;
 }
 
+const eventMap: { [key: string]: any } = {};
+
 export interface OptionsProps {
   options: OptionInfo[];
   activeVal?: string;
@@ -44,17 +46,18 @@ type OptionsComponent = Component<DataType> &
 export default defineComponent<DataType>({
   template: templateParser(html)({ styles }),
   attached(this: OptionsComponent) {
-    this.events.documentClick = this.events.documentClick.bind(this);
-    dom.eventUtil.addHandler(
-      document.body || document.getElementsByTagName("body")[0],
-      "click",
-      this.events.documentClick
-    );
-    dom.eventUtil.addHandler(
-      window as any,
-      "resize",
-      this.events.documentClick
-    );
+    const id = (this as any).id;
+    eventMap[id] = () => {
+      this.events.documentClick.call(this);
+    };
+    // this.events.documentClick = this.events.documentClick.bind(this);
+    dom.eventUtil.addHandler(document as any, "click", eventMap[id]);
+    dom.eventUtil.addHandler(window as any, "resize", eventMap[id]);
+  },
+  detached() {
+    const id = (this as any).id;
+    dom.eventUtil.removeHandler(document as any, "click", eventMap[id]);
+    dom.eventUtil.removeHandler(window as any, "resize", eventMap[id]);
   },
   initData() {
     return {

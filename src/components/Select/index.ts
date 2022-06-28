@@ -12,6 +12,7 @@ interface SelectProps {
   activeVal?: any;
   suffix?: string;
   isNumber?: number;
+  optionsStyle?: string;
   "on-change"?: (val: any) => void;
 }
 interface SelectStates {
@@ -33,10 +34,11 @@ export default defineComponent<DataType>({
     //   "optionsRef"
     // ) as any) as OptionsInterface;
     // optionsInterface.setBaseEle(this.el as any);
+    console.log("初始化...");
     if (!this.OptionsComponent) {
       this.OptionsComponent = new Options({
         owner: this,
-        source: `<c-options on-optionClick="events.optionsClick($event)" s-ref="optionsRef" offset={{{y:2}}} mod="options" show="{= showOptions =}" activeVal="{= activeVal =}" options="{{options}}"></c-options>`,
+        source: `<c-options style={{optionsStyle}} on-optionClick="events.optionsClick($event)" s-ref="optionsRef" offset={{{y:2}}} mod="options" show="{= showOptions =}" activeVal="{= activeVal =}" options="{{options}}"></c-options>`,
       }) as any;
       this.OptionsComponent.attach(document.body);
     }

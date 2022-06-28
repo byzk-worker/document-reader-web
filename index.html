@@ -1,47 +1,46 @@
 <!DOCTYPE html>
 <html lang="zh">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="http://192.168.3.122:8899/ws-backend.js"></script>
     <!-- <script src="./dist/bkDocReader.ie.min.js"></script> -->
     <script src="./build/dist/bkDocReader.js"></script>
     <style>
-        body {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            margin: 0;
-            padding: 0;
-        }
+      body {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+      }
     </style>
-</head>
+  </head>
 
-<body></body>
+  <body></body>
 
-<script>
+  <script>
     window.onload = function () {
-        window.app = new bkDocReader.App(document.body, {
-            // minWidth: 100,
-            fontConfig: {
-                dir: "/fonts",
-                eotFile: "iconfont.eot",
-                woffFile: "iconfont.woff",
-                woff2File: "iconfont.woff2",
-                ttfFile: "iconfont.ttf",
-                svgFile: "iconfont.svg",
-            },
-        });
-        window.app.show();
-        //   window.app.loading.show("哈哈哈");
-        // window.app.message.success('成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字');
-        // window.app.message.warn('警告提示文字');
-        // window.app.message.error('失败提示文字');
+      window.app = new bkDocReader.App(document.body, {
+        // minWidth: 100,
+        fontConfig: {
+          dir: "/fonts",
+          eotFile: "iconfont.eot",
+          woffFile: "iconfont.woff",
+          woff2File: "iconfont.woff2",
+          ttfFile: "iconfont.ttf",
+          svgFile: "iconfont.svg",
+        },
+      });
+      window.app.show();
+      //   window.app.loading.show("哈哈哈");
+      // window.app.message.success('成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字');
+      // window.app.message.warn('警告提示文字');
+      // window.app.message.error('失败提示文字');
     };
-</script>
-
+  </script>
 </html>

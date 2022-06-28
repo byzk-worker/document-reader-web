@@ -631,6 +631,10 @@ export interface SealDragOption {
   mode?: "default" | "multipage" | "qiFeng";
   allowManualPosition?: boolean;
   cernterPositionMode?: "center" | "leftBottom";
+  qiFenConfig?: {
+    splitPageNum?:number;
+    sealMode?: "all" | "odd" | "even";
+  }
 }
 
 export interface SealDragResult {

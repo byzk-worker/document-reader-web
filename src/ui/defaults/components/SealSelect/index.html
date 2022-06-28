@@ -102,6 +102,7 @@
           style="width: 249px; float: left;"
           activeVal="{= qiFenPageSealMode =}"
           options="{{oddSwitchOption}}"
+          optionsStyle="width: 249px;"
         ></ui-select>
       </div>
       <div
@@ -116,7 +117,10 @@
           多少页显示一个印章
         </div>
         <ui-inputNumber
-        value="{= oneSealInPageNumVal =}"
+          defaultValue="{{1}}"
+          minValue="{{1}}"
+          maxValue="{{4}}"
+          value="{= oneSealInPageNumVal =}"
           style="margin-left: 3px; height: 23px; line-height: 23px;"
         ></ui-inputNumber>
       </div>

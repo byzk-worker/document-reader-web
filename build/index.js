@@ -980,7 +980,7 @@ var styles$e = {"common_font":"index-module_common_font__1JO7K","text_overflow":
 
 var html$a = "<div class=\"<%= styles.toolJump %>\">\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\n</div>";
 
-var html$9 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
+var html$9 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">\n";
 
 var styles$d = {};
 
@@ -1169,12 +1169,23 @@ var html$6 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\n
 
 var styles$b = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
 
+var eventMap = {};
 var Options = defineComponent({
     template: template$6(html$6)({ styles: styles$b }),
     attached: function () {
-        this.events.documentClick = this.events.documentClick.bind(this);
-        eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
-        eventUtil.addHandler(window, "resize", this.events.documentClick);
+        var _this = this;
+        var id = this.id;
+        eventMap[id] = function () {
+            _this.events.documentClick.call(_this);
+        };
+        // this.events.documentClick = this.events.documentClick.bind(this);
+        eventUtil.addHandler(document, "click", eventMap[id]);
+        eventUtil.addHandler(window, "resize", eventMap[id]);
+    },
+    detached: function () {
+        var id = this.id;
+        eventUtil.removeHandler(document, "click", eventMap[id]);
+        eventUtil.removeHandler(window, "resize", eventMap[id]);
     },
     initData: function () {
         return {
@@ -1273,10 +1284,11 @@ var Select = defineComponent({
         //   "optionsRef"
         // ) as any) as OptionsInterface;
         // optionsInterface.setBaseEle(this.el as any);
+        console.log("初始化...");
         if (!this.OptionsComponent) {
             this.OptionsComponent = new Options({
                 owner: this,
-                source: "<c-options on-optionClick=\"events.optionsClick($event)\" s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
+                source: "<c-options style={{optionsStyle}} on-optionClick=\"events.optionsClick($event)\" s-ref=\"optionsRef\" offset={{{y:2}}} mod=\"options\" show=\"{= showOptions =}\" activeVal=\"{= activeVal =}\" options=\"{{options}}\"></c-options>"
             });
             this.OptionsComponent.attach(document.body);
         }
@@ -1578,7 +1590,7 @@ function supportJumpPage(app) {
     return supportPages && supportPages.jump;
 }
 
-var html$4 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n  <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n    <div class=\"<%= styles.title %>\">\n      <div class=\"<%= styles.text %>\">{{titleText}}</div>\n      <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n    </div>\n    <div class=\"<%= styles.contents %>\">\n      <div class=\"<%= styles.label %>\">\n        印章选择\n      </div>\n      <div class=\"<%= styles.sealContent %>\">\n        <fragment s-for=\"sealInfo in sealList\">\n          <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n            <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n          </div>\n        </fragment>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n        页面选项设置\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('allPages')\" s-show=\"{{radioSelectStatus !== 'allPages'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'allPages'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('allPages')\">全部页面</label>\n        </div>\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('custom')\" s-show=\"{{radioSelectStatus !== 'custom'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'custom'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('custom')\">自定义页面设置</label>\n          <input value=\"{= customPageInputVal =}\" on-keydown=\"events.customPageInputKeyDown($event)\" s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.pageNumSelect %>\">\n          <span s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.prompt %>\">格式示例：1-2;4;6</span>\n        </div>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.checkbox %>\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectImg}}\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{!checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectNoImg}}\">\n          <label on-click=\"events.checkboxChange()\">需手动对位置再调整</label>\n        </div>\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.label %>\">\n        页面选择\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.OddChoice %>\">\n        <div class=\"<%= styles.label %>\">\n          奇偶选择\n        </div>\n        <ui-select style=\"width: 249px; float: left;\" activeVal=\"{= qiFenPageSealMode =}\" options=\"{{oddSwitchOption}}\"></ui-select>\n      </div>\n      <div s-show=\"isQiFenSign\" style=\"margin-top: 90px;\" class=\"<%= styles.label %>\">\n        印章显示设置\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.sealShow %>\">\n        <div class=\"<%= styles.label %>\">\n          多少页显示一个印章\n        </div>\n        <ui-inputNumber value=\"{= oneSealInPageNumVal =}\" style=\"margin-left: 3px; height: 23px; line-height: 23px;\"></ui-inputNumber>\n      </div>\n    </div>\n    <div class=\"<%= styles.btnGroup %>\">\n      <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">\n        确定\n      </div>\n    </div>\n  </div>\n</div>\n";
+var html$4 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\n  <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\n    <div class=\"<%= styles.title %>\">\n      <div class=\"<%= styles.text %>\">{{titleText}}</div>\n      <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\n    </div>\n    <div class=\"<%= styles.contents %>\">\n      <div class=\"<%= styles.label %>\">\n        印章选择\n      </div>\n      <div class=\"<%= styles.sealContent %>\">\n        <fragment s-for=\"sealInfo in sealList\">\n          <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\n            <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\n          </div>\n        </fragment>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\n        页面选项设置\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('allPages')\" s-show=\"{{radioSelectStatus !== 'allPages'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'allPages'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('allPages')\">全部页面</label>\n        </div>\n        <div class=\"<%= styles.radio %>\">\n          <img on-click=\"events.radioSelectAllPages('custom')\" s-show=\"{{radioSelectStatus !== 'custom'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\n          <img s-show=\"{{radioSelectStatus === 'custom'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\n          <label on-click=\"events.radioSelectAllPages('custom')\">自定义页面设置</label>\n          <input value=\"{= customPageInputVal =}\" on-keydown=\"events.customPageInputKeyDown($event)\" s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.pageNumSelect %>\">\n          <span s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.prompt %>\">格式示例：1-2;4;6</span>\n        </div>\n      </div>\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\n        <div class=\"<%= styles.checkbox %>\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectImg}}\">\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{!checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectNoImg}}\">\n          <label on-click=\"events.checkboxChange()\">需手动对位置再调整</label>\n        </div>\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.label %>\">\n        页面选择\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.OddChoice %>\">\n        <div class=\"<%= styles.label %>\">\n          奇偶选择\n        </div>\n        <ui-select style=\"width: 249px; float: left;\" activeVal=\"{= qiFenPageSealMode =}\" options=\"{{oddSwitchOption}}\" optionsStyle=\"width: 249px;\"></ui-select>\n      </div>\n      <div s-show=\"isQiFenSign\" style=\"margin-top: 90px;\" class=\"<%= styles.label %>\">\n        印章显示设置\n      </div>\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.sealShow %>\">\n        <div class=\"<%= styles.label %>\">\n          多少页显示一个印章\n        </div>\n        <ui-inputNumber defaultValue=\"{{1}}\" minValue=\"{{1}}\" maxValue=\"{{4}}\" value=\"{= oneSealInPageNumVal =}\" style=\"margin-left: 3px; height: 23px; line-height: 23px;\"></ui-inputNumber>\n      </div>\n    </div>\n    <div class=\"<%= styles.btnGroup %>\">\n      <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">\n        确定\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 var styles$9 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
 
@@ -1619,7 +1631,8 @@ var SealSelect = defineComponent({
                 { val: "all", text: "所有页面" },
                 { val: "odd", text: "奇数页面" },
                 { val: "even", text: "偶数页面" },
-            ]
+            ],
+            oneSealInPageNumVal: "1"
         };
     },
     attached: function () {
@@ -1670,7 +1683,7 @@ var SealSelect = defineComponent({
         }
         else if (mode === "qiFeng") {
             this.data.set("qiFenPageSealMode", "all");
-            this.data.set("oneSealInPageNumVal", "");
+            this.data.set("oneSealInPageNumVal", "1");
         }
         this.data.set("maskHideClassName", undefined);
         this.data.set("activeSeal", undefined);
@@ -1864,6 +1877,23 @@ function getFinderInterface(app) {
 //       //   verifySealWindowComponent.attach(document.body);
 //       //   verifySealWindowInterface = verifySealWindowComponent as any;
 //       // }
+//       getSealSelectInterface((window as any).app).selectSealQiFen([
+//         {
+//           id: 1,
+//           imgUrl:
+//             "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//         } as any,
+//         {
+//           id: 2,
+//           imgUrl:
+//             "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//         } as any,
+//         {
+//           id: 3,
+//           imgUrl:
+//             "https://img0.baidu.com/it/u=3205828459,1269096295&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=513",
+//         } as any,
+//       ]);
 //       // sealSelectInterface
 //       //   .selectSealQiFen([
 //       //     {
@@ -2439,6 +2469,79 @@ var headerTabsBtns = {
             }
         }
     },
+    sealQiFenAdd: {
+        type: "default",
+        needReader: true,
+        nodeInfo: {
+            html: "&#xe675;",
+            title: "骑缝签章",
+            text: "骑缝签章",
+            isShow: function (app) {
+                var sealSupport = app.currentBookmark().parserWrapperInfo.parserInfo
+                    .support.seal;
+                if (!sealSupport ||
+                    !sealSupport.sealList ||
+                    !sealSupport.positionSeal) {
+                    return false;
+                }
+                return true;
+            },
+            click: function (app) {
+                return __awaiter(this, void 0, void 0, function () {
+                    var currentBookmark, sealListResult, sealList, res, dragRes, e_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                currentBookmark = app.currentBookmark();
+                                if (!currentBookmark || !currentBookmark.id) {
+                                    return [2 /*return*/];
+                                }
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 5, 6, 7]);
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealList()];
+                            case 2:
+                                sealListResult = _a.sent();
+                                if (!sealListResult) {
+                                    return [2 /*return*/];
+                                }
+                                sealListResult.password;
+                                sealList = sealListResult.sealList;
+                                return [4 /*yield*/, getSealSelectInterface(app).selectSealQiFen(sealList)];
+                            case 3:
+                                res = _a.sent();
+                                if (res.cancel) {
+                                    return [2 /*return*/];
+                                }
+                                return [4 /*yield*/, currentBookmark.parserWrapperInfo.parserInterface.sealDrag(res.sealInfo, {
+                                        mode: "qiFeng",
+                                        qiFenConfig: {
+                                            splitPageNum: res.oneSealInPageNum,
+                                            sealMode: res.modSwitch
+                                        }
+                                    })];
+                            case 4:
+                                dragRes = _a.sent();
+                                if (!dragRes || dragRes.length === 0) {
+                                    app.message.success("签章操作已取消!", { timeout: 3000 });
+                                    return [2 /*return*/];
+                                }
+                                console.log(dragRes);
+                                return [3 /*break*/, 7];
+                            case 5:
+                                e_2 = _a.sent();
+                                app.message.error(e_2.message || e_2);
+                                return [3 /*break*/, 7];
+                            case 6:
+                                app.loading.hide();
+                                return [7 /*endfinally*/];
+                            case 7: return [2 /*return*/];
+                        }
+                    });
+                });
+            }
+        }
+    },
     sealPagesDragAdd: {
         type: "default",
         needReader: true,
@@ -2458,7 +2561,7 @@ var headerTabsBtns = {
             },
             click: function (app, event) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var currentBookmark, sealListResult, pwd, sealList, res, dragRes, sealPositionList, e_2;
+                    var currentBookmark, sealListResult, pwd, sealList, res, dragRes, sealPositionList, e_3;
                     var _a;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -2478,7 +2581,6 @@ var headerTabsBtns = {
                                 }
                                 pwd = sealListResult.password;
                                 sealList = sealListResult.sealList;
-                                app.loading.hide();
                                 return [4 /*yield*/, getSealSelectInterface(app).selectSealMultipage(sealList)];
                             case 3:
                                 res = _b.sent();
@@ -2507,8 +2609,8 @@ var headerTabsBtns = {
                                 app.message.success("多页签章成功!");
                                 return [3 /*break*/, 8];
                             case 6:
-                                e_2 = _b.sent();
-                                app.message.error(e_2.message || e_2);
+                                e_3 = _b.sent();
+                                app.message.error(e_3.message || e_3);
                                 return [3 /*break*/, 8];
                             case 7:
                                 app.loading.hide();
@@ -2780,7 +2882,11 @@ var defaultData = {
         },
         safety: {
             text: "安全",
-            tools: [headerTabsBtns.sealDragAdd, headerTabsBtns.sealPagesDragAdd]
+            tools: [
+                headerTabsBtns.sealDragAdd,
+                headerTabsBtns.sealPagesDragAdd,
+                headerTabsBtns.sealQiFenAdd,
+            ]
         },
         help: {
             text: "帮助"
@@ -3760,7 +3866,7 @@ var MessageImpl = /** @class */ (function () {
         var elementGuid = newGuid();
         var exBtns = ((opt === null || opt === void 0 ? void 0 : opt.exBtn) || []).map(function (m) { return __assign(__assign({}, m), { guid: newGuid() }); });
         var showIconFlag = (_a = opt === null || opt === void 0 ? void 0 : opt.showIcon) !== null && _a !== void 0 ? _a : true;
-        var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles$1.messageBoxBackground, "\" >\n                <div class=\"").concat(styles$1.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles$1.title, "\" >\n                        <div class=\"").concat(styles$1.titleLeft, "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles$1.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles$1.titleTip, "\" >").concat(title, "</span>\n                        </div>\n                        <div class=\"").concat(styles$1.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles$1.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat(((opt === null || opt === void 0 ? void 0 : opt.timeout) && (opt === null || opt === void 0 ? void 0 : opt.timeout) <= 0) ? "<span class=\"".concat(styles$1.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    ").concat((opt === null || opt === void 0 ? void 0 : opt.content) ? "<div class='".concat(styles$1.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
+        var element = htmlTemplate("<div id=".concat(elementGuid, " class=\"").concat(styles$1.messageBoxBackground, "\" >\n                <div class=\"").concat(styles$1.messageBox, " ").concat(getClassName(type), "\" >\n                    <div class=\"").concat(styles$1.title, "\" >\n                        <div class=\"").concat(styles$1.titleLeft, "\" style=\"").concat(((opt === null || opt === void 0 ? void 0 : opt.timeout) && (opt === null || opt === void 0 ? void 0 : opt.timeout) <= 0) ? "width:313px" : "", "\" >\n                            ").concat(showIconFlag ? "<span class=\"".concat(styles$1.titleIcon, "\" ><img src=\"").concat(getIcon(type), "\" /></span>") : '', "\n                            <span class=\"").concat(styles$1.titleTip, "\" >").concat(title, "</span>\n                        </div>\n                        <div class=\"").concat(styles$1.titleRight, "\" >\n                            ").concat((exBtns && exBtns.length > 0) ? "<span class=\"".concat(styles$1.exBtn, "\" >\n                                ").concat(exBtns.map(function (m) { return "<span id=\"".concat(m.guid, "\" class=\"").concat(m.className ? m.className : '', "\" >").concat(m.title, "</span>"); }).join(""), "\n                            </span>") : "", "\n                            ").concat(((opt === null || opt === void 0 ? void 0 : opt.timeout) && (opt === null || opt === void 0 ? void 0 : opt.timeout) <= 0) ? "<span class=\"".concat(styles$1.closeIcon, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >\u00D7</span>") : '', "\n                        </div>\n                    </div>\n                    <div style=\"clear:both;\" ></div>\n                    ").concat((opt === null || opt === void 0 ? void 0 : opt.content) ? "<div class='".concat(styles$1.content, "' > ").concat(opt.content, " </div>") : '', "\n                </div>\n            </div>\n            "));
         if (exBtns && exBtns.length > 0) {
             exBtns.forEach(function (btn) {
                 if (!btn.callback) {

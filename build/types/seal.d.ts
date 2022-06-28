@@ -88,6 +88,22 @@ export interface SealDragOption {
    * 2. leftBottom: 左下角为中心
    */
   cernterPositionMode?: "center" | "leftBottom";
+  /**
+   * 骑缝签章配置
+   */
+  qiFenConfig?: {
+    /**
+     * 多少页切割一个章
+     */
+    splitPageNum?: number;
+    /**
+     * 骑缝的奇偶页模式
+     * all 所有
+     * odd 奇数
+     * even 偶数
+     */
+    sealMode?: "all" | "odd" | "even";
+  };
 }
 
 /**

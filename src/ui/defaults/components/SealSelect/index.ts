@@ -95,6 +95,7 @@ export default defineComponent<DataType>({
         { val: "odd", text: "奇数页面" },
         { val: "even", text: "偶数页面" },
       ],
+      oneSealInPageNumVal: "1",
     };
   },
   attached(this: SealSelectComponent) {
@@ -148,7 +149,7 @@ export default defineComponent<DataType>({
       this.data.set("customPageInputVal", "");
     } else if (mode === "qiFeng") {
       this.data.set("qiFenPageSealMode", "all");
-      this.data.set("oneSealInPageNumVal", "");
+      this.data.set("oneSealInPageNumVal", "1");
     }
     this.data.set("maskHideClassName", undefined);
     this.data.set("activeSeal", undefined);
