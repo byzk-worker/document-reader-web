@@ -23523,9 +23523,9 @@ var bkDocReader = (function (exports) {
       }
     }
 
-    var css_248z$j = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);\n  z-index: 2;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_icon__MnfZO,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO {\n  color: #2752e7;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
-    var styles$h = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
-    styleInject(css_248z$j);
+    var css_248z$i = ".index-module_common_font__kzEJV {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__8S-Xs {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_header__bANPo {\n  width: 100%;\n  min-height: 40px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  overflow: hidden;\n  position: relative;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE {\n  position: absolute;\n  right: 13px;\n  width: 24px;\n  height: 100%;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabFold__y-rrE > span {\n  font-size: 24px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  float: left;\n  cursor: pointer;\n  height: 100%;\n  width: 98px;\n  line-height: 40px;\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_fileBtn__ws1VT > span,\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH > span {\n  font-size: 12px;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB {\n  float: left;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH {\n  width: 50px;\n  transition: all 0.3s;\n}\n.index-module_header__bANPo > .index-module_tollbar__GkMcX > .index-module_tabs__9LWcB > .index-module_tab__RiFFH.index-module_active__a-6ac {\n  background-color: #fff;\n  color: #333;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y {\n  width: 100%;\n  height: 0;\n  background-color: #fff;\n  transition: all 0.3s;\n  overflow: hidden;\n  position: relative;\n  box-shadow: 0px 4px 6px -5px rgba(11, 20, 54, 0.5);\n  z-index: 2;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y.index-module_active__a-6ac {\n  height: 50px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  width: 14px;\n  height: 100%;\n  background-color: #888;\n  line-height: 50px;\n  position: absolute;\n  top: 0;\n  cursor: pointer;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp > span,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq > span {\n  font-size: 14px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_prevTool__ac9hp {\n  left: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_nextTool__6W3wq {\n  right: 0;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  padding: 0 24px;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 {\n  height: 100%;\n  float: left;\n  margin-right: 16px;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN {\n  width: 2px;\n  height: 100%;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_separate__rpKpN > div {\n  width: 100%;\n  height: 42px;\n  margin-top: 4px;\n  background-color: #888;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- {\n  width: 50px;\n  height: 100%;\n  cursor: pointer;\n  overflow: hidden;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_text__XqzxF,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-:hover .index-module_icon__MnfZO,\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f-.index-module_active__a-6ac .index-module_icon__MnfZO {\n  color: #2752e7;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_text__XqzxF {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO {\n  width: 24px;\n  height: 24px;\n  border-radius: 24px;\n  margin: 4px auto 2px auto;\n  text-align: center;\n  color: #444c5e;\n}\n.index-module_header__bANPo > .index-module_tabPanels__FVo0y > .index-module_tabPanel__aeg7u > .index-module_wrapper__alOl2 > .index-module_tool__nu8f- .index-module_icon__MnfZO > span {\n  font-size: 24px;\n}\n";
+    var styles$g = {"common_font":"index-module_common_font__kzEJV","text_overflow":"index-module_text_overflow__8S-Xs","header":"index-module_header__bANPo","tollbar":"index-module_tollbar__GkMcX","tabFold":"index-module_tabFold__y-rrE","fileBtn":"index-module_fileBtn__ws1VT","tabs":"index-module_tabs__9LWcB","tab":"index-module_tab__RiFFH","active":"index-module_active__a-6ac","tabPanels":"index-module_tabPanels__FVo0y","prevTool":"index-module_prevTool__ac9hp","nextTool":"index-module_nextTool__6W3wq","tabPanel":"index-module_tabPanel__aeg7u","wrapper":"index-module_wrapper__alOl2","separate":"index-module_separate__rpKpN","tool":"index-module_tool__nu8f-","text":"index-module_text__XqzxF","icon":"index-module_icon__MnfZO"};
+    styleInject(css_248z$i);
 
     var htmlTemplate$1 = "<div id=\"{{id || undefined}}\" class=\"<%= styles.header %>{{className ? ' ' + className : ''}}\">\r\n    <div class=\"<%= styles.tollbar %>\">\r\n        <div class=\"<%= styles.fileBtn %>\">\r\n            <span class=\"iconfont\">&#xe655;\r\n                <span>文件</span>\r\n            </span>\r\n        </div>\r\n        <fragment s-for=\"toolbarConfig, i in toolbars\">\r\n            <div class=\"<%= styles.tabs %>\" on-click=\"events.tabClick(i)\" s-if=\"fns.showToolBar(toolbarConfig, bookmarkInfos.id)\">\r\n                <div title=\"{{toolbarConfig.text}}\" class=\"<%= styles.tab %> {{selectTabKey !== undefined && selectTabKey === i ? '<%= styles.active %>' : ''}}\">\r\n                    <span s-if=\"!!toolbarConfig.iconHtml\" class=\"iconfont\">{{toolbarConfig.iconHtml}}</span>\r\n                    <span>{{toolbarConfig.text}}</span>\r\n                </div>\r\n            </div>\r\n        </fragment>\r\n        <div class=\"<%= styles.tabFold %>\" title=\"{{expand ? '收起' : '展开'}}\" on-click=\"events.tabPanExpandClick()\">\r\n            <span class=\"iconfont\">{{expand?'&#xe656;':'&#xe71d;' | raw}}</span>\r\n        </div>\r\n    </div>\r\n    <div s-ref=\"tabPanels\" class=\"<%= styles.tabPanels %> {{expand ? '<%= styles.active %>' : ''}}\">\r\n        <div on-click=\"events.prevAndNextToolClick(false)\" class=\"<%= styles.prevTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, false)\"></div>\r\n        <div s-ref=\"toolsPanel\" class=\"<%= styles.tabPanel %>\" style=\"{{fns.settingToolsPanelWidthReturnStyle(handlePanelWidth)}}margin-left: {{-marginLeft}}px;\">\r\n            <fragment s-for=\"toolbarConfig, i in toolbars\">\r\n                <fragment s-for=\"toolInfo, index in toolbarConfig.tools\">\r\n                    <div s-show=\"selectTabKey === i && fns.showTool(toolInfo, bookmarkInfos.index)\" class=\"<%= styles.wrapper %>\">\r\n                        <div s-ref=\"ref-tool-{{i}}-{{index}}\" s-if=\"!!toolInfo.nodeInfo && toolInfo.type === 'default'\" class=\"<%= styles.tool %> {{toolInfo.nodeInfo.active?'<%= styles.active %>':''}}\" title=\"{{(toolInfo.nodeInfo && toolInfo.nodeInfo.title) || ''}}\" style=\"{{fns.handleNodeInfoWidth(toolInfo.nodeInfo)}}\">\r\n                            {{events.handleRender(toolInfo, i, index)}}\r\n                            <ui-toolbtn s-if=\"!toolInfo.nodeInfo.renderId\" s-bind=\"{{{...toolInfo.nodeInfo}}}\"></ui-toolbtn>\r\n                        </div>\r\n                        <div s-if=\"toolInfo.type === 'separate'\" class=\"<%= styles.separate %>\">\r\n                            <div></div>\r\n                        </div>\r\n                    </div>\r\n                </fragment>\r\n            </fragment>\r\n            \r\n        </div>\r\n        <div on-click=\"events.prevAndNextToolClick(true)\" class=\"<%= styles.nextTool %>\" s-show=\"fns.showControlBreakWrapper(showControlBreak, true)\"></div>\r\n    </div>\r\n</div>";
 
@@ -40736,11 +40736,11 @@ var bkDocReader = (function (exports) {
     var html$c = "<fragment>\r\n    <div s-if=\"html\" class=\"{{className || '<%= styles.icon %>'}}\">\r\n        <span class=\"iconfont\">{{html | raw}}</span>\r\n    </div>\r\n    <div s-if=\"text\" class=\"{{className || '<%= styles.text %>'}}\">\r\n        <span>{{text}}</span>\r\n    </div>\r\n</fragment>";
 
     var ToolBtn = dist.exports.defineComponent({
-        template: lodash.exports.template(html$c)({ styles: styles$h })
+        template: lodash.exports.template(html$c)({ styles: styles$g })
     });
 
     var template$5 = lodash.exports.template(htmlTemplate$1)({
-        styles: styles$h
+        styles: styles$g
     });
     var Header = dist.exports.defineComponent({
         template: template$5,
@@ -40994,25 +40994,25 @@ var bkDocReader = (function (exports) {
 
     var html$b = "<div class=\"<%= styles.reader %>\">\r\n    <div class=\"<%= styles.tempContent %>\" s-ref=\"tempContent\" s-show=\"bookmarkInfos.index < 0\"></div>\r\n    <!-- <fragment s-for=\"bookmark in bookmarkInfos.list\">\r\n        <div key=\"{{bookmark.id}}\" s-key=\"{{bookmark.id}}\" renderData=\"{{handleContent(bookmark.id)}}\" s-show=\"bookmarkInfos.id == bookmark.id\" class=\"<%= styles.readerContent %>\"\r\n            s-ref=\"ref-readerContent-{{bookmark.id}}\">\r\n        </div>\r\n    </fragment> -->\r\n    <div style=\"display: none\" key=\"{{renderReaders(bookmarkInfos.id)}}\"></div>\r\n    <div s-if=\"errMsg\" class=\"<%= styles.error %>\">\r\n        <h3>{{errMsg}}</h3>\r\n    </div>\r\n</div>";
 
-    var css_248z$i = ".index-module_reader__8JtQW {\n  position: absolute;\n  top: 16px;\n  bottom: 16px;\n  left: 16px;\n  right: 16px;\n  overflow: hidden;\n}\n.index-module_reader__8JtQW > .index-module_tempContent__lb78H {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  z-index: 9;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 {\n  margin: 0 auto;\n  margin-top: 98px;\n  color: red;\n  font-weight: bold;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 > h3 {\n  text-align: center;\n  font-weight: bolder;\n}\n.index-module_reader__8JtQW .index-module_readerContent__5qVGr {\n  position: absolute;\n  overflow: hidden;\n  width: 100%;\n  height: 100%;\n}\n";
-    var styles$g = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
-    styleInject(css_248z$i);
-
-    var css_248z$h = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n  color: #444c5e;\n  transition: all 0.3s;\n}\n.index-module_toolIconBtn__99EQS:hover {\n  color: #2752e7;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7 {\n  transition: all 0.3s;\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n.index-module_active__SH6e7 {\n  color: #2752e7;\n}\n";
-    var styles$f = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+    var css_248z$h = ".index-module_reader__8JtQW {\n  position: absolute;\n  top: 16px;\n  bottom: 16px;\n  left: 16px;\n  right: 16px;\n  overflow: hidden;\n}\n.index-module_reader__8JtQW > .index-module_tempContent__lb78H {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  z-index: 9;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 {\n  margin: 0 auto;\n  margin-top: 98px;\n  color: red;\n  font-weight: bold;\n}\n.index-module_reader__8JtQW .index-module_error__updK0 > h3 {\n  text-align: center;\n  font-weight: bolder;\n}\n.index-module_reader__8JtQW .index-module_readerContent__5qVGr {\n  position: absolute;\n  overflow: hidden;\n  width: 100%;\n  height: 100%;\n}\n";
+    var styles$f = {"reader":"index-module_reader__8JtQW","tempContent":"index-module_tempContent__lb78H","error":"index-module_error__updK0","readerContent":"index-module_readerContent__5qVGr"};
     styleInject(css_248z$h);
+
+    var css_248z$g = ".index-module_common_font__1JO7K {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__5IRoi {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_toolJump__1AnPZ {\n  height: 100%;\n  line-height: 50px;\n  text-align: center;\n}\n.index-module_toolJump__1AnPZ > span {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  color: #333;\n  transition: all 0.3s;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7 {\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolJump__1AnPZ > span.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolJump__1AnPZ > span:hover {\n  color: #2752e7;\n}\n.index-module_toolJump__1AnPZ > input {\n  width: 30px;\n}\n.index-module_toolIconBtn__99EQS {\n  height: 100%;\n  line-height: 50px;\n  color: #444c5e;\n  transition: all 0.3s;\n}\n.index-module_toolIconBtn__99EQS:hover {\n  color: #2752e7;\n}\n.index-module_toolIconBtn__99EQS > span {\n  font-size: 24px;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7 {\n  transition: all 0.3s;\n  color: #888;\n  cursor: not-allowed;\n}\n.index-module_toolIconBtn__99EQS.index-module_disabled__hCCJ7:hover {\n  color: #888;\n}\n.index-module_toolScale__GZ9IV {\n  width: 100%;\n  height: 100%;\n  padding-top: 10px;\n}\n.index-module_active__SH6e7 {\n  color: #2752e7;\n}\n";
+    var styles$e = {"common_font":"index-module_common_font__1JO7K","text_overflow":"index-module_text_overflow__5IRoi","toolJump":"index-module_toolJump__1AnPZ","disabled":"index-module_disabled__hCCJ7","toolIconBtn":"index-module_toolIconBtn__99EQS","toolScale":"index-module_toolScale__GZ9IV","active":"index-module_active__SH6e7"};
+    styleInject(css_248z$g);
 
     var html$a = "<div class=\"<%= styles.toolJump %>\">\r\n    <span class=\"iconfont {{prevDisableClass}}\" on-click=\"events.prevOrNextClick(false)\" title=\"上一页\">&#xe615;</span>\r\n    <input-number on-change=\"events.valueChange($event)\" s-ref=\"input-number\" minValue=\"1\" maxValue=\"{{maxValue}}\" value=\"{= value =}\"></input-number>\r\n    <span class=\"iconfont {{nextDisableClass}}\" on-click=\"events.prevOrNextClick(true)\" title=\"下一页\">&#xe718;</span>\r\n</div>";
 
     var html$9 = "<input on-keyup=\"events.valueChange($event)\" on-keydown=\"events.valueKeyDown($event)\" on-blur=\"events.valueBlur($event)\" value=\"{= value =}\">";
 
-    var css_248z$g = "";
-    var styles$e = {};
-    styleInject(css_248z$g);
+    var css_248z$f = "";
+    var styles$d = {};
+    styleInject(css_248z$f);
 
     var allowKeys = [8, 37, 39, 46];
     var InputNumber = dist.exports.defineComponent({
-        template: lodash.exports.template(html$9)(styles$e),
+        template: lodash.exports.template(html$9)(styles$d),
         initData: function () {
             return {
                 value: "1",
@@ -41112,7 +41112,7 @@ var bkDocReader = (function (exports) {
         components: {
             "input-number": InputNumber
         },
-        template: lodash.exports.template(html$a)({ styles: styles$f }),
+        template: lodash.exports.template(html$a)({ styles: styles$e }),
         initData: function () {
             return {
                 maxValue: undefined,
@@ -41131,14 +41131,14 @@ var bkDocReader = (function (exports) {
             prevDisableClass: function () {
                 var val = this.data.get("value");
                 if (val == 1) {
-                    return styles$f.disabled;
+                    return styles$e.disabled;
                 }
             },
             nextDisableClass: function () {
                 var val = this.data.get("value");
                 var maxVal = this.data.get("maxValue");
                 if (val >= maxVal) {
-                    return styles$f.disabled;
+                    return styles$e.disabled;
                 }
             }
         },
@@ -41189,18 +41189,18 @@ var bkDocReader = (function (exports) {
 
     var html$7 = "<div class=\"<%= styles.select %> {{showOptions ? '<%= styles.active %>':''}}\" on-click=\"events.selectClick($event)\">\r\n    <div class=\"<%= styles.value %>\">\r\n        <span s-show=\"!isNumber\">{{activeText}}</span>\r\n        <input-number s-show=\"isNumber\" on-change=\"events.inputChange($event)\" style=\"width:50px;border: none;outline: none;\" minValue=\"{{1}}\" maxValue=\"{{800}}\" value=\"{= activeVal =}\">\r\n        </input-number>\r\n        <!-- <span class=\"<%= styles.suffix %>\">%</span> -->\r\n    </div>\r\n    <!-- <span class=\"iconfont\">&#xe71d;</span> -->\r\n    <span class=\"iconfont\">{{suffix|raw}}</span>\r\n</div>";
 
-    var css_248z$f = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n  position: relative;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  position: absolute;\n  left: 6px;\n  right: 21px;\n  top: 0;\n  bottom: 0;\n  height: 100%;\n  color: #333;\n  text-align: left;\n  z-index: 2;\n}\n.index-module_select__2NwCG > .index-module_value__4778I > .index-module_suffix__bXZSl {\n  position: absolute;\n  height: 28px;\n  line-height: 28px;\n  top: 0;\n  right: 16px;\n  z-index: 1;\n}\n.index-module_select__2NwCG:hover,\n.index-module_select__2NwCG.index-module_active__zruap {\n  border: 1px solid #40a9ff;\n}\n.index-module_select__2NwCG > span {\n  display: block;\n  position: absolute;\n  top: 0;\n  right: 9px;\n  font-size: 12px;\n  width: 12px;\n  height: 28px;\n  line-height: 28px;\n}\n";
-    var styles$d = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
-    styleInject(css_248z$f);
+    var css_248z$e = ".index-module_common_font__niHsZ {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__COYLB {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_select__2NwCG {\n  width: 100%;\n  height: 28px;\n  border: 1px solid #888;\n  border-radius: 4px;\n  margin: 0 auto;\n  transition: all 0.3s;\n  line-height: 28px;\n  position: relative;\n}\n.index-module_select__2NwCG > .index-module_value__4778I {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n  position: absolute;\n  left: 6px;\n  right: 21px;\n  top: 0;\n  bottom: 0;\n  height: 100%;\n  color: #333;\n  text-align: left;\n  z-index: 2;\n}\n.index-module_select__2NwCG > .index-module_value__4778I > .index-module_suffix__bXZSl {\n  position: absolute;\n  height: 28px;\n  line-height: 28px;\n  top: 0;\n  right: 16px;\n  z-index: 1;\n}\n.index-module_select__2NwCG:hover,\n.index-module_select__2NwCG.index-module_active__zruap {\n  border: 1px solid #40a9ff;\n}\n.index-module_select__2NwCG > span {\n  display: block;\n  position: absolute;\n  top: 0;\n  right: 9px;\n  font-size: 12px;\n  width: 12px;\n  height: 28px;\n  line-height: 28px;\n}\n";
+    var styles$c = {"common_font":"index-module_common_font__niHsZ","text_overflow":"index-module_text_overflow__COYLB","select":"index-module_select__2NwCG","value":"index-module_value__4778I","suffix":"index-module_suffix__bXZSl","active":"index-module_active__zruap"};
+    styleInject(css_248z$e);
 
     var html$6 = "<div class=\"<%= styles.options %>\" style=\"{{optionsStyle}}\">\r\n    <div s-for=\"option in options\" class=\"<%= styles.option %> {{activeVal===option.val ? '<%= styles.active %>':''}}\" on-click=\"events.optionClick($event,option)\">{{option.text}}</div>\r\n</div>";
 
-    var css_248z$e = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  z-index: 99999;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  transition: all 0.3s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
-    var styles$c = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
-    styleInject(css_248z$e);
+    var css_248z$d = ".index-module_common_font__Sz-yv {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n}\n.index-module_text_overflow__MHvJv {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n}\n.index-module_options__BzSRC {\n  font-size: 12px;\n  text-align: center;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #fff;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  z-index: 99999;\n  text-align: left;\n  color: #333;\n  width: 86px;\n  position: absolute;\n  left: 100px;\n  top: 28px;\n  overflow: hidden;\n  box-shadow: 2px 0px 7px -1px rgba(0, 0, 0, 0.25);\n  background-color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  transition: all 0.3s;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z {\n  padding-left: 6px;\n  height: 28px;\n  width: 100%;\n  line-height: 28px;\n  transition: all 0.2s;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z:hover {\n  background-color: #f5f5f5;\n}\n.index-module_options__BzSRC > .index-module_option__7PE8z.index-module_active__Xn-PG {\n  background-color: #e9f6fe;\n  font-weight: 400;\n}\n";
+    var styles$b = {"common_font":"index-module_common_font__Sz-yv","text_overflow":"index-module_text_overflow__MHvJv","options":"index-module_options__BzSRC","option":"index-module_option__7PE8z","active":"index-module_active__Xn-PG"};
+    styleInject(css_248z$d);
 
     var Options = dist.exports.defineComponent({
-        template: lodash.exports.template(html$6)({ styles: styles$c }),
+        template: lodash.exports.template(html$6)({ styles: styles$b }),
         attached: function () {
             this.events.documentClick = this.events.documentClick.bind(this);
             eventUtil.addHandler(document.body || document.getElementsByTagName("body")[0], "click", this.events.documentClick);
@@ -41294,7 +41294,7 @@ var bkDocReader = (function (exports) {
     });
 
     var Select = dist.exports.defineComponent({
-        template: lodash.exports.template(html$7)({ styles: styles$d }),
+        template: lodash.exports.template(html$7)({ styles: styles$c }),
         components: {
             "input-number": InputNumber
         },
@@ -41350,7 +41350,7 @@ var bkDocReader = (function (exports) {
         components: {
             "c-select": Select
         },
-        template: lodash.exports.template(html$8)({ styles: styles$f }),
+        template: lodash.exports.template(html$8)({ styles: styles$e }),
         attached: function () {
             this.events.bookmarkChange = this.events.bookmarkChange.bind(this);
             this.events.scalChange = this.events.scalChange.bind(this);
@@ -41405,12 +41405,12 @@ var bkDocReader = (function (exports) {
 
     var html$5 = "<div on-click=\"openFile\" class=\"<%= styles.content %>\">\r\n    <img src=\"data:image/png;base64,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\">\r\n</div>";
 
-    var css_248z$d = ".index-module_content__2P82G {\n  width: 292px;\n  height: 363px;\n  border-radius: 20px 20px 20px 20px;\n  border: 1px solid #999999;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-left: -146px;\n  margin-top: -181.5px;\n  cursor: pointer;\n}\n.index-module_content__2P82G:hover {\n  background: #ffffff;\n}\n.index-module_content__2P82G > img {\n  width: 90px;\n  height: 90px;\n  display: block;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-top: -45px;\n  margin-left: -45px;\n}\n";
-    var styles$b = {"content":"index-module_content__2P82G"};
-    styleInject(css_248z$d);
+    var css_248z$c = ".index-module_content__2P82G {\n  width: 292px;\n  height: 363px;\n  border-radius: 20px 20px 20px 20px;\n  border: 1px solid #999999;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-left: -146px;\n  margin-top: -181.5px;\n  cursor: pointer;\n}\n.index-module_content__2P82G:hover {\n  background: #ffffff;\n}\n.index-module_content__2P82G > img {\n  width: 90px;\n  height: 90px;\n  display: block;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin-top: -45px;\n  margin-left: -45px;\n}\n";
+    var styles$a = {"content":"index-module_content__2P82G"};
+    styleInject(css_248z$c);
 
     var TempReaderContent = dist.exports.defineComponent({
-        template: lodash.exports.template(html$5)({ styles: styles$b }),
+        template: lodash.exports.template(html$5)({ styles: styles$a }),
         openFile: function () {
             return __awaiter(this, void 0, void 0, function () {
                 var result;
@@ -41560,17 +41560,17 @@ var bkDocReader = (function (exports) {
         var parserInterface = currentBookmark.parserWrapperInfo.parserInterface;
         var numPages = parserInterface.getNumPages();
         var nowPageNo = parserInterface.nowPageNo();
-        var haveDisabled = this.className.includes(" " + styles$f.disabled);
+        var haveDisabled = this.className.includes(" " + styles$e.disabled);
         if (this.title === "跳转到首页" || this.title === "上一页") {
             if (nowPageNo <= 1) {
                 if (haveDisabled) {
                     return;
                 }
-                this.className += " " + styles$f.disabled;
+                this.className += " " + styles$e.disabled;
                 this.update();
             }
             else if (haveDisabled) {
-                this.className = this.className.split(" " + styles$f.disabled).join("");
+                this.className = this.className.split(" " + styles$e.disabled).join("");
                 this.update();
             }
             return;
@@ -41580,11 +41580,11 @@ var bkDocReader = (function (exports) {
                 if (haveDisabled) {
                     return;
                 }
-                this.className += " " + styles$f.disabled;
+                this.className += " " + styles$e.disabled;
                 this.update();
             }
             else if (haveDisabled) {
-                this.className = this.className.split(" " + styles$f.disabled).join("");
+                this.className = this.className.split(" " + styles$e.disabled).join("");
                 this.update();
             }
             return;
@@ -41612,9 +41612,9 @@ var bkDocReader = (function (exports) {
 
     var html$4 = "<div class=\"<%= styles.sealSelectMask %> {{maskHideClassName}}\">\r\n  <div style=\"{{sealSelectStyles}}\" class=\"<%= styles.sealSelect %>\">\r\n    <div class=\"<%= styles.title %>\">\r\n      <div class=\"<%= styles.text %>\">{{titleText}}</div>\r\n      <span class=\"iconfont <%= styles.close %>\" on-click=\"events.closeClick()\">&#xe600;</span>\r\n    </div>\r\n    <div class=\"<%= styles.contents %>\">\r\n      <div class=\"<%= styles.label %>\">\r\n        印章选择\r\n      </div>\r\n      <div class=\"<%= styles.sealContent %>\">\r\n        <fragment s-for=\"sealInfo in sealList\">\r\n          <div on-click=\"events.sealClick(sealInfo)\" class=\"<%= styles.seal %> {{activeSeal.id === sealInfo.id ? '<%= styles.active %>' : ''}}\">\r\n            <img width=\"150\" src=\"{{sealInfo.imgUrl}}\">\r\n          </div>\r\n        </fragment>\r\n      </div>\r\n      <div s-show=\"isPageSign\" class=\"<%= styles.label %>\">\r\n        页面选项设置\r\n      </div>\r\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\r\n        <div class=\"<%= styles.radio %>\">\r\n          <img on-click=\"events.radioSelectAllPages('allPages')\" s-show=\"{{radioSelectStatus !== 'allPages'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\r\n          <img s-show=\"{{radioSelectStatus === 'allPages'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\r\n          <label on-click=\"events.radioSelectAllPages('allPages')\">全部页面</label>\r\n        </div>\r\n        <div class=\"<%= styles.radio %>\">\r\n          <img on-click=\"events.radioSelectAllPages('custom')\" s-show=\"{{radioSelectStatus !== 'custom'}}\" src=\"{{radioSelectNoImg}}\" width=\"14\" height=\"14\">\r\n          <img s-show=\"{{radioSelectStatus === 'custom'}}\" src=\"{{radioSelectImg}}\" width=\"14\" height=\"14\">\r\n          <label on-click=\"events.radioSelectAllPages('custom')\">自定义页面设置</label>\r\n          <input value=\"{= customPageInputVal =}\" on-keydown=\"events.customPageInputKeyDown($event)\" s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.pageNumSelect %>\">\r\n          <span s-show=\"{{radioSelectStatus === 'custom'}}\" class=\"<%= styles.prompt %>\">格式示例：1-2;4;6</span>\r\n        </div>\r\n      </div>\r\n      <div s-show=\"isPageSign\" class=\"<%= styles.pageConfigSetting %>\">\r\n        <div class=\"<%= styles.checkbox %>\">\r\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectImg}}\">\r\n          <img on-click=\"events.checkboxChange()\" s-show=\"{{!checkboxOk}}\" width=\"14\" height=\"14\" src=\"{{selectNoImg}}\">\r\n          <label on-click=\"events.checkboxChange()\">需手动对位置再调整</label>\r\n        </div>\r\n      </div>\r\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.label %>\">\r\n        页面选择\r\n      </div>\r\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.OddChoice %>\">\r\n        <div class=\"<%= styles.label %>\">\r\n          奇偶选择\r\n        </div>\r\n        <ui-select style=\"width: 249px; float: left;\" activeVal=\"{= qiFenPageSealMode =}\" options=\"{{oddSwitchOption}}\"></ui-select>\r\n      </div>\r\n      <div s-show=\"isQiFenSign\" style=\"margin-top: 90px;\" class=\"<%= styles.label %>\">\r\n        印章显示设置\r\n      </div>\r\n      <div s-show=\"isQiFenSign\" class=\"<%= styles.sealShow %>\">\r\n        <div class=\"<%= styles.label %>\">\r\n          多少页显示一个印章\r\n        </div>\r\n        <ui-inputNumber value=\"{= oneSealInPageNumVal =}\" style=\"margin-left: 3px; height: 23px; line-height: 23px;\"></ui-inputNumber>\r\n      </div>\r\n    </div>\r\n    <div class=\"<%= styles.btnGroup %>\">\r\n      <div on-click=\"events.okClick()\" class=\"<%= styles.okBtn %> {{disabled}}\">\r\n        确定\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n";
 
-    var css_248z$c = ".index-module_sealSelectMask__vmm9t {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n  z-index: 999;\n  overflow: hidden;\n}\n.index-module_sealSelectMask__vmm9t.index-module_hide__mFEJS {\n  display: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o {\n  position: absolute;\n  width: 461px;\n  left: 50%;\n  top: 50%;\n  margin-left: calc(-461px / 2);\n  background-color: #ffffff;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_close__5YfKo {\n  float: right;\n  color: #ffffff;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-right: 20px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_text__fZ6fQ {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  float: left;\n  color: #ffffff;\n  padding-left: 16px;\n  height: 40px;\n  line-height: 40px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 {\n  width: 100%;\n  padding: 14px 31px 0;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_label__5Byyv {\n  color: #333333;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  height: 30px;\n  line-height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre {\n  width: 391px;\n  height: 180px;\n  border: 1px solid #e6e6e6;\n  margin-bottom: 14px;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL {\n  width: 150px;\n  float: left;\n  margin-left: 18px;\n  margin-top: 9px;\n  cursor: pointer;\n  transition: all 0.3s;\n  border: 1px dashed transparent;\n  padding: 4px;\n  border-radius: 9px 9px 9px 9px;\n  font-size: 0;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL:hover,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL.index-module_active__DHS0n {\n  border: 1px dashed #2752e7;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 {\n  width: 100%;\n  height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h {\n  width: 110px;\n  float: left;\n  height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > img {\n  vertical-align: middle;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > label {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > .index-module_pageNumSelect__T9lMp {\n  padding-left: 11px;\n  margin-left: 20px;\n  width: 234px;\n  height: 30px;\n  border-radius: 4px 4px 4px 4px;\n  outline: none;\n  border: 1px solid #e6e6e6;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > .index-module_prompt__oyAHw {\n  margin-left: 28px;\n  display: block;\n  width: 111px;\n  height: 24px;\n  font-size: 10px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #666666;\n  line-height: 24px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 {\n  width: 100%;\n  height: 30px;\n  margin-top: 117px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 > img {\n  vertical-align: middle;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 > label {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_OddChoice__GtIUf,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO {\n  width: 100%;\n  height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_OddChoice__GtIUf > .index-module_label__5Byyv,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO > .index-module_label__5Byyv {\n  width: 106px;\n  text-align: right;\n  line-height: 30px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  float: left;\n  margin-right: 3px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO > .index-module_label__5Byyv {\n  margin-left: -7px;\n  width: 112px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV {\n  width: 100%;\n  overflow: hidden;\n  position: absolute;\n  bottom: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew {\n  width: 99px;\n  height: 34px;\n  background: #2752e7;\n  border-radius: 4px 4px 4px 4px;\n  line-height: 34px;\n  font-size: 14px;\n  text-align: center;\n  color: #ffffff;\n  font-weight: 400;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  float: right;\n  margin-right: 31px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew.index-module_disabled__CjHxO {\n  background-color: #444c5e;\n  cursor: not-allowed;\n}\n";
-    var styles$a = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
-    styleInject(css_248z$c);
+    var css_248z$b = ".index-module_sealSelectMask__vmm9t {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n  z-index: 999;\n  overflow: hidden;\n}\n.index-module_sealSelectMask__vmm9t.index-module_hide__mFEJS {\n  display: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o {\n  position: absolute;\n  width: 461px;\n  left: 50%;\n  top: 50%;\n  margin-left: calc(-461px / 2);\n  background-color: #ffffff;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_close__5YfKo {\n  float: right;\n  color: #ffffff;\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  margin-right: 20px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_title__9-hxx > .index-module_text__fZ6fQ {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  float: left;\n  color: #ffffff;\n  padding-left: 16px;\n  height: 40px;\n  line-height: 40px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 {\n  width: 100%;\n  padding: 14px 31px 0;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_label__5Byyv {\n  color: #333333;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  height: 30px;\n  line-height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre {\n  width: 391px;\n  height: 180px;\n  border: 1px solid #e6e6e6;\n  margin-bottom: 14px;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL {\n  width: 150px;\n  float: left;\n  margin-left: 18px;\n  margin-top: 9px;\n  cursor: pointer;\n  transition: all 0.3s;\n  border: 1px dashed transparent;\n  padding: 4px;\n  border-radius: 9px 9px 9px 9px;\n  font-size: 0;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL:hover,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealContent__JKVre > .index-module_seal__961BL.index-module_active__DHS0n {\n  border: 1px dashed #2752e7;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 {\n  width: 100%;\n  height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h {\n  width: 110px;\n  float: left;\n  height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > img {\n  vertical-align: middle;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > label {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > .index-module_pageNumSelect__T9lMp {\n  padding-left: 11px;\n  margin-left: 20px;\n  width: 234px;\n  height: 30px;\n  border-radius: 4px 4px 4px 4px;\n  outline: none;\n  border: 1px solid #e6e6e6;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_radio__IkG1h > .index-module_prompt__oyAHw {\n  margin-left: 28px;\n  display: block;\n  width: 111px;\n  height: 24px;\n  font-size: 10px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #666666;\n  line-height: 24px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 {\n  width: 100%;\n  height: 30px;\n  margin-top: 117px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 > img {\n  vertical-align: middle;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_pageConfigSetting__Clay7 > .index-module_checkbox__XQU04 > label {\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  line-height: 30px;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_OddChoice__GtIUf,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO {\n  width: 100%;\n  height: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_OddChoice__GtIUf > .index-module_label__5Byyv,\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO > .index-module_label__5Byyv {\n  width: 106px;\n  text-align: right;\n  line-height: 30px;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n  float: left;\n  margin-right: 3px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_contents__BtrD8 > .index-module_sealShow__9ZiBO > .index-module_label__5Byyv {\n  margin-left: -7px;\n  width: 112px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV {\n  width: 100%;\n  overflow: hidden;\n  position: absolute;\n  bottom: 30px;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew {\n  width: 99px;\n  height: 34px;\n  background: #2752e7;\n  border-radius: 4px 4px 4px 4px;\n  line-height: 34px;\n  font-size: 14px;\n  text-align: center;\n  color: #ffffff;\n  font-weight: 400;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  float: right;\n  margin-right: 31px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.index-module_sealSelectMask__vmm9t > .index-module_sealSelect__ne38o > .index-module_btnGroup__I02WV > .index-module_okBtn__WDAew.index-module_disabled__CjHxO {\n  background-color: #444c5e;\n  cursor: not-allowed;\n}\n";
+    var styles$9 = {"sealSelectMask":"index-module_sealSelectMask__vmm9t","hide":"index-module_hide__mFEJS","sealSelect":"index-module_sealSelect__ne38o","title":"index-module_title__9-hxx","close":"index-module_close__5YfKo","text":"index-module_text__fZ6fQ","contents":"index-module_contents__BtrD8","label":"index-module_label__5Byyv","sealContent":"index-module_sealContent__JKVre","seal":"index-module_seal__961BL","active":"index-module_active__DHS0n","pageConfigSetting":"index-module_pageConfigSetting__Clay7","radio":"index-module_radio__IkG1h","pageNumSelect":"index-module_pageNumSelect__T9lMp","prompt":"index-module_prompt__oyAHw","checkbox":"index-module_checkbox__XQU04","OddChoice":"index-module_OddChoice__GtIUf","sealShow":"index-module_sealShow__9ZiBO","btnGroup":"index-module_btnGroup__I02WV","okBtn":"index-module_okBtn__WDAew","disabled":"index-module_disabled__CjHxO"};
+    styleInject(css_248z$b);
 
     function base64ToBlob(base64Data) {
         var arr = base64Data.split(","), fileType = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), l = bstr.length, u8Arr = new Uint8Array(l);
@@ -41635,13 +41635,13 @@ var bkDocReader = (function (exports) {
             "ui-select": Select,
             "ui-inputNumber": InputNumber
         },
-        template: lodash.exports.template(html$4)({ styles: styles$a }),
+        template: lodash.exports.template(html$4)({ styles: styles$9 }),
         initData: function () {
             return {
                 mode: "seal",
                 sealList: [],
                 customPageInputVal: "",
-                maskHideClassName: styles$a.hide,
+                maskHideClassName: styles$9.hide,
                 selectImg: mulSelectB64Url,
                 selectNoImg: mulSlectNoB64Url,
                 radioSelectImg: radioSelectB64Url,
@@ -41663,7 +41663,7 @@ var bkDocReader = (function (exports) {
         },
         computed: {
             disabled: function () {
-                return !this.data.get("activeSeal") ? styles$a.disabled : "";
+                return !this.data.get("activeSeal") ? styles$9.disabled : "";
             },
             sealSelectStyles: function () {
                 var height = 601;
@@ -41691,7 +41691,7 @@ var bkDocReader = (function (exports) {
         _selectSeal: function (sealList, mode) {
             var _this = this;
             mode = mode || "seal";
-            if (this.data.get("maskHideClassName") !== styles$a.hide) {
+            if (this.data.get("maskHideClassName") !== styles$9.hide) {
                 throw new Error("选择器被锁定");
             }
             var res = new Promise(function (resolve, reject) {
@@ -41808,7 +41808,7 @@ var bkDocReader = (function (exports) {
                     resultData.oneSealInPageNum = parseInt(this.data.get("oneSealInPageNumVal"));
                 }
                 this.data.set("sealList", []);
-                this.data.set("maskHideClassName", styles$a.hide);
+                this.data.set("maskHideClassName", styles$9.hide);
                 this.data.set("activeSeal", undefined);
                 this._waitResult &&
                     this._waitResult.resolve &&
@@ -41818,7 +41818,7 @@ var bkDocReader = (function (exports) {
             closeClick: function () {
                 document.removeEventListener("keydown", this.events.documentKeyHandle);
                 this.data.set("sealList", []);
-                this.data.set("maskHideClassName", styles$a.hide);
+                this.data.set("maskHideClassName", styles$9.hide);
                 this.data.set("activeSeal", undefined);
                 this._waitResult &&
                     this._waitResult.resolve &&
@@ -42117,12 +42117,12 @@ var bkDocReader = (function (exports) {
 
     var html$3 = "<div style=\"display: {{show?'block':'none'}}\" class=\"<%= styles.finder %>\">\r\n  <div s-ref=\"ref-title\" class=\"<%= styles.title %>\" on-mousedown=\"events.titleMouseDown($event)\" on-mouseup=\"events.titleMouseUp($event)\">\r\n    <span class=\"<%= styles.text %>\">PIN码</span>\r\n    <img on-click=\"hide()\" id=\"<%= styles.close %>\" title=\"关闭\" src=\"data:image/png;base64,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\">\r\n  </div>\r\n  <div class=\"<%= styles.content %>\">\r\n    <div class=\"<%= styles.form %>\">\r\n      <label for=\"<%= styles.keyword %>\">关键字:</label>\r\n      <input id=\"<%= styles.keyword %>\" type=\"text\">\r\n    </div>\r\n    <div class=\"<%= styles.btnGroup %>\">\r\n      <div class=\"<%= styles.nexBtn %>\">下一个</div>\r\n      <div>上一个</div>\r\n    </div>\r\n  </div>\r\n</div>\r\n";
 
-    var css_248z$b = ".index-module_finder__xACI2 {\n  position: absolute;\n  width: 513px;\n  height: 187px;\n  background: #ffffff;\n  top: 100px;\n  z-index: 999999;\n  box-shadow: 3px 2px 10px 2px rgba(0, 0, 0, 0.16);\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  line-height: 40px;\n  color: #fff;\n  position: relative;\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw > .index-module_text__1MAXO {\n  display: block;\n  padding-left: 16px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  cursor: default;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw > #index-module_close__ljqi8 {\n  display: block;\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  right: 26px;\n  top: 50%;\n  margin-top: calc(-18px / 2);\n  cursor: pointer;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra {\n  width: 100%;\n  height: calc(100%-40px);\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk {\n  width: 100%;\n  padding: 23px 0 44px 0;\n  font-size: 0;\n  height: 30px;\n  line-height: 30px;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > label {\n  display: inline-block;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  margin-left: 31px;\n  margin-right: 6px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > #index-module_keyword__nrmX8 {\n  display: inline-block;\n  width: 400px;\n  height: 28px;\n  line-height: 28px;\n  font-size: 12px;\n  border-radius: 4px 4px 4px 4px;\n  outline: none;\n  border: 1px solid #e6e6e6;\n  padding-left: 6px;\n  color: #2752e7;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > #index-module_keyword__nrmX8:focus {\n  border: 1px solid #2752e7;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- {\n  width: 100%;\n  position: relative;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- > div {\n  float: right;\n  margin-right: 20px;\n  width: 99px;\n  height: 34px;\n  background: #2752e7;\n  text-align: center;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #ffffff;\n  line-height: 34px;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- > div.index-module_nexBtn__K5uoa {\n  margin-right: 25px;\n}\n";
-    var styles$9 = {"finder":"index-module_finder__xACI2","title":"index-module_title__ZtCSw","text":"index-module_text__1MAXO","close":"index-module_close__ljqi8","content":"index-module_content__rurra","form":"index-module_form__ySfkk","keyword":"index-module_keyword__nrmX8","btnGroup":"index-module_btnGroup__9X1C-","nexBtn":"index-module_nexBtn__K5uoa"};
-    styleInject(css_248z$b);
+    var css_248z$a = ".index-module_finder__xACI2 {\n  position: absolute;\n  width: 513px;\n  height: 187px;\n  background: #ffffff;\n  top: 100px;\n  z-index: 999999;\n  box-shadow: 3px 2px 10px 2px rgba(0, 0, 0, 0.16);\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw {\n  width: 100%;\n  height: 40px;\n  background: #2752e7;\n  line-height: 40px;\n  color: #fff;\n  position: relative;\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw > .index-module_text__1MAXO {\n  display: block;\n  padding-left: 16px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  cursor: default;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_title__ZtCSw > #index-module_close__ljqi8 {\n  display: block;\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  right: 26px;\n  top: 50%;\n  margin-top: calc(-18px / 2);\n  cursor: pointer;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra {\n  width: 100%;\n  height: calc(100%-40px);\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk {\n  width: 100%;\n  padding: 23px 0 44px 0;\n  font-size: 0;\n  height: 30px;\n  line-height: 30px;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > label {\n  display: inline-block;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  margin-left: 31px;\n  margin-right: 6px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > #index-module_keyword__nrmX8 {\n  display: inline-block;\n  width: 400px;\n  height: 28px;\n  line-height: 28px;\n  font-size: 12px;\n  border-radius: 4px 4px 4px 4px;\n  outline: none;\n  border: 1px solid #e6e6e6;\n  padding-left: 6px;\n  color: #2752e7;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_form__ySfkk > #index-module_keyword__nrmX8:focus {\n  border: 1px solid #2752e7;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- {\n  width: 100%;\n  position: relative;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- > div {\n  float: right;\n  margin-right: 20px;\n  width: 99px;\n  height: 34px;\n  background: #2752e7;\n  text-align: center;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #ffffff;\n  line-height: 34px;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.index-module_finder__xACI2 > .index-module_content__rurra > .index-module_btnGroup__9X1C- > div.index-module_nexBtn__K5uoa {\n  margin-right: 25px;\n}\n";
+    var styles$8 = {"finder":"index-module_finder__xACI2","title":"index-module_title__ZtCSw","text":"index-module_text__1MAXO","close":"index-module_close__ljqi8","content":"index-module_content__rurra","form":"index-module_form__ySfkk","keyword":"index-module_keyword__nrmX8","btnGroup":"index-module_btnGroup__9X1C-","nexBtn":"index-module_nexBtn__K5uoa"};
+    styleInject(css_248z$a);
 
     var Finder = dist.exports.defineComponent({
-        template: lodash.exports.template(html$3)({ styles: styles$9 }),
+        template: lodash.exports.template(html$3)({ styles: styles$8 }),
         initData: function () {
             return {
                 show: false
@@ -42159,43 +42159,6 @@ var bkDocReader = (function (exports) {
         }
     });
 
-    var css_248z$a = ".index-module_maskContainer__V675O {\n  position: fixed;\n  top: 0px;\n  left: 0px;\n  width: 100vw;\n  height: 100vh;\n  z-index: 1000;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.index-module_modalContainer__wr8XZ {\n  width: 460px;\n  background: #FFFFFF;\n  box-shadow: 3px 2px 10px 2px rgba(0, 0, 0, 0.16);\n  border-radius: 0px 0px 0px 0px;\n  opacity: 1;\n}\n.index-module_modalTitle__Bn4bw {\n  height: 15px;\n  background: #2752E7;\n  border-radius: 0px 0px 0px 0px;\n  padding-top: 12px;\n  padding-bottom: 13px;\n  padding-left: 16px;\n  padding-right: 16px;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #FFFFFF;\n}\n.index-module_modalCloseBtn__PVHQV {\n  font-weight: 900;\n  font-size: 18px;\n  position: relative;\n  top: -3px;\n  cursor: pointer;\n}\n.index-module_modalContent__UJHtR {\n  min-height: 247px;\n  padding-left: 23px;\n  padding-right: 22px;\n}\n.index-module_modalTipIconBox__brAt- {\n  margin-top: 31px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin-bottom: 16px;\n}\n.index-module_modalIcon__CKsmU {\n  width: 110px;\n  height: 110px;\n  border: 1px solid red;\n}\n.index-module_modalTipTitleBox__Q7ssL {\n  text-align: center;\n  font-size: 16px;\n  font-family: Microsoft YaHei UI-Bold, Microsoft YaHei UI;\n  font-weight: bold;\n  color: #333333;\n  margin-bottom: 18px;\n}\n.index-module_modalTitleSplit__qxCx7 {\n  border-top: 1px solid #E6E6E6;\n  margin-bottom: 23px;\n}\n.index-module_modalTipTxtBox__Z5Yp2 {\n  text-indent: 2em;\n  font-size: 14px;\n  padding-left: 9px;\n  padding-right: 9px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #666666;\n}\n.index-module_rstListBox__F5HOn {\n  margin-top: 10px;\n  margin-bottom: 34px;\n  height: 164px;\n  border: 1px solid #2752E7;\n  padding: 9px 4px 9px 11px;\n}\n.index-module_rstListTitleBox__apIQ2 {\n  height: 25px;\n  background: #CBD7FF;\n  display: flex;\n  align-items: center;\n  font-size: 14px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #333333;\n}\n.index-module_rstListBody__uagkH {\n  margin-top: 4px;\n  height: 134px;\n  overflow: auto;\n}\n.index-module_rstListBody__uagkH::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 4px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 4px;\n}\n.index-module_rstListBody__uagkH::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 10px;\n  background: #CBD7FF;\n  position: absolute;\n  display: none;\n}\n.index-module_rstListBody__uagkH:hover::-webkit-scrollbar-thumb {\n  display: inline;\n}\n.index-module_rstListRow__YeIxS {\n  display: flex;\n  align-items: center;\n  font-size: 12px;\n  font-family: Microsoft YaHei UI-Regular, Microsoft YaHei UI;\n  font-weight: 400;\n  color: #666666;\n  margin-bottom: 10px;\n}\n.index-module_txtAutoHide__reoqc {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n}\n";
-    var styles$8 = {"maskContainer":"index-module_maskContainer__V675O","modalContainer":"index-module_modalContainer__wr8XZ","modalTitle":"index-module_modalTitle__Bn4bw","modalCloseBtn":"index-module_modalCloseBtn__PVHQV","modalContent":"index-module_modalContent__UJHtR","modalTipIconBox":"index-module_modalTipIconBox__brAt-","modalIcon":"index-module_modalIcon__CKsmU","modalTipTitleBox":"index-module_modalTipTitleBox__Q7ssL","modalTitleSplit":"index-module_modalTitleSplit__qxCx7","modalTipTxtBox":"index-module_modalTipTxtBox__Z5Yp2","rstListBox":"index-module_rstListBox__F5HOn","rstListTitleBox":"index-module_rstListTitleBox__apIQ2","rstListBody":"index-module_rstListBody__uagkH","rstListRow":"index-module_rstListRow__YeIxS","txtAutoHide":"index-module_txtAutoHide__reoqc"};
-    styleInject(css_248z$a);
-
-    function newGuid$1() {
-        var curguid = "";
-        for (var i = 1; i <= 32; i++) {
-            var id = Math.floor(Math.random() * 16.0).toString(16);
-            curguid += id;
-            if (i === 8 || i === 12 || i === 16 || i === 20)
-                curguid += "";
-        }
-        return "a".concat(curguid);
-    }
-    function renderPage(success, rsp, hideList, root) {
-        var elementGuid = newGuid$1();
-        var element = "\n        <div id=\"".concat(elementGuid, "\" class=\"").concat(styles$8.maskContainer, "\" >\n            <div class=\"").concat(styles$8.modalContainer, "\" >\n                <div class=\"").concat(styles$8.modalTitle, "\" >\n                    <div style=\"float:left\" >\u6279\u91CF\u9A8C\u7AE0</div>\n                    <div style=\"float:right\" class=\"").concat(styles$8.modalCloseBtn, "\" onclick=\"document.getElementById('").concat(elementGuid, "').remove()\" >x</div>\n                </div>\n                <div class=\"").concat(styles$8.modalContent, "\" >\n                    <div class=\"").concat(styles$8.modalTipIconBox, "\" >\n                        <div class=\"").concat(styles$8.modalIcon, "\" ></div>\n                    </div>\n                    <div class=\"").concat(styles$8.modalTipTitleBox, "\" >\n                        \u5F88\u9057\u61BE\uFF0C\u6587\u6863\u9A8C\u8BC1\u5931\u8D25\uFF01\n                    </div>\n                    <div class=\"").concat(styles$8.modalTitleSplit, "\" ></div>\n                    <div class=\"").concat(styles$8.modalTipTxtBox, "\" >\n                        \u6587\u6863\u5185\u6240\u6709\u5370\u7AE0\u5DF2\u7ECF\u9A8C\u8BC1\uFF0C\u6587\u6863\u5185\u5BB9\u5DF2\u88AB\u7BE1\u6539\uFF0C\u6587\u6863\u4E2D\u5171\u8BA1\u542B\u6709").concat(rsp.length, "\u4E2A\u5370\u7AE0\uFF0C\u6709").concat(rsp.filter(function (m) { return !m.success; }).length, "\u4E2A\u5370\u7AE0\u9A8C\u8BC1\u5931\u8D25\u3002\n                    </div>\n                    ").concat(!hideList ? "\n                    <div class=\"".concat(styles$8.rstListBox, "\" >\n                        <div class=\"").concat(styles$8.rstListTitleBox, "\" >\n                            <div style=\"width:30px\" ></div>\n                            <div style=\"width:80px\" >\u9875\u7801</div>\n                            <div style=\"width:140px\" >\u5370\u7AE0\u540D\u79F0</div>\n                            <div>\u8BF4\u660E</div>\n                        </div>\n                        <div class=\"").concat(styles$8.rstListBody, "\" >\n                            ").concat(rsp.map(function (m) { return "\n                                <div class=\"".concat(styles$8.rstListRow, "\" >\n                                    <div style=\"width:30px\" ></div>\n                                    <div style=\"width:80px\" >").concat(m.page, "</div>\n                                    <div style=\"width:140px;color:#2752E7;\" title=\"").concat(m.sealName, "\" ><div style=\"width:130px;\" class=\"").concat(styles$8.txtAutoHide, "\" >").concat(m.sealName, "</div></div>\n                                    <div style=\"width:143px;\" class=\"").concat(styles$8.txtAutoHide, "\" title=\"").concat(m.desc, "\" >").concat(m.desc, "</div>\n                                </div>\n                            "); }).join("\r\n"), "\n                        </div>\n                    </div>\n                    ") : "", "\n                </div>\n            </div>\n        </div>\n    ");
-        var div = document.createElement('div');
-        div.innerHTML = element;
-        (root || document.body).appendChild(div);
-    }
-    function success(rsp, hideList, root) {
-        renderPage(true, rsp, hideList, root);
-    }
-    function error(rsp, hideList, root) {
-        renderPage(false, rsp, hideList, root);
-    }
-    var BathCheckSealRst = {
-        success: success,
-        error: error
-    };
-
-    setTimeout(function () {
-        BathCheckSealRst.error([
-            { page: 1, success: false, sealName: '某某公章*', desc: '算法验证失败' },
-        ]);
-    }, 200);
     new asyncLock();
     var sealSelectInterface;
     var finderInterface;
@@ -42262,11 +42225,11 @@ var bkDocReader = (function (exports) {
         catch (e) {
             isDisabled = false;
         }
-        if (isDisabled && !this.className.includes("  " + styles$f.disabled)) {
-            this.className += " " + styles$f.disabled;
+        if (isDisabled && !this.className.includes("  " + styles$e.disabled)) {
+            this.className += " " + styles$e.disabled;
             this.update(this);
         }
-        else if (!isDisabled && this.className.includes(" " + styles$f.disabled)) {
+        else if (!isDisabled && this.className.includes(" " + styles$e.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42285,11 +42248,11 @@ var bkDocReader = (function (exports) {
         catch (e) {
             isDisabled = false;
         }
-        if (isDisabled && !this.className.includes("  " + styles$f.disabled)) {
-            this.className += " " + styles$f.disabled;
+        if (isDisabled && !this.className.includes("  " + styles$e.disabled)) {
+            this.className += " " + styles$e.disabled;
             this.update(this);
         }
-        else if (!isDisabled && this.className.includes(" " + styles$f.disabled)) {
+        else if (!isDisabled && this.className.includes(" " + styles$e.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42300,12 +42263,12 @@ var bkDocReader = (function (exports) {
         var val = scaleVals[isNarrow ? 0 : scaleVals.length - 1];
         var isDisabled = isNarrow ? scale <= val : scale >= val;
         if (isDisabled) {
-            if (!this.className.includes(" " + styles$f.disabled)) {
-                this.className += " " + styles$f.disabled;
+            if (!this.className.includes(" " + styles$e.disabled)) {
+                this.className += " " + styles$e.disabled;
                 this.update(this);
             }
         }
-        else if (this.className.includes(" " + styles$f.disabled)) {
+        else if (this.className.includes(" " + styles$e.disabled)) {
             this.className = this.className.split(" ")[0];
             this.update(this);
         }
@@ -42521,7 +42484,7 @@ var bkDocReader = (function (exports) {
                 needReader: true,
                 title: "缩小",
                 width: 24,
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 isShow: showSupportScale,
                 attached: function (app) {
                     var self = this;
@@ -42541,11 +42504,11 @@ var bkDocReader = (function (exports) {
                 click: function (app) {
                     try {
                         var nextNodeInfo = this.selector.next();
-                        if (nextNodeInfo.className.includes(" " + styles$f.disabled)) {
+                        if (nextNodeInfo.className.includes(" " + styles$e.disabled)) {
                             nextNodeInfo.className = nextNodeInfo.className.split(" ")[0];
                             nextNodeInfo.update(nextNodeInfo);
                         }
-                        if (this.className.includes(" " + styles$f.disabled)) {
+                        if (this.className.includes(" " + styles$e.disabled)) {
                             return;
                         }
                         var parserInterface = app.currentBookmark().parserWrapperInfo
@@ -42565,16 +42528,16 @@ var bkDocReader = (function (exports) {
                             index -= 1;
                         }
                         if (index <= 0) {
-                            if (this.className.includes(" " + styles$f.disabled)) {
+                            if (this.className.includes(" " + styles$e.disabled)) {
                                 return;
                             }
-                            this.className += " " + styles$f.disabled;
+                            this.className += " " + styles$e.disabled;
                             this.update(this);
                             if (index === -1) {
                                 return;
                             }
                         }
-                        else if (this.className.includes(" " + styles$f.disabled)) {
+                        else if (this.className.includes(" " + styles$e.disabled)) {
                             this.className = this.className.split(" ")[0];
                             this.update(this);
                         }
@@ -42613,7 +42576,7 @@ var bkDocReader = (function (exports) {
                 html: "&#xe671;",
                 title: "放大",
                 width: 24,
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 isShow: showSupportScale,
                 attached: function (app) {
                     var self = this;
@@ -42632,11 +42595,11 @@ var bkDocReader = (function (exports) {
                 },
                 click: function (app) {
                     var prevNodeInfo = this.selector.prev();
-                    if (prevNodeInfo.className.includes(" " + styles$f.disabled)) {
+                    if (prevNodeInfo.className.includes(" " + styles$e.disabled)) {
                         prevNodeInfo.className = prevNodeInfo.className.split(" ")[0];
                         prevNodeInfo.update(prevNodeInfo);
                     }
-                    if (this.className.includes(" " + styles$f.disabled)) {
+                    if (this.className.includes(" " + styles$e.disabled)) {
                         return;
                     }
                     try {
@@ -42657,16 +42620,16 @@ var bkDocReader = (function (exports) {
                             index += 1;
                         }
                         if (index >= scaleVals.length - 1 || index === -1) {
-                            if (this.className.includes(" " + styles$f.disabled)) {
+                            if (this.className.includes(" " + styles$e.disabled)) {
                                 return;
                             }
-                            this.className += " " + styles$f.disabled;
+                            this.className += " " + styles$e.disabled;
                             this.update(this);
                             if (index >= scaleVals.length) {
                                 return;
                             }
                         }
-                        else if (this.className.includes(" " + styles$f.disabled)) {
+                        else if (this.className.includes(" " + styles$e.disabled)) {
                             this.className = this.className.split(" ")[0];
                             this.update(this);
                         }
@@ -42870,7 +42833,7 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe667;",
                 title: "顺时针旋转",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 isShow: function (app) {
                     return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -42894,7 +42857,7 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe669;",
                 title: "逆时针旋转",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 isShow: function (app) {
                     return app.currentBookmark().parserWrapperInfo.parserInfo.support
@@ -42918,20 +42881,20 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe719;",
                 title: "跳转到首页",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$f.disabled)) {
+                    if (this.className.includes(" " + styles$e.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
                     if (!currentBookmark || !currentBookmark.id) {
                         return;
                     }
-                    if (!this.className.includes(" " + styles$f.disabled)) {
-                        this.className += " " + styles$f.disabled;
+                    if (!this.className.includes(" " + styles$e.disabled)) {
+                        this.className += " " + styles$e.disabled;
                         this.update();
                     }
                     currentBookmark.parserWrapperInfo.parserInterface.jumpTo(1);
@@ -42944,12 +42907,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe615;",
                 title: "上一页",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$f.disabled)) {
+                    if (this.className.includes(" " + styles$e.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -42957,8 +42920,8 @@ var bkDocReader = (function (exports) {
                         return;
                     }
                     var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() - 1;
-                    if (nowPageNo <= 1 && this.className.includes(" " + styles$f.disabled)) {
-                        this.className += " " + styles$f.disabled;
+                    if (nowPageNo <= 1 && this.className.includes(" " + styles$e.disabled)) {
+                        this.className += " " + styles$e.disabled;
                         this.update();
                     }
                     if (nowPageNo >= 1) {
@@ -42973,12 +42936,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe718;",
                 title: "下一页",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app, event) {
-                    if (this.className.includes(" " + styles$f.disabled)) {
+                    if (this.className.includes(" " + styles$e.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -42988,8 +42951,8 @@ var bkDocReader = (function (exports) {
                     var nowPageNo = currentBookmark.parserWrapperInfo.parserInterface.nowPageNo() + 1;
                     var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
                     if (nowPageNo >= numPages &&
-                        this.className.includes(" " + styles$f.disabled)) {
-                        this.className += " " + styles$f.disabled;
+                        this.className.includes(" " + styles$e.disabled)) {
+                        this.className += " " + styles$e.disabled;
                         this.update();
                     }
                     if (nowPageNo <= numPages) {
@@ -43004,12 +42967,12 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 html: "&#xe690;",
                 title: "跳转到尾页",
-                className: styles$f.toolIconBtn,
+                className: styles$e.toolIconBtn,
                 width: 24,
                 attached: jumpBtnGroupCheckAttached,
                 isShow: supportJumpPage,
                 click: function (app) {
-                    if (this.className.includes(" " + styles$f.disabled)) {
+                    if (this.className.includes(" " + styles$e.disabled)) {
                         return;
                     }
                     var currentBookmark = app.currentBookmark();
@@ -43017,8 +42980,8 @@ var bkDocReader = (function (exports) {
                         return;
                     }
                     var numPages = currentBookmark.parserWrapperInfo.parserInterface.getNumPages();
-                    if (!this.className.includes(" " + styles$f.disabled)) {
-                        this.className += " " + styles$f.disabled;
+                    if (!this.className.includes(" " + styles$e.disabled)) {
+                        this.className += " " + styles$e.disabled;
                         this.update();
                     }
                     currentBookmark.parserWrapperInfo.parserInterface.jumpTo(numPages);
@@ -43200,7 +43163,7 @@ var bkDocReader = (function (exports) {
 
     new asyncLock();
     var Reader = dist.exports.defineComponent({
-        template: lodash.exports.template(html$b)({ styles: styles$g }),
+        template: lodash.exports.template(html$b)({ styles: styles$f }),
         initData: function () {
             return {
                 bookmarkLoadErrors: { __length: 0 }
@@ -43300,7 +43263,7 @@ var bkDocReader = (function (exports) {
                                 throw new Error("解析器未实现渲染方法");
                             }
                             readerEle = createElement("div");
-                            readerEle.className = styles$g.readerContent;
+                            readerEle.className = styles$f.readerContent;
                             this.readerEleList[bookmark.id] = readerEle;
                             rootEle.appendChild(readerEle);
                             res = parserInterface.render(readerEle);
