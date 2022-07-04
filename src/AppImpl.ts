@@ -64,7 +64,7 @@ const defaultOptions: AppUpdateOptions = {
     left: {
       toolbars: [
         defaultData.sildebarLeftTabs.outline,
-        defaultData.sildebarLeftTabs.sign,
+        // defaultData.sildebarLeftTabs.sign,
         defaultData.sildebarLeftTabs.comment,
         defaultData.sildebarLeftTabs.thumbnail,
       ],

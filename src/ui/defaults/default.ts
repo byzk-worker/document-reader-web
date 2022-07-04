@@ -235,6 +235,9 @@ const headerTabsBtns = {
       text: "保存",
       html: "&#xe65c;",
       title: "保存",
+      isShow() {
+        return false;
+      },
     },
   } as ToolInfo,
   saveAs: {
@@ -244,6 +247,16 @@ const headerTabsBtns = {
       text: "另存为",
       html: "&#xe65c;",
       title: "另存为",
+      isShow(app) {
+        return app.currentBookmark().parserWrapperInfo.parserInfo.support.save;
+      },
+      click(app) {
+        const currentBookmark = app.currentBookmark();
+        if (!currentBookmark || !currentBookmark.id) {
+          return;
+        }
+        currentBookmark.parserWrapperInfo.parserInterface.save();
+      },
     },
   } as ToolInfo,
   print: {
@@ -253,6 +266,9 @@ const headerTabsBtns = {
       text: "打印",
       html: "&#xe65d;",
       title: "打印",
+      isShow() {
+        return false;
+      },
     },
   } as ToolInfo,
   jump: {
@@ -551,9 +567,10 @@ const headerTabsBtns = {
       title: "查找",
       text: "查找",
       isShow(app) {
-        const pagesConfig = app.currentBookmark().parserWrapperInfo.parserInfo
-          .support.pages;
-        return pagesConfig && pagesConfig.find;
+        return false;
+        // const pagesConfig = app.currentBookmark().parserWrapperInfo.parserInfo
+        //   .support.pages;
+        // return pagesConfig && pagesConfig.find;
       },
       click(app) {
         const finder = getFinderInterface(app);

@@ -43,6 +43,10 @@ export declare interface ReaderParserSupport {
    */
   fileSuffix: string[];
   /**
+   * 是否支持保存
+   */
+  save: boolean;
+  /**
    * 是否支持缩放
    */
   scale: boolean;
@@ -172,6 +176,11 @@ export declare interface ReaderParserConstructor {
  * 解析器功能接口
  */
 export interface ReaderParserInterface {
+  /**
+   * 保存文件
+   * @param savePath 保存路径
+   */
+  save?(savePath: string): Promise<void>;
   /**
    * 获取印章列表
    */
@@ -443,6 +452,12 @@ export declare abstract class ReaderParserAbstract
   protected fire(eventName: "pageNoChange", currentPageNo: number): void;
   protected fire(eventName: "scaleChange", scale: number): void;
   protected fire(eventName: "moduleSwitchChange", mode: "move" | "select");
+
+  /**
+   * 保存文件
+   * @param savePath 保存路径
+   */
+  public save(savePath?: string): Promise<void>;
 
   /**
    * 获取印章列表

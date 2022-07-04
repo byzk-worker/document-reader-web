@@ -42413,7 +42413,10 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 text: "保存",
                 html: "&#xe65c;",
-                title: "保存"
+                title: "保存",
+                isShow: function () {
+                    return false;
+                }
             }
         },
         saveAs: {
@@ -42422,7 +42425,17 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 text: "另存为",
                 html: "&#xe65c;",
-                title: "另存为"
+                title: "另存为",
+                isShow: function (app) {
+                    return app.currentBookmark().parserWrapperInfo.parserInfo.support.save;
+                },
+                click: function (app) {
+                    var currentBookmark = app.currentBookmark();
+                    if (!currentBookmark || !currentBookmark.id) {
+                        return;
+                    }
+                    currentBookmark.parserWrapperInfo.parserInterface.save();
+                }
             }
         },
         print: {
@@ -42431,7 +42444,10 @@ var bkDocReader = (function (exports) {
             nodeInfo: {
                 text: "打印",
                 html: "&#xe65d;",
-                title: "打印"
+                title: "打印",
+                isShow: function () {
+                    return false;
+                }
             }
         },
         jump: {
@@ -42727,9 +42743,10 @@ var bkDocReader = (function (exports) {
                 title: "查找",
                 text: "查找",
                 isShow: function (app) {
-                    var pagesConfig = app.currentBookmark().parserWrapperInfo.parserInfo
-                        .support.pages;
-                    return pagesConfig && pagesConfig.find;
+                    return false;
+                    // const pagesConfig = app.currentBookmark().parserWrapperInfo.parserInfo
+                    //   .support.pages;
+                    // return pagesConfig && pagesConfig.find;
                 },
                 click: function (app) {
                     var finder = getFinderInterface(app);
@@ -44288,6 +44305,9 @@ var bkDocReader = (function (exports) {
         ReaderParserAbstract.prototype.signSealQiFen = function (sealInfo, pwd) {
             throw ErrNoSupportFunction;
         };
+        ReaderParserAbstract.prototype.save = function (savePath) {
+            throw ErrNoSupportFunction;
+        };
         ReaderParserAbstract.supportAll = {
             nowBrowser: true,
             fileSuffix: [],
@@ -44299,6 +44319,7 @@ var bkDocReader = (function (exports) {
             thumbnail: true,
             outline: true,
             annotations: true,
+            save: true,
             full: {
                 width: true,
                 content: true
@@ -44338,6 +44359,7 @@ var bkDocReader = (function (exports) {
             return false;
         },
         scale: false,
+        save: false,
         rotation: false,
         full: false,
         pages: false,
@@ -44525,7 +44547,7 @@ var bkDocReader = (function (exports) {
             left: {
                 toolbars: [
                     defaultData.sildebarLeftTabs.outline,
-                    defaultData.sildebarLeftTabs.sign,
+                    // defaultData.sildebarLeftTabs.sign,
                     defaultData.sildebarLeftTabs.comment,
                     defaultData.sildebarLeftTabs.thumbnail,
                 ]
