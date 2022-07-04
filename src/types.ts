@@ -508,6 +508,10 @@ export interface ReaderParserSupport {
    */
   annotations: boolean;
   /**
+   * 是否支持保存
+   */
+  save: boolean;
+  /**
    * 是否支持全屏
    */
   full:
@@ -778,6 +782,11 @@ export interface ReaderParserInterface {
    */
   loadFile(file: FileInfo): Promise<void>;
   /**
+   * 保存文件
+   * @param savePath 保存路径
+   */
+  save?(savePath?: string): Promise<void>;
+  /**
    * 获取缩放
    */
   getScale?(): number;
@@ -917,6 +926,7 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
     thumbnail: true,
     outline: true,
     annotations: true,
+    save: true,
     full: {
       width: true,
       content: true,
@@ -1120,6 +1130,9 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   ): Promise<void> {
     throw ErrNoSupportFunction;
   }
+  save(savePath?: string): Promise<void> {
+    throw ErrNoSupportFunction;
+  }
 }
 
 /**
@@ -1151,6 +1164,7 @@ export const readerParserSupportDefault: ReaderParserSupport = {
     return false;
   },
   scale: false,
+  save: false,
   rotation: false,
   full: false,
   pages: false,
