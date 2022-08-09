@@ -52,6 +52,46 @@ function getClassName(type: 'success' | 'warn' | 'error') {
     }
 }
 
+interface IDelayObj {
+    id: string,
+    body: NodeJS.Timeout
+}
+
+var delayList: IDelayObj[] = [];
+
+const queueAdd = (guid: string, body: NodeJS.Timeout) => {
+    queueRemove(guid);
+    delayList.push({ id: guid, body });
+}
+
+const queueRemove = (guid: string) => {
+    delayList = delayList.filter(m => m.id !== guid);
+}
+
+const startTimeout = (guid: string, time: number) => {
+    queueAdd(guid, setTimeout(() => {
+        document.getElementById(guid).remove();
+    }, time));
+}
+
+const endTimeout = (guid: string) => {
+    clearTimeout(delayList.find(m => m.id === guid).body);
+    queueRemove(guid);
+}
+
+const addDelayTask = (guid: string, time: number) => {
+    startTimeout(guid, time);
+    //鼠标移入事件
+    document.getElementById(guid).onmouseover = () => {
+        endTimeout(guid);
+    };
+    //鼠标离开事件
+    document.getElementById(guid).onmouseout = () => {
+        startTimeout(guid, time);
+    }
+}
+
+
 export interface MessageOption {
     /**
      * 额外按钮
@@ -134,13 +174,11 @@ export class MessageImpl implements MessageInterface {
                 ele.onclick = btn.callback;
             })
         }
+        this.msgRoot.appendChild(element);
         var hideTimeFlag = opt?.timeout ?? 5000;
         if (hideTimeFlag > 0) {
-            setTimeout(() => {
-                document.getElementById(elementGuid).remove()
-            }, hideTimeFlag);
+            addDelayTask(elementGuid, hideTimeFlag);
         }
-        this.msgRoot.appendChild(element);
     }
     success(title: string, opt?: MessageOption) {
         this.show(title, 'success', opt);
