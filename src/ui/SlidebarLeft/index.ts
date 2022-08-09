@@ -9,6 +9,7 @@ interface SlidebarLeftProps {}
 interface SlidebarLeftStates {
   expand: boolean;
   activeKey: number;
+  openName: string;
   pannelDragWidth: number;
   appSize: {
     minWidth: number;
@@ -38,6 +39,7 @@ export default defineComponent<DataType>({
       expand: false,
       pannelDragWidth: 0,
       dragX: 0,
+      openName: "",
     };
   },
   attached(this: SlidebarLeftComponent) {
@@ -142,6 +144,7 @@ export default defineComponent<DataType>({
       if (disabled) {
         return;
       }
+      this.data.set("openName", toolbar.text);
       const nowActiveKey = this.data.get("activeKey");
       this.data.set("activeKey", key);
       if (nowActiveKey !== key) {

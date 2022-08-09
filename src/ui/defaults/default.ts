@@ -3,8 +3,8 @@ import {
   AppInterface,
   NodeInfo,
   NodeInfoThis,
-  SealPositionInfo,
-  SealQiFenInfo,
+  SignaturePositionReqInfo,
+  SignatureGapReqInfo,
   ToolbarConfig,
   ToolInfo,
 } from "../../types";
@@ -606,7 +606,7 @@ const headerTabsBtns = {
     type: "default",
     needReader: true,
     nodeInfo: {
-      html: "&#xe610;",
+      html: "&#xe67e;",
       title: "手工签章",
       text: "手工签章",
       isShow(app) {
@@ -646,14 +646,16 @@ const headerTabsBtns = {
             return;
           }
           app.loading.show("正在签署印章...");
-          const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
-            return {
-              x: res.x,
-              y: res.y,
-              pageNo: res.pageNo,
-            };
-          });
-          await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+          const sealPositionList: SignaturePositionReqInfo[] = dragRes.map(
+            (res) => {
+              return {
+                x: res.x,
+                y: res.y,
+                pageNo: res.pageNo,
+              };
+            }
+          );
+          await currentBookmark.parserWrapperInfo.parserInterface.signatureByPositionList(
             res.sealInfo,
             pwd,
             ...sealPositionList
@@ -706,34 +708,39 @@ const headerTabsBtns = {
           if (res.cancel) {
             return;
           }
-          const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
-            res.sealInfo,
-            {
-              mode: "qiFeng",
-              qiFenConfig: {
-                splitPageNum: res.oneSealInPageNum,
-                sealMode: res.modSwitch,
-              },
-            }
-          );
-          if (!dragRes || dragRes.length === 0) {
-            app.message.success("签章操作已取消!", { timeout: 3000 });
-            return;
-          }
+          // const dragRes = await currentBookmark.parserWrapperInfo.parserInterface.sealDrag(
+          //   res.sealInfo,
+          //   {
+          //     mode: "qiFeng",
+          //     gapConfig: {
+          //       splitPageNum: res.oneSealInPageNum,
+          //       sealMode: res.modSwitch,
+          //     },
+          //   }
+          // );
+          // if (!dragRes || dragRes.length === 0) {
+          //   app.message.success("签章操作已取消!", { timeout: 3000 });
+          //   return;
+          // }
 
-          app.loading.show("正在签署印章...");
-          const sealPositionList: SealQiFenInfo[] = dragRes.map((r) => {
-            return {
-              x: r.x,
-              y: r.y,
-              pageNo: r.pageNo,
-              splitSize: res.oneSealInPageNum,
-            };
-          });
-          await currentBookmark.parserWrapperInfo.parserInterface.signSealQiFen(
+          app.loading.show("正在签署骑缝章...");
+          // const sealPositionList: SignatureGapReqInfo[] = dragRes.map((r) => {
+          //   return {
+          //     x: r.x,
+          //     y: r.y,
+          //     pageNo: r.pageNo,
+          //     splitSize: res.oneSealInPageNum,
+          //   };
+          // });
+
+          await currentBookmark.parserWrapperInfo.parserInterface.signatureByGap(
             res.sealInfo,
             pwd,
-            ...sealPositionList
+            {
+              splitPageNum: res.oneSealInPageNum,
+              type: res.modSwitch,
+              positionModel: res.positionModel,
+            }
           );
           app.message.success("骑缝签章成功");
         } catch (e) {
@@ -748,7 +755,7 @@ const headerTabsBtns = {
     type: "default",
     needReader: true,
     nodeInfo: {
-      html: "&#xe677;",
+      html: "&#xe681;",
       title: "多页签章",
       text: "多页签章",
       isShow(app) {
@@ -792,14 +799,16 @@ const headerTabsBtns = {
             }
           );
           app.loading.show("正在签署印章...");
-          const sealPositionList: SealPositionInfo[] = dragRes.map((res) => {
-            return {
-              x: res.x,
-              y: res.y,
-              pageNo: res.pageNo,
-            };
-          });
-          await currentBookmark.parserWrapperInfo.parserInterface.signSealPositionList(
+          const sealPositionList: SignaturePositionReqInfo[] = dragRes.map(
+            (res) => {
+              return {
+                x: res.x,
+                y: res.y,
+                pageNo: res.pageNo,
+              };
+            }
+          );
+          await currentBookmark.parserWrapperInfo.parserInterface.signatureByPositionList(
             res.sealInfo,
             pwd,
             ...sealPositionList
@@ -860,7 +869,7 @@ const headerTabsBtns = {
           }
 
           app.loading.show("正在签署印章...");
-          await currentBookmark.parserWrapperInfo.parserInterface.signSealKeyword(
+          await currentBookmark.parserWrapperInfo.parserInterface.signatureByKeywords(
             res.sealInfo,
             pwd,
             keyword
@@ -1161,12 +1170,12 @@ export const defaultData = {
       text: "帮助",
     } as ToolbarConfig,
   },
-  sildebarLeftTabs: {
+  sidebarLeftTabs: {
     outline: {
       text: "书签",
-      iconHtml: "&#xe67b;",
+      iconHtml: "&#xe684;",
       // iconHtml: "&#xe64f;",
-      disabled: slidebarLeftToolbarDisabled,
+      disabled: sidebarLeftToolbarDisabled,
       renderChildren(app, dom) {
         const currentBookmark = app.currentBookmark();
         if (!currentBookmark || !currentBookmark.id) {
@@ -1180,12 +1189,12 @@ export const defaultData = {
     sign: {
       text: "签章",
       iconHtml: "&#xe64f;",
-      disabled: slidebarLeftToolbarDisabled,
+      disabled: sidebarLeftToolbarDisabled,
     } as ToolbarConfig,
     comment: {
       text: "注释",
       iconHtml: "&#xe650;",
-      disabled: slidebarLeftToolbarDisabled,
+      disabled: sidebarLeftToolbarDisabled,
       renderChildren(app, dom) {
         const currentBookmark = app.currentBookmark();
         if (!currentBookmark || !currentBookmark.id) {
@@ -1201,7 +1210,7 @@ export const defaultData = {
     thumbnail: {
       text: "缩图",
       iconHtml: "&#xe651;",
-      disabled: slidebarLeftToolbarDisabled,
+      disabled: sidebarLeftToolbarDisabled,
       renderChildren(app, dom) {
         const currentBookmark = app.currentBookmark();
         if (!currentBookmark || !currentBookmark.id) {
@@ -1229,7 +1238,7 @@ export const defaultContentTemp: (
   return tempReaderComponent;
 };
 
-function slidebarLeftToolbarDisabled(app: AppInterface) {
+function sidebarLeftToolbarDisabled(app: AppInterface) {
   const currentBookmark = app.currentBookmark();
   return (
     !currentBookmark ||

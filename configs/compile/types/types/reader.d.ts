@@ -1,4 +1,30 @@
-import { FileInfo, ReaderParserConstructor, ReaderParserInfo } from "./parser";
+import { FileInfo, ReaderParserInfo } from "./parser";
+
+/**
+ * http协议保存参数
+ */
+export interface SaveHttpOptions {
+  /**
+   * 上传方式
+   */
+  method?: "POST" | "PUT";
+  /***
+   * form字段中，文件字段的字段名
+   */
+  fieldName?: string;
+  /**
+   * 要保存成的文件名
+   */
+  filename?: string;
+  /**
+   * http请求头
+   */
+  headers?: any;
+  /**
+   * 表单数据
+   */
+  form?: FormData;
+}
 
 /**
  * 阅读器接口
@@ -18,6 +44,33 @@ export declare interface ReaderInterface {
    * 当前解析器
    */
   currentParser(): ReaderParserInfo | undefined;
+  /**
+   * 当前文件信息
+   */
+  currentFileInfo(): Promise<FileInfo>;
+  /**
+   * 关闭当前文件
+   */
+  closeCurrentFile(): void;
+  /**
+   * 保存当前文件到Base64
+   */
+  saveCurrentFileToBase64(): Promise<string>;
+  /**
+   * 保存当前文件到本地磁盘中的路径
+   * @param path 要保存到的路径
+   */
+  saveCurrentFileToLocalPath(path: string): Promise<void>;
+  /**
+   * 保存文件到http(s)服务
+   * @param url 服务器地址
+   * @param options 自定义选项
+   */
+  saveCurrentFileToHttp(url: string, options?: SaveHttpOptions): Promise<void>;
+  /**
+   * 重新加载当前页面
+   */
+  reloadCurrentFile(...pageNo: number[]): void;
   /**
    * 加载文件
    * @param file 要加载的文件

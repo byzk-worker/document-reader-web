@@ -88,14 +88,15 @@ export function actualSizeAttached(
   app: AppInterface
 ) {
   this.scale = 1;
-  scaleBookmarkChange = _bindListener(
+  const self = this as any
+  self._scaleBookmarkChange = _bindListener(
     app,
     "bookmarkChange",
     scaleBookmarkChange,
     this
   );
 
-  scaleChange = _bindListener(
+  self._scaleChange = _bindListener(
     app.getReader(),
     "scaleChange",
     scaleChange,
@@ -110,14 +111,15 @@ export function suitablePageAttached(
   app: AppInterface
 ) {
   this.scale = 0.8;
-  suitableScaleBookmarkChange = _bindListener(
+  const self = this as any
+  self._suitableScaleBookmarkChange = _bindListener(
     app,
     "bookmarkChange",
     suitableScaleBookmarkChange,
     this
   );
 
-  suitableScaleChange = _bindListener(
+  self._suitableScaleChange = _bindListener(
     app.getReader(),
     "scaleChange",
     suitableScaleChange,

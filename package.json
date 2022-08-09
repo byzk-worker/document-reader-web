@@ -1,6 +1,6 @@
 {
   "name": "@byzk/document-reader",
-  "libName": "bkDocReader",
+  "libName": "docReader",
   "version": "0.0.0",
   "description": "web文档阅读器, 支持PDF、OFD等文档在线阅览",
   "main": "./index.js",
@@ -8,7 +8,7 @@
   "author": {
     "name": "SuLinXin",
     "email": "15210204903@163.com",
-    "url": "https://github.com/SuLinXin66"
+    "url": "https://github.com/byzk-worker/document-reader-web"
   },
   "license": "MIT",
   "keywords": [
@@ -25,7 +25,7 @@
   ],
   "homepage": "https://github.com/SuLinXin66/document-reader-web",
   "bugs": {
-    "url": "https://github.com/SuLinXin66/document-reader-web/issues",
+    "url": "https://github.com/byzk-worker/document-reader-web/issues",
     "email": "15210204903@163.com"
   },
   "devDependencies": {

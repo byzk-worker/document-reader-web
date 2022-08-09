@@ -23,6 +23,7 @@ import {
   NodeInfo,
   NodeInfoThis,
   ReaderParserInterface,
+  SaveHttpOptions,
 } from "./types";
 import { app, dom, id, ie } from "./utils";
 import { defaultData } from "./ui/defaults/default";
@@ -63,10 +64,10 @@ const defaultOptions: AppUpdateOptions = {
   sidebars: {
     left: {
       toolbars: [
-        defaultData.sildebarLeftTabs.outline,
-        // defaultData.sildebarLeftTabs.sign,
-        defaultData.sildebarLeftTabs.comment,
-        defaultData.sildebarLeftTabs.thumbnail,
+        defaultData.sidebarLeftTabs.outline,
+        // defaultData.sidebarLeftTabs.sign,
+        defaultData.sidebarLeftTabs.comment,
+        defaultData.sidebarLeftTabs.thumbnail,
       ],
     },
     right: false,
@@ -346,11 +347,66 @@ class ReaderImpl implements ReaderInterface {
     throw ErrFileNotParsed;
   }
 
+  public currentFileInfo(): Promise<FileInfo> {
+    const parser = this.currentParser();
+    if (!parser) {
+      throw ErrLackOfParser;
+    }
+
+    return parser.parserInterface.currentFileInfo();
+  }
+
   currentParser(): ParserWrapperInfo {
     return this._app.currentBookmark()?.parserWrapperInfo;
   }
   supportFileSuffix(): string[] {
     return this._supportFileSuffix;
+  }
+
+  closeCurrentFile(): void {
+    const currentBookmark = this._app.currentBookmark();
+    if (!currentBookmark || !currentBookmark.parserWrapperInfo) {
+      return;
+    }
+
+    this._app.removeBookmarkById(currentBookmark.id);
+  }
+
+  saveCurrentFileToBase64(): Promise<string> {
+    const currentBookmark = this._app.currentBookmark();
+    if (!currentBookmark || !currentBookmark.parserWrapperInfo) {
+      return;
+    }
+    return currentBookmark.parserWrapperInfo.parserInterface.saveToBase64();
+  }
+
+  saveCurrentFileToLocalPath(path: string): Promise<void> {
+    const currentBookmark = this._app.currentBookmark();
+    if (!currentBookmark || !currentBookmark.parserWrapperInfo) {
+      return;
+    }
+    return currentBookmark.parserWrapperInfo.parserInterface.saveToLocalPath(
+      path
+    );
+  }
+
+  saveCurrentFileToHttp(url: string, options?: SaveHttpOptions): Promise<void> {
+    const currentBookmark = this._app.currentBookmark();
+    if (!currentBookmark || !currentBookmark.parserWrapperInfo) {
+      return;
+    }
+    return currentBookmark.parserWrapperInfo.parserInterface.saveToHttp(
+      url,
+      options
+    );
+  }
+
+  reloadCurrentFile(...pageNo: number[]): void {
+    const current = this.currentParser();
+    if (!current) {
+      return;
+    }
+    current.parserInterface.reload(...pageNo);
   }
 
   attach(parserInfo: ReaderParserInfo): void {
@@ -695,7 +751,10 @@ export class AppImpl implements AppInterface {
       isConvert = true;
     }
 
-    this._bookmarkList.splice(index, 1);
+    const removeBookmark = this._bookmarkList.splice(index, 1)[0];
+    if (removeBookmark.parserWrapperInfo.parserInterface) {
+      removeBookmark.parserWrapperInfo.parserInterface.close();
+    }
     this._bookmarkMap = {};
     for (let i = 0; i < this._bookmarkList.length; i++) {
       const bookmarkInfo = this._bookmarkList[i];

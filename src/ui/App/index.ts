@@ -18,10 +18,10 @@ const template = `
         <ui-header appSize={{appSize}} appShow="{{appShow}}" s-if="{{header !== false}}" s-bind={{{...header}}} appId="{{appId}}" bookmarkInfos="{{bookmarkInfos}}" ></ui-header>
     </div>
     <div id="${styles.content}" style="height: {{contentHeight}}px">
-      <div s-if="{{!sidebars || sidebars.left !== false}}" id="${styles.sidebarLeft}">
+      <div s-if="{{sidebars && sidebars.left !== false}}" id="${styles.sidebarLeft}">
         <ui-slide-left appSize={{appSize}} bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.left||{})}}}"></ui-slide-left>
       </div>
-      <div  s-if="{{!sidebars || sidebars.right !== false}}" id="${styles.sidebarRight}">
+      <div  s-if="{{sidebars && sidebars.right !== false}}" id="${styles.sidebarRight}">
         <ui-slide-right appSize={{appSize}} bookmarkInfos="{{bookmarkInfos}}" appShow="{{appShow}}" appId="{{appId}}" s-bind="{{{...(sidebars.right||{})}}}"></ui-slide-right>
       </div>
       <div id="${styles.reader}">

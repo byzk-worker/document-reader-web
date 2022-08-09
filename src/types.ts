@@ -396,7 +396,7 @@ export interface AppInterface {
       app: AppInterface,
       currentBookmark: AppBookmarkInfoWithIndex
     ) => void
-  );
+  ): void;
 
   /**
    * 移除监听器
@@ -415,10 +415,36 @@ export interface AppInterface {
   loading: LoadingInterface;
 }
 
+/**
+ * http协议保存参数
+ */
+export interface SaveHttpOptions {
+  /**
+   * 上传方式
+   */
+  method?: "POST" | "PUT";
+  /***
+   * form字段中，文件字段的字段名
+   */
+  fieldName?: string;
+  /**
+   * 要保存成的文件名
+   */
+  filename?: string;
+  /**
+   * http请求头
+   */
+  headers?: any;
+  /**
+   * 表单数据
+   */
+  form?: FormData;
+}
+
 export interface ReaderInterface {
   /**
    * 附加一个解析器
-   * @param parser 解析器
+   * @param parserInfo 解析器
    */
   attach(parserInfo: ReaderParserInfo): void;
   /**
@@ -430,6 +456,33 @@ export interface ReaderInterface {
    * 当前解析器信息
    */
   currentParser(): ParserWrapperInfo | undefined;
+  /**
+   * 当前文件信息
+   */
+  currentFileInfo(): Promise<FileInfo>;
+  /**
+   * 关闭当前文件
+   */
+  closeCurrentFile(): void;
+  /**
+   * 保存当前文件到Base64
+   */
+  saveCurrentFileToBase64(): Promise<string>;
+  /**
+   * 保存当前文件到本地磁盘中的路径
+   * @param path 要保存到的路径
+   */
+  saveCurrentFileToLocalPath(path: string): Promise<void>;
+  /**
+   * 保存文件到http(s)服务
+   * @param url 服务器地址
+   * @param options 自定义选项
+   */
+  saveCurrentFileToHttp(url: string, options?: SaveHttpOptions): Promise<void>;
+  /**
+   * 重新加载当前页面
+   */
+  reloadCurrentFile(...pageNo: number[]): void;
   /**
    * 加载文件
    * @param file 要加载的文件
@@ -614,8 +667,9 @@ export interface ReaderParserConstructor {
 
 export interface FileInfo {
   name: string;
+  id?: string;
   path?: string;
-  rawHtmlEle: HTMLInputElement;
+  rawHtmlEle?: HTMLInputElement;
 }
 
 export interface SealInfo {
@@ -642,11 +696,15 @@ export interface SealDragOption {
   minPageNo?: number;
   mode?: "default" | "multipage" | "qiFeng";
   allowManualPosition?: boolean;
-  cernterPositionMode?: "center" | "leftBottom";
-  qiFenConfig?: {
+  centerPositionMode?: "center" | "leftBottom";
+  gapConfig?: {
     splitPageNum?: number;
     sealMode?: "all" | "odd" | "even";
   };
+  /**
+   * 坐标单位, 默认 mm
+   */
+  coordinateUnit?: "px" | "mm";
 }
 
 export interface SealDragResult {
@@ -654,13 +712,19 @@ export interface SealDragResult {
   sealInfo: SealInfo;
   x: number;
   y: number;
-  cernterPositionMode?: "center" | "leftBottom";
+  centerPositionMode?: "center" | "leftBottom";
+  /**
+   * 坐标单位, 默认 mm
+   * mm: 毫米
+   * px: 像素
+   */
+  coordinateUnit?: "px" | "mm";
 }
 
 /**
  * 签章定位信息
  */
-export interface SealPositionInfo {
+export interface SignaturePositionReqInfo {
   /**
    * x 位置
    */
@@ -675,11 +739,15 @@ export interface SealPositionInfo {
   pageNo: number;
 }
 
-export interface SealQiFenInfo extends SealPositionInfo {
+export interface SignatureGapReqInfo {
+  x?: number;
+  y?: number;
   /**
    * 切割数量
    */
-  splitSize: number;
+  splitPageNum?: number;
+  type?: "all" | "odd" | "pair";
+  positionModel?: "top" | "center" | "bottom";
 }
 
 export interface SealListResult {
@@ -688,6 +756,18 @@ export interface SealListResult {
 }
 
 export interface ReaderParserInterface {
+  /**
+   * 当前文件信息
+   */
+  currentFileInfo(): Promise<FileInfo>;
+  /**
+   * 关闭当前文件
+   */
+  close(): void;
+  /**
+   * 重新加载当前页面
+   */
+  reload(...pageNo: number[]): void;
   /**
    * 获取印章列表
    */
@@ -702,13 +782,13 @@ export interface ReaderParserInterface {
     options?: SealDragOption
   ): Promise<SealDragResult[]>;
 
-  signSealQiFen?(
+  signatureByGap?(
     sealInfo: SealInfo,
     pwd: string | undefined,
-    ...options: SealQiFenInfo[]
+    options: SignatureGapReqInfo
   ): Promise<void>;
 
-  signSealKeyword?(
+  signatureByKeywords?(
     sealInfo: SealInfo,
     pwd: string,
     keyword: string
@@ -720,10 +800,10 @@ export interface ReaderParserInterface {
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  signSealPosition?(
+  signatureByPosition?(
     sealInfo: SealInfo,
     password: string | undefined,
-    positionInfo: SealPositionInfo
+    positionInfo: SignaturePositionReqInfo
   ): Promise<void>;
   /**
    * 坐标签章
@@ -732,20 +812,20 @@ export interface ReaderParserInterface {
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
-  signSealPositionList?(
+  signatureByPositionList?(
     sealInfo: SealInfo,
     password: string | undefined,
-    ...positionInfoList: SealPositionInfo[]
+    ...positionInfoList: SignaturePositionReqInfo[]
   ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  signSealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  signatureVerify?(sealFieldName: string): Promise<SealVerifyResult>;
   /**
    * 验证全文印章
    */
-  signSealVerifyAll?(): Promise<SealVerifyResult[]>;
+  signatureVerifyAll?(): Promise<SealVerifyResult[]>;
   /**
    * 渲染注释
    * @param domEle 要加载到的dom元素
@@ -786,6 +866,24 @@ export interface ReaderParserInterface {
    * @param savePath 保存路径
    */
   save?(savePath?: string): Promise<void>;
+  /**
+   * 保存文件到Base64
+   */
+  saveToBase64(): Promise<string>;
+
+  /**
+   * 保存文件到本地路径
+   * @param path 本地路径
+   */
+  saveToLocalPath(path: string): Promise<void>;
+
+  /**
+   * 保存文件到http(s)服务
+   * @param url http服务地址
+   * @param options http选项
+   */
+  saveToHttp(url: string, options?: SaveHttpOptions): Promise<void>;
+
   /**
    * 获取缩放
    */
@@ -886,7 +984,10 @@ export interface ReaderParserInterface {
    * @param eventName 事件名称
    * @param callback 回调
    */
-  removeListener?(eventName: "scaleChange", callback: (pageNo: number) => void);
+  removeListener?(
+    eventName: "scaleChange",
+    callback: (pageNo: number) => void
+  ): void;
   /**
    * 移除模式选择切换事件
    * @param eventName 事件名称
@@ -895,7 +996,7 @@ export interface ReaderParserInterface {
   removeListener?(
     eventName: "moduleSwitchChange",
     callback: (mode: "move" | "select") => void
-  );
+  ): void;
   /**
    * 当前页码
    */
@@ -1084,10 +1185,10 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   sealList(): Promise<SealListResult | undefined> {
     throw ErrNoSupportFunction;
   }
-  signSealVerify(sealFieldName: string): Promise<SealVerifyResult> {
+  signatureVerify(sealFieldName: string): Promise<SealVerifyResult> {
     throw ErrNoSupportFunction;
   }
-  signSealVerifyAll(): Promise<SealVerifyResult[]> {
+  signatureVerifyAll(): Promise<SealVerifyResult[]> {
     throw ErrNoSupportFunction;
   }
   setRotation(deg: number): void {
@@ -1102,35 +1203,53 @@ export abstract class ReaderParserAbstract implements ReaderParserInterface {
   ): Promise<SealDragResult[]> {
     throw ErrNoSupportFunction;
   }
-  signSealKeyword(
+  signatureByKeywords(
     sealInfo: SealInfo,
     pwd: string,
     keyword: string
   ): Promise<void> {
     throw ErrNoSupportFunction;
   }
-  signSealPosition(
+  signatureByPosition(
     sealInfo: SealInfo,
     password: string | undefined,
-    positionInfo: SealPositionInfo
+    positionInfo: SignaturePositionReqInfo
   ): Promise<void> {
-    return this.signSealPositionList(sealInfo, password, positionInfo);
+    return this.signatureByPositionList(sealInfo, password, positionInfo);
   }
-  signSealPositionList(
+  signatureByPositionList(
     sealInfo: SealInfo,
     password: string | undefined,
-    ...positionInfoList: SealPositionInfo[]
+    ...positionInfoList: SignaturePositionReqInfo[]
   ): Promise<void> {
     throw ErrNoSupportFunction;
   }
-  signSealQiFen(
+  signatureByGap(
     sealInfo: SealInfo,
     pwd: string,
-    ...options: SealQiFenInfo[]
+    options: SignatureGapReqInfo
   ): Promise<void> {
     throw ErrNoSupportFunction;
   }
   save(savePath?: string): Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  saveToBase64(): Promise<string> {
+    throw ErrNoSupportFunction;
+  }
+  saveToHttp(url: string, options?: SaveHttpOptions): Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  saveToLocalPath(path: string): Promise<void> {
+    throw ErrNoSupportFunction;
+  }
+  currentFileInfo(): Promise<FileInfo> {
+    throw ErrNoSupportFunction;
+  }
+  close(): void {
+    throw ErrNoSupportFunction;
+  }
+  reload(...pageNo: number[]): void {
     throw ErrNoSupportFunction;
   }
 }

@@ -105,6 +105,17 @@
           optionsStyle="width: 249px;"
         ></ui-select>
       </div>
+      <div style="margin-top: 18px;" s-show="isQiFenSign" class="<%= styles.OddChoice %>">
+        <div class="<%= styles.label %>">
+          位置选择
+        </div>
+        <ui-select
+          style="width: 249px; float: left;"
+          activeVal="{= gapPositionMode =}"
+          options="{{gapPositionOption}}"
+          optionsStyle="width: 249px;"
+        ></ui-select>
+      </div>
       <div
         s-show="isQiFenSign"
         style="margin-top: 90px;"
@@ -119,7 +130,7 @@
         <ui-inputNumber
           defaultValue="{{1}}"
           minValue="{{1}}"
-          maxValue="{{4}}"
+          maxValue="{{10}}"
           value="{= oneSealInPageNumVal =}"
           style="margin-left: 3px; height: 23px; line-height: 23px;"
         ></ui-inputNumber>

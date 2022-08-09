@@ -87,11 +87,11 @@ export interface SealDragOption {
    * 1. center: 中心为起点
    * 2. leftBottom: 左下角为中心
    */
-  cernterPositionMode?: "center" | "leftBottom";
+  centerPositionMode?: "center" | "leftBottom";
   /**
    * 骑缝签章配置
    */
-  qiFenConfig?: {
+  gapConfig?: {
     /**
      * 多少页切割一个章
      */
@@ -104,6 +104,12 @@ export interface SealDragOption {
      */
     sealMode?: "all" | "odd" | "even";
   };
+  /**
+   * 坐标单位, 默认 mm
+   * mm: 毫米
+   * px: 像素
+   */
+  coordinateUnit?: "px" | "mm";
 }
 
 /**
@@ -131,13 +137,19 @@ export interface SealDragResult {
    * 1. center: 中心为起点
    * 2. leftBottom: 左下角为中心
    */
-  cernterPositionMode?: "center" | "leftBottom";
+  centerPositionMode?: "center" | "leftBottom";
+  /**
+   * 坐标单位, 默认 mm
+   * mm: 毫米
+   * px: 像素
+   */
+  coordinateUnit?: "px" | "mm";
 }
 
 /**
  * 签章定位信息
  */
-export interface SealPositionInfo {
+export interface SignaturePositionReqInfo {
   /**
    * x 位置
    */
@@ -169,9 +181,13 @@ export interface SealListResult {
 /**
  * 骑缝签章信息
  */
-export interface SealQiFenInfo extends SealPositionInfo {
+export interface SignatureGapReqInfo {
+  x?: number;
+  y?: number;
   /**
    * 切割数量
    */
-  splitSize: number;
+  splitPageNum?: number;
+  type?: "all" | "odd" | "pair";
+  positionModel?: "top" | "center" | "bottom";
 }

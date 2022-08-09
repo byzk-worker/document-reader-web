@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="http://192.168.3.122:8899/ws-backend.js"></script>
+    <!-- <script src="http://192.168.100.217:8899/ws-backend.js"></script> -->
     <!-- <script src="./dist/bkDocReader.ie.min.js"></script> -->
-    <script src="./build/dist/bkDocReader.js"></script>
+    <script src="./build/dist/docReader.js"></script>
     <style>
       body {
         position: absolute;
@@ -25,10 +25,10 @@
 
   <script>
     window.onload = function () {
-      window.app = new bkDocReader.App(document.body, {
+      window.app = new docReader.App(document.body, {
         // minWidth: 100,
         fontConfig: {
-          dir: "/fonts",
+          dir: "./fonts",
           eotFile: "iconfont.eot",
           woffFile: "iconfont.woff",
           woff2File: "iconfont.woff2",

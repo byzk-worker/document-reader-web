@@ -28,10 +28,12 @@ interface SealSelectStates {
   checkboxOk: boolean;
 
   oddSwitchOption: OptionInfo[];
+  gapPositionOption: OptionInfo[];
 
   customPageInputVal?: string;
 
-  qiFenPageSealMode: "all" | "even" | "odd";
+  qiFenPageSealMode: "all" | "pair" | "odd";
+  gapPositionMode: "top" | "center" | "bottom";
   oneSealInPageNumVal: string;
 }
 export interface SealSelectInterface {
@@ -52,7 +54,8 @@ export interface SealSelectInterface {
   ): Promise<{
     cancel: boolean;
     sealInfo: SealInfo;
-    modSwitch: "all" | "even" | "odd";
+    modSwitch?: "all" | "pair" | "odd";
+    positionModel?: "top" | "center" | "bottom";
     oneSealInPageNum?: number;
   }>;
 }
@@ -90,12 +93,18 @@ export default defineComponent<DataType>({
       radioSelectStatus: "allPages",
       checkboxOk: false,
       qiFenPageSealMode: "all",
+      gapPositionMode: "center",
       oddSwitchOption: [
         { val: "all", text: "所有页面" },
         { val: "odd", text: "奇数页面" },
-        { val: "even", text: "偶数页面" },
+        { val: "pair", text: "偶数页面" },
       ],
-      oneSealInPageNumVal: "1",
+      gapPositionOption: [
+        { val: "top", text: "顶部" },
+        { val: "center", text: "中间" },
+        { val: "bottom", text: "底部" },
+      ],
+      oneSealInPageNumVal: "10",
     };
   },
   attached(this: SealSelectComponent) {
@@ -149,7 +158,8 @@ export default defineComponent<DataType>({
       this.data.set("customPageInputVal", "");
     } else if (mode === "qiFeng") {
       this.data.set("qiFenPageSealMode", "all");
-      this.data.set("oneSealInPageNumVal", "1");
+      this.data.set("gapPositionMode", "center");
+      this.data.set("oneSealInPageNumVal", "10");
     }
     this.data.set("maskHideClassName", undefined);
     this.data.set("activeSeal", undefined);
@@ -252,6 +262,7 @@ export default defineComponent<DataType>({
           }
         }
       } else if (mode === "qiFeng") {
+        resultData.positionModel = this.data.get("gapPositionMode");
         resultData.modSwitch = this.data.get("qiFenPageSealMode");
         resultData.oneSealInPageNum = parseInt(
           this.data.get("oneSealInPageNumVal")

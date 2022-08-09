@@ -1,13 +1,13 @@
 import { AppInterface } from "./app";
-import { ReaderInterface } from "./reader";
+import { ReaderInterface, SaveHttpOptions } from "./reader";
 import {
   SealDragResult,
   SealDragOption,
   SealInfo,
   SealListResult,
-  SealPositionInfo,
+  SignaturePositionReqInfo,
   SealVerifyResult,
-  SealQiFenInfo,
+  SignatureGapReqInfo,
 } from "./seal";
 
 /**
@@ -19,13 +19,17 @@ export declare interface FileInfo {
    */
   name: string;
   /**
+   * 文件ID
+   */
+  id?: string;
+  /**
    * 路径
    */
   path?: string;
   /**
    * 原始HTML文件节点
    */
-  rawHtmlEle: HTMLInputElement;
+  rawHtmlEle?: HTMLInputElement;
 }
 
 /**
@@ -177,10 +181,37 @@ export declare interface ReaderParserConstructor {
  */
 export interface ReaderParserInterface {
   /**
+   * 当前文件信息
+   */
+  currentFileInfo(): Promise<FileInfo>;
+  /**
+   * 关闭当前文件
+   */
+  close(): void;
+  /**
+   * 重新加载当前页面
+   */
+  reload(...pageNo: number[]): void;
+  /**
    * 保存文件
    * @param savePath 保存路径
    */
   save?(savePath: string): Promise<void>;
+  /**
+   * 保存当前文件到Base64
+   */
+  saveToBase64?(): Promise<string>;
+  /**
+   * 保存当前文件到本地磁盘中的路径
+   * @param path 要保存到的路径
+   */
+  saveToLocalPath?(path: string): Promise<void>;
+  /**
+   * 保存文件到http(s)服务
+   * @param url 服务器地址
+   * @param options 自定义选项
+   */
+  saveToHttp?(url: string, options?: SaveHttpOptions): Promise<void>;
   /**
    * 获取印章列表
    */
@@ -201,10 +232,10 @@ export interface ReaderParserInterface {
    * @param pwd 密码
    * @param options 选项
    */
-  signSealQiFen?(
+  signatureByGap?(
     sealInfo: SealInfo,
     pwd: string | undefined,
-    options: SealQiFenInfo
+    options: SignatureGapReqInfo
   ): Promise<void>;
 
   /**
@@ -213,7 +244,7 @@ export interface ReaderParserInterface {
    * @param pwd 密码
    * @param keyword 关键字
    */
-  signSealKeyword?(
+  signatureByKeywords?(
     sealInfo: SealInfo,
     pwd: string | undefined,
     keyword: string
@@ -225,10 +256,10 @@ export interface ReaderParserInterface {
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  signSealPosition?(
+  signatureByPosition?(
     sealInfo: SealInfo,
     password: string | undefined,
-    positionInfo: SealPositionInfo
+    positionInfo: SignaturePositionReqInfo
   ): Promise<void>;
   /**
    * 坐标签章
@@ -237,16 +268,16 @@ export interface ReaderParserInterface {
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
-  signSealPositionList?(
+  signatureByPositionList?(
     sealInfo: SealInfo,
     password: string | undefined,
-    ...positionInfoList: SealPositionInfo[]
+    ...positionInfoList: SignaturePositionReqInfo[]
   ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  signSealVerify?(sealFieldName: string): Promise<SealVerifyResult>;
+  signatureVerify?(sealFieldName: string): Promise<SealVerifyResult>;
   /**
    * 验证全文印章
    */
@@ -357,13 +388,19 @@ export interface ReaderParserInterface {
    * @param eventName 监听名称
    * @param callback 回调
    */
-  addListener?(eventName: "pageNoChange", callback: (pageNo: number) => void);
+  addListener?(
+    eventName: "pageNoChange",
+    callback: (pageNo: number) => void
+  ): void;
   /**
    * 添加缩放改变事件
    * @param eventName 事件名称
    * @param callback 回调
    */
-  addListener?(eventName: "scaleChange", callback: (scale: number) => void);
+  addListener?(
+    eventName: "scaleChange",
+    callback: (scale: number) => void
+  ): void;
   /**
    * 添加模式选择事件
    * @param eventName 事件名称
@@ -372,7 +409,7 @@ export interface ReaderParserInterface {
   addListener?(
     eventName: "moduleSwitchChange",
     callback: (mode: "move" | "select") => void
-  );
+  ): void;
   /**
    * 移除监听
    * @param eventName 名称
@@ -381,13 +418,16 @@ export interface ReaderParserInterface {
   removeListener?(
     eventName: "pageNoChange",
     callback: (pageNo: number) => void
-  );
+  ): void;
   /**
    * 移除缩放事件监听
    * @param eventName 事件名称
    * @param callback 回调
    */
-  removeListener?(eventName: "scaleChange", callback: (scale: number) => void);
+  removeListener?(
+    eventName: "scaleChange",
+    callback: (scale: number) => void
+  ): void;
   /**
    * 移除模式选择切换事件
    * @param eventName 事件名称
@@ -396,7 +436,7 @@ export interface ReaderParserInterface {
   removeListener?(
     eventName: "moduleSwitchChange",
     callback: (mode: "move" | "select") => void
-  );
+  ): void;
   /**
    * 当前页码
    */
@@ -416,7 +456,8 @@ export interface ReaderParserInterface {
  * 解析器基础抽象类
  */
 export declare abstract class ReaderParserAbstract
-  implements ReaderParserInterface {
+  implements ReaderParserInterface
+{
   /**
    * 缩放值, 默认读取 window.devicePixelRatio || 1
    */
@@ -454,10 +495,42 @@ export declare abstract class ReaderParserAbstract
   protected fire(eventName: "moduleSwitchChange", mode: "move" | "select");
 
   /**
+   * 获取当前文件信息
+   */
+  public currentFileInfo(): Promise<FileInfo>;
+
+  /**
+   * 关闭当前文件
+   */
+  public close(): void;
+  /**
+   * 重新加载当前页面
+   */
+  public reload(...pageNo: number[]): void;
+
+  /**
    * 保存文件
    * @param savePath 保存路径
    */
   public save(savePath?: string): Promise<void>;
+
+  /**
+   * 保存文件到Base64
+   */
+  public saveToBase64(): Promise<string>;
+
+  /**
+   * 保存文件到本地路径
+   * @param path 本地路径
+   */
+  public saveToLocalPath(path: string): Promise<void>;
+
+  /**
+   * 保存文件到http(s)服务
+   * @param url http服务地址
+   * @param options http选项
+   */
+  public saveToHttp(url: string, options?: SaveHttpOptions): Promise<void>;
 
   /**
    * 获取印章列表
@@ -480,10 +553,10 @@ export declare abstract class ReaderParserAbstract
    * @param pwd 密码
    * @param options 参数
    */
-  public signSealQiFen(
+  public signatureByGap(
     sealInfo: SealInfo,
     pwd: string,
-    options: SealQiFenInfo
+    options: SignatureGapReqInfo
   ): Promise<void>;
 
   /**
@@ -504,10 +577,10 @@ export declare abstract class ReaderParserAbstract
    * @param positionInfo 位置信息
    * @throws Error 签章添加失败抛出异常
    */
-  public signSealPosition(
+  public signatureByPosition(
     sealInfo: SealInfo,
     password: string | undefined,
-    positionInfo: SealPositionInfo
+    positionInfo: SignaturePositionReqInfo
   ): Promise<void>;
 
   /**
@@ -517,16 +590,16 @@ export declare abstract class ReaderParserAbstract
    * @param positionInfoList 位置列表信息
    * @throws Error 签章添加失败抛出异常
    */
-  public signSealPositionList(
+  public signatureByPositionList(
     sealInfo: SealInfo,
     password: string | undefined,
-    ...positionInfoList: SealPositionInfo[]
+    ...positionInfoList: SignaturePositionReqInfo[]
   ): Promise<void>;
   /**
    * 验证印章通过表单名称
    * @param sealFieldName 印章表单名称
    */
-  public signSealVerify(sealFieldName: string): Promise<SealVerifyResult>;
+  public signatureVerify(sealFieldName: string): Promise<SealVerifyResult>;
 
   /**
    * 验证全文印章

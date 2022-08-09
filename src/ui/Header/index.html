@@ -1,9 +1,9 @@
 <div id="{{id || undefined}}" class="<%= styles.header %>{{className ? ' ' + className : ''}}">
     <div class="<%= styles.tollbar %>">
         <div class="<%= styles.fileBtn %>">
-            <span class="iconfont">&#xe655;
+            <!-- <span class="iconfont">&#xe655;
                 <span>文件</span>
-            </span>
+            </span> -->
         </div>
         <fragment s-for="toolbarConfig, i in toolbars">
             <div class="<%= styles.tabs %>" on-click="events.tabClick(i)"

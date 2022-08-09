@@ -1,7 +1,7 @@
 <div class="<%= styles.slidebarLeft %>" style="{{slideWrapperIeStyle}}">
     <div class="clearfix <%= styles.tabsWrapper %>">
-        <div class="<%= styles.comment %>">
-            <span>缩图</span>
+        <div style="{{openName?'color: #2752e7;':''}}" class="<%= styles.comment %>">
+            <span>{{openName || "缩图"}}</span>
         </div>
         <div class="<%= styles.tabs %>">
             <fragment s-for="toolbar, index in toolbars">
