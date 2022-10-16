@@ -41,7 +41,13 @@
 ## 浏览器中使用
 
 ```html
+<script src="https://raw.githubusercontent.com/byzk-worker/document-reader-web/main/build/dist/docReader.min.js"></script>
+```
 
+在IE中使用
+
+```html
+<script src="https://raw.githubusercontent.com/byzk-worker/document-reader-web/main/build/dist/docReader.ie.min.js"></script>
 ```
 
 ## npm中使用
@@ -63,6 +69,39 @@ yarn add @byzk/document-reader
 # <div id="integration">应用集成</div>
 
 # <div id="website">传统WEB项目</div>
+
+关键代码
+
+```html
+<script src="https://raw.githubusercontent.com/byzk-worker/document-reader-web/main/build/dist/docReader.min.js"></script> 
+<script>
+  // window load事件
+  window.onload = function () {
+    // 初始化阅读器
+    window.app = new docReader.App(document.body, {
+      // 指定阅读器字体图标的文件路径
+      fontConfig: {
+        dir: "./fonts",
+        eotFile: "iconfont.eot",
+        woffFile: "iconfont.woff",
+        woff2File: "iconfont.woff2",
+        ttfFile: "iconfont.ttf",
+        svgFile: "iconfont.svg",
+      },
+    });
+    window.app.show();
+    //   window.app.loading.show("哈哈哈");
+    // window.app.message.success('成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字成功提示文字');
+    window.app.message.warn('警告提示文字');
+    // window.app.message.error('失败提示文字');
+  };
+</script>
+```
+
+
+
+
+[完整示例]()
 
 
 

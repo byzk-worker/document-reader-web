@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>传统项目阅读器测试demo</title>
+    // 引入阅读器库
+    <script src="./js/docReader.min.js"></script>
+    // 基础样式
+    <style>
+      html,
+      body,
+      #app {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      // 等待元素加载完成
+      window.onload = function () {
+        // 初始化阅读器App对象
+        // 第一个参数为要挂载到的DOM节点
+        // 第二个为对应用选项
+        docRe;
+        window.app = new docReader.App(document.getElementById("app"), {
+          fontConfig: {},
+        });
+      };
+    </script>
+  </body>
+</html>
